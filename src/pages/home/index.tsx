@@ -21,8 +21,6 @@ import { PauseWarning } from '@/features/typing/components/PauseWarning';
 import { MetricsPanel } from '@/features/typing/components/MetricsPanel';
 import { ResultSection } from '@/features/results/components/ResultSection';
 import { HistorySection } from '@/features/results/components/HistorySection';
-import { SettingsPanel } from '@/features/settings/components/SettingsPanel';
-
 export default function Home() {
   const { playKeystroke, playErrorSound } = useSound();
 
@@ -30,7 +28,6 @@ export default function Home() {
 
   const { saveRound } = useRoundStats();
 
-  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isNextLoading, setIsNextLoading] = useState(false);
 
   const [showHistorySection, setShowHistorySection] = useState(false);
@@ -174,13 +171,6 @@ export default function Home() {
     currentWordEl?.scrollIntoView({ block: 'center', behavior: 'smooth' });
   }, [activeWordIndex, isStarted, isReady]);
 
-  useEffect(() => {
-    if (isSettingsOpen) {
-      pause();
-    } else if (isStarted && !isCompleted) {
-      resume();
-    }
-  }, [isSettingsOpen, isStarted, isCompleted, pause, resume]);
 
   useEffect(() => {
     if (isReady && !isStarted) {
@@ -233,7 +223,6 @@ export default function Home() {
       <div className="w-full max-w-5xl">
         <Header
           onOpenHistorySection={() => setShowHistorySection(true)}
-          onOpenSettings={() => setIsSettingsOpen(true)}
         />
 
         <Dialog.Root open={showHistorySection} onOpenChange={setShowHistorySection}>
@@ -343,14 +332,6 @@ export default function Home() {
           loadingButton={loadingButton}
         />
 
-        {isSettingsOpen && (
-          <div className="fixed inset-0 z-50">
-            <div className="absolute inset-0" onClick={() => setIsSettingsOpen(false)} />
-            <div className="absolute bottom-0 left-0 w-full">
-              <SettingsPanel onPrepare={() => prepare()} setIsOpen={setIsSettingsOpen} />
-            </div>
-          </div>
-        )}
       </div>
     </div>
   );

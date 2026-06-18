@@ -1,7 +1,6 @@
 'use client';
 
 import { useConfig } from '@/features/settings/context/ConfigContext';
-import { useSound } from '@/features/sound/context/SoundContext';
 
 type InlineSettingsProps = {
   onPrepare: () => void;
@@ -38,7 +37,6 @@ const Separator = () => (
 export const InlineSettings = ({ onPrepare }: InlineSettingsProps) => {
   const { mode, setMode, category, setCategory, difficulty, setDifficulty, initialTime, setInitialTime } =
     useConfig();
-  const { soundName, setSoundName } = useSound();
 
   const currentModeValue = mode === 'passage' ? 'passage' : String(initialTime);
 
@@ -75,7 +73,7 @@ export const InlineSettings = ({ onPrepare }: InlineSettingsProps) => {
           { label: 'hard', value: 'hard' },
         ]}
         currentValue={difficulty}
-        onChange={setDifficulty}
+        onChange={(v) => setDifficulty(v as 'easy' | 'medium' | 'hard')}
       />
 
       <Separator />
@@ -88,22 +86,9 @@ export const InlineSettings = ({ onPrepare }: InlineSettingsProps) => {
           { label: 'code', value: 'code' },
         ]}
         currentValue={category}
-        onChange={(v) => { setCategory(v); onPrepare(); }}
+        onChange={(v) => { setCategory(v as 'general' | 'lyrics' | 'quotes' | 'code'); onPrepare(); }}
       />
 
-      <Separator />
-
-      <PillGroup
-        options={[
-          { label: 'creamy', value: 'creamy' },
-          { label: 'beep', value: 'beep' },
-          { label: 'osu', value: 'osu' },
-          { label: 'pop', value: 'pop' },
-          { label: 'off', value: 'none' },
-        ]}
-        currentValue={soundName}
-        onChange={(v) => setSoundName(v as typeof soundName)}
-      />
     </div>
   );
 };
