@@ -72,13 +72,13 @@ export function HistorySection({ open, onOpenChange }: Props) {
           `}
           onEscapeKeyDown={() => onOpenChange(false)}
         >
-          <h1 className="text-preset-3-semibold text-center">History</h1>
-          <p className="text-preset-4-regular text-neutral-400 mt-1 text-center">
+          <h1 className="text-base font-semibold font-display text-neutral-400 text-center tracking-widest uppercase">History</h1>
+          <p className="text-xs font-display text-neutral-600 mt-1 text-center">
             {isLoggedIn ? 'Your saved rounds' : 'Review your type history'}
           </p>
 
           <div className="mt-8 flex flex-col flex-1">
-            <div className="space-y-4 overflow-y-visible overflow-x-visible flex-1">
+            <div className="flex-1 divide-y divide-neutral-800">
               {rounds.length === 0 && (
                 <p className="text-neutral-500 text-center text-sm mt-8">No rounds yet.</p>
               )}
@@ -88,41 +88,37 @@ export function HistorySection({ open, onOpenChange }: Props) {
                 return (
                   <div
                     key={round.id}
-                    className={`
-                      group relative flex items-center justify-between p-4 rounded-xl
-                      border transition-all duration-300
-                      ${
-                        isBest
-                          ? 'border-yellow-500 shadow-[0_0_20px_rgba(250,204,21,0.35)]'
-                          : 'border-neutral-500/40 hover:bg-neutral-800/30'
-                      }
-                    `}
+                    className="group relative flex items-center justify-between py-4 transition-colors duration-200 hover:bg-neutral-800/20"
                   >
                     {isBest && (
-                      <div className="absolute top-0 right-0 translate-x-1/3 -translate-y-1/3 rotate-12 pointer-events-none">
-                        <FontAwesomeIcon size="xl" icon={faCrown} className="text-yellow-500" />
-                      </div>
+                      <FontAwesomeIcon
+                        icon={faCrown}
+                        size="xs"
+                        className="absolute -left-1 top-3 text-yellow-500 opacity-70"
+                      />
                     )}
 
-                    <div>
-                      <p className="text-neutral-0 text-preset-3-semibold">
+                    <div className="pl-4">
+                      <p className="text-preset-3-semibold text-yellow-500">
                         {round.wpm}{' '}
-                        <span className="text-preset-7 text-neutral-400 font-mono">WPM</span>
+                        <span className="text-preset-7 text-neutral-500 font-mono">wpm</span>
                       </p>
-                      <p className="text-preset-7 text-blue-400 font-mono">
-                        {round.accuracy}% acc{' '}
-                        <span className="text-neutral-400">•</span> {round.time}s{' '}
-                        <span className="text-neutral-400">•</span> {round.mode}
+                      <p className="text-preset-7 text-neutral-400 font-mono">
+                        {round.accuracy}% acc
+                        <span className="mx-1 text-neutral-600">•</span>
+                        {round.time}s
+                        <span className="mx-1 text-neutral-600">•</span>
+                        {round.mode}
                       </p>
                     </div>
 
                     <div className="flex flex-col items-end gap-2">
-                      <p className="text-sm text-neutral-500">
+                      <p className="text-xs text-neutral-600">
                         {formatDistanceToNow(round.timestamp, { addSuffix: true })}
                       </p>
                       <button
                         onClick={() => handleDelete(round.id)}
-                        className="cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity text-neutral-500 hover:text-red-500"
+                        className="cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity text-neutral-600 hover:text-red-400"
                         title="Delete"
                       >
                         <FontAwesomeIcon icon={faTrash} size="sm" />
@@ -133,8 +129,8 @@ export function HistorySection({ open, onOpenChange }: Props) {
               })}
             </div>
 
-            <Dialog.Close className="text-white cursor-pointer hover:brightness-110 transition-all duration-100 mt-6 flex items-center justify-center p-4 py-2 bg-red-500 rounded-xl">
-              Close
+            <Dialog.Close className="cursor-pointer mt-6 text-sm text-neutral-500 hover:text-neutral-300 transition-colors duration-200 text-center py-2">
+              close
             </Dialog.Close>
           </div>
         </Dialog.Content>
