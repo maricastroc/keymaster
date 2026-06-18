@@ -268,7 +268,7 @@ export default function Home() {
           {!showResults && currentText && (
             <div
               onClick={() => isReady && inputRef.current?.focus()}
-              className={`max-h-40 sm:max-h-44 overflow-y-auto scroll-smooth hide-scrollbar font-mono text-2xl sm:text-3xl leading-relaxed cursor-text transition-opacity duration-300 ${
+              className={`max-h-40 sm:max-h-48 overflow-y-auto scroll-smooth hide-scrollbar font-mono text-2xl sm:text-3xl leading-relaxed cursor-text transition-opacity duration-300 ${
                 !isReady || isPaused || isLoading ? 'blur-sm opacity-60' : ''
               } ${textFading ? 'opacity-0' : ''}`}
             >

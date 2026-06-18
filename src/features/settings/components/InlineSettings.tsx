@@ -31,7 +31,7 @@ const PillGroup = ({ options, currentValue, onChange }: PillGroupProps) => (
 );
 
 const Separator = () => (
-  <span className="text-neutral-700 text-sm select-none">|</span>
+  <span className="text-neutral-700 text-sm select-none hidden sm:inline">|</span>
 );
 
 export const InlineSettings = ({ onPrepare }: InlineSettingsProps) => {
@@ -51,7 +51,7 @@ export const InlineSettings = ({ onPrepare }: InlineSettingsProps) => {
   };
 
   return (
-    <div className="flex items-center justify-center flex-wrap gap-2 mb-8">
+    <div className="flex items-center justify-center flex-wrap gap-2 mb-6 mt-8">
       <PillGroup
         options={[
           { label: '15s', value: '15' },

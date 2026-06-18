@@ -61,9 +61,9 @@ export const Header = ({ onOpenHistorySection }: HeaderProps) => {
         </div>
       </div>
 
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-2 md:gap-3">
         {personalBest > 0 && (
-          <div className="flex items-center gap-1.5 text-neutral-500 text-sm font-mono">
+          <div className="hidden sm:flex items-center gap-1.5 text-neutral-500 text-sm font-mono">
             <Image src="/assets/images/icon-personal-best.svg" alt="PB" width={14} height={14} className="opacity-50 trophy-icon" />
             <span className="text-yellow-500 font-bold">{personalBest}</span>
             <span className="text-xs">wpm</span>
