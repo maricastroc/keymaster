@@ -4,7 +4,7 @@ import { faGithub, faLinkedin } from '@fortawesome/free-brands-svg-icons';
 
 export const Footer = () => (
   <footer className="w-full mt-16 pb-8 flex items-center justify-center gap-4">
-    <span style={{ fontFamily: "'IBM Plex Mono', monospace" }} className="text-xs text-neutral-600">
+    <span className="font-display text-xs text-neutral-600">
       Mariana Castro
     </span>
     <span className="text-neutral-700 text-xs">·</span>

@@ -20,6 +20,7 @@
 
   --font-sans: var(--font-sora);
   --font-mono: var(--font-roboto-mono);
+  --font-display: 'IBM Plex Mono', monospace;
 
   --chart-grid: rgba(255, 255, 255, 0.05);
 }
@@ -64,6 +65,7 @@
 
   --font-sans: var(--font-sora);
   --font-mono: var(--font-roboto-mono);
+  --font-display: 'IBM Plex Mono', monospace;
 }
 
 @layer utilities {
