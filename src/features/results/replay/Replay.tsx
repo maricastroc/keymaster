@@ -64,6 +64,8 @@ export const Replay = ({ keystrokes, text, onKeystroke }: Props) => {
 
   const wordRanges = useMemo(() => buildWordRanges(text), [text]);
 
+  const fillPercent = keystrokes.length > 0 ? (currentIndex / keystrokes.length) * 100 : 0;
+
   const charStates = useMemo(
     () => buildCharStates(text, keystrokes, currentIndex),
     [text, keystrokes, currentIndex],
@@ -72,40 +74,42 @@ export const Replay = ({ keystrokes, text, onKeystroke }: Props) => {
   return (
     <div className="w-full max-w-5xl flex flex-col gap-4 mt-10">
       <div className="flex items-center justify-between">
-        <h2 className="text-neutral-300 font-semibold text-sm uppercase tracking-widest">
+        <h2 className="text-neutral-400 font-semibold text-sm uppercase tracking-widest">
           Replay
         </h2>
         <div className="flex items-center gap-3">
           <button
             onClick={reset}
-            className="text-xs text-neutral-500 hover:text-neutral-300 transition"
+            className="cursor-pointer text-xs text-neutral-500 hover:text-neutral-300 transition"
             title="Reset"
           >
             ↩
           </button>
           <button
             onClick={isPlaying ? pause : play}
-            className="text-xs px-3 py-1 rounded bg-neutral-800 hover:bg-neutral-700 text-neutral-300 transition"
+            className="cursor-pointer text-xs px-3 py-1 rounded bg-neutral-800 hover:bg-neutral-700 text-neutral-400 transition"
           >
             {isPlaying ? 'Pause' : currentIndex >= keystrokes.length ? 'Replay' : 'Play'}
           </button>
         </div>
       </div>
 
-      {/* Timeline scrubber */}
-      <input
-        type="range"
-        min={0}
-        max={keystrokes.length}
-        value={currentIndex}
-        onChange={(e) => {
-          pause();
-          jumpToIndex(Number(e.target.value));
-        }}
-        className="w-full accent-blue-500 h-1 cursor-pointer"
-      />
+      <div className="relative w-full h-1">
+        <div className="absolute inset-0 rounded-full bg-neutral-700" />
+        <div
+          className="absolute inset-y-0 left-0 rounded-full bg-yellow-500"
+          style={{ width: `${fillPercent}%` }}
+        />
+        <input
+          type="range"
+          min={0}
+          max={keystrokes.length}
+          value={currentIndex}
+          onChange={(e) => { pause(); jumpToIndex(Number(e.target.value)); }}
+          className="absolute inset-0 w-full opacity-0 cursor-pointer"
+        />
+      </div>
 
-      {/* Word display */}
       <div className="font-mono leading-loose text-base select-none">
         {wordRanges.map((range, wordIdx) => {
           const word = text.slice(range.start, range.end).replace(/ $/, '');
@@ -114,10 +118,10 @@ export const Replay = ({ keystrokes, text, onKeystroke }: Props) => {
               {word.split('').map((char, relIdx) => {
                 const absIdx = range.start + relIdx;
                 const cs = charStates[absIdx];
-                let color = 'text-neutral-600';
-                if (cs.state === 'correct') color = 'text-neutral-200';
+                let color = 'text-neutral-300';
+                if (cs.state === 'correct') color = 'text-neutral-400';
                 if (cs.state === 'incorrect') color = 'text-red-400';
-                if (cs.state === 'cursor') color = 'text-neutral-200 border-b-2 border-blue-400';
+                if (cs.state === 'cursor') color = 'text-neutral-300 border-b-2 border-blue-400';
                 return (
                   <span key={relIdx} className={color}>
                     {char}

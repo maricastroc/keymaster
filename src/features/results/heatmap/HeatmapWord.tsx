@@ -2,11 +2,11 @@ import { memo, useMemo } from 'react';
 import { WordStats } from './logic/history';
 
 const HEATMAP_COLORS = [
-  'var(--color-red-400)',
-  'var(--color-orange-400)',
-  'var(--color-neutral-400)',
-  'var(--color-blue-300)',
-  'var(--color-blue-500)',
+  'var(--color-red-500)',
+  '#c97f2a',
+  'var(--color-neutral-500)',
+  'var(--color-yellow-500)',
+  'var(--color-neutral-0)',
 ] as const;
 
 type Props = {

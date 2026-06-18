@@ -4,11 +4,11 @@ import { HeatmapWord } from './HeatmapWord';
 import { Keystroke } from '@/types/keyStore';
 
 const HEATMAP_COLORS = [
-  'var(--color-red-400)',
-  'var(--color-orange-400)',
-  'var(--color-neutral-400)',
-  'var(--color-blue-300)',
-  'var(--color-blue-500)',
+  'var(--color-red-500)',
+  '#c97f2a',
+  'var(--color-neutral-500)',
+  'var(--color-yellow-500)',
+  'var(--color-neutral-0)',
 ] as const;
 
 const LABELS = ['Very Slow', 'Slow', 'Average', 'Fast', 'Very Fast'];
@@ -30,7 +30,7 @@ export const Heatmap = ({ keystrokes, text }: Props) => {
   return (
     <div className="w-full max-w-5xl flex flex-col gap-4">
       <div className="flex items-center justify-between mt-10 sm:mt-16">
-        <h2 className="text-neutral-300 font-semibold text-sm uppercase tracking-widest">
+        <h2 className="text-neutral-400 font-semibold text-sm uppercase tracking-widest">
           Word Heatmap
         </h2>
         <button
