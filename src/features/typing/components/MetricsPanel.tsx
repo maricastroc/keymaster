@@ -20,45 +20,27 @@ export const MetricsPanel = ({
   timeLeft,
   progress = 0,
 }: MetricsPanelProps) => {
-  const accuracyColor = !isStarted
-    ? 'text-neutral-0'
-    : accuracy === 100
-      ? 'text-green-500'
-      : 'text-red-500';
-
-  const timeColor =
-    isStarted && mode === 'timed' ? 'text-yellow-500' : 'text-neutral-0';
-
-  const Item = ({
-    label,
-    value,
-    valueClass = '',
-  }: {
-    label: string;
-    value: React.ReactNode;
-    valueClass?: string;
-  }) => (
-    <div className="flex flex-col md:flex-row items-center justify-center gap-1 md:gap-3 px-4 md:px-8">
-      <p className="text-preset-4 font-medium text-neutral-400">{label}</p>
-      <span className={`text-xl md:text-preset-2 ${valueClass}`}>{value}</span>
-    </div>
-  );
-
   return (
-    <div className="mt-16">
-      <div className="flex w-full items-center justify-center pb-4 divide-x divide-neutral-600">
-        <Item label="WPM:" value={wpm} />
-        <Item
-          label="Accuracy:"
-          value={`${accuracy}%`}
-          valueClass={accuracyColor}
-        />
-        <Item label="Time:" value={formatTime(timeLeft)} valueClass={timeColor} />
-      </div>
-      <div className="w-full h-px bg-neutral-700 overflow-hidden">
+    <div className="mt-4 mb-6">
+      {isStarted ? (
+        <div className="flex items-end gap-8">
+          <span className="font-mono text-5xl font-bold text-yellow-500 tabular-nums leading-none">
+            {mode === 'timed' ? formatTime(timeLeft) : `${wpm}`}
+          </span>
+          <div className="flex items-center gap-4 pb-1 text-neutral-500 font-mono text-sm">
+            {mode === 'timed' && (
+              <span>{wpm} <span className="text-xs">wpm</span></span>
+            )}
+            <span className={accuracy < 90 ? 'text-red-500' : ''}>{accuracy}%</span>
+          </div>
+        </div>
+      ) : (
+        <div className="h-14" />
+      )}
+      <div className="mt-3 w-full h-px bg-neutral-700 overflow-hidden">
         {isStarted && (
           <div
-            className="h-full bg-blue-500 transition-all duration-150"
+            className="h-full bg-yellow-500 transition-all duration-150"
             style={{ width: `${progress * 100}%` }}
           />
         )}

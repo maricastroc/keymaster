@@ -51,7 +51,7 @@ export const ActionButtons = ({
 
   return (
     <>
-      <div className="flex items-center justify-center gap-6 mt-20">
+      <div className="flex items-center justify-center gap-4 mt-10">
         {buttons.map((button) => (
           <div
             key={button.id}

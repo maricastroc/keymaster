@@ -14,10 +14,9 @@ import { api } from '@/lib/axios';
 
 import { Header } from '@/components/Header';
 import { Button } from '@/components/ui/button';
-import { SettingsPanel } from '@/features/settings/components/SettingsPanel';
+import { InlineSettings } from '@/features/settings/components/InlineSettings';
 import { ActionButtons } from '@/features/typing/components/ActionButtons';
 import { WordDisplay } from '@/features/typing/components/WordDisplay';
-import { TagsContainer } from '@/features/typing/components/TagsContainer';
 import { PauseWarning } from '@/features/typing/components/PauseWarning';
 import { MetricsPanel } from '@/features/typing/components/MetricsPanel';
 import { ResultSection } from '@/features/results/components/ResultSection';
@@ -229,139 +228,128 @@ export default function Home() {
 
 
   return (
-    <div className="relative min-h-screen p-4 md:p-8 xl:px-28">
-      <Header
-        onOpenHistorySection={() => setShowHistorySection(true)}
-        onOpenSettings={() => setIsSettingsOpen(true)}
-      />
+    <div className="relative min-h-screen flex flex-col items-center px-4 py-6 md:py-10">
+      <div className="w-full max-w-3xl">
+        <Header
+          onOpenHistorySection={() => setShowHistorySection(true)}
+          onOpenSettings={() => {}}
+        />
 
-      <Dialog.Root
-        open={showHistorySection}
-        onOpenChange={setShowHistorySection}
-      >
-        <HistorySection
+        <Dialog.Root
           open={showHistorySection}
           onOpenChange={setShowHistorySection}
-        />
-      </Dialog.Root>
-
-      {showResults && (
-        <div className="animate-resultIn">
-          <ResultSection
-            metrics={metrics}
-            finishedTime={finishedTime}
-            chartData={chartData}
-            generalStats={generalStats}
-            keystrokes={keystrokes}
-            text={currentText}
+        >
+          <HistorySection
+            open={showHistorySection}
+            onOpenChange={setShowHistorySection}
           />
-        </div>
-      )}
+        </Dialog.Root>
 
-      {!showResults && (
-        <MetricsPanel
-          isStarted={isStarted}
-          metrics={metrics}
-          mode={mode}
-          timeLeft={timeLeft}
-          progress={words.length > 0 ? activeWordIndex / words.length : 0}
-        />
-      )}
-
-      <div className="mt-10 relative mx-auto text-left">
-        {!showResults && !currentText && (
-          <div className="flex flex-col gap-4 py-2">
-            {[85, 65, 75, 50, 70].map((w, i) => (
-              <div
-                key={i}
-                className="h-8 rounded-lg bg-neutral-800 animate-pulse"
-                style={{ width: `${w}%` }}
-              />
-            ))}
-          </div>
-        )}
-        {!showResults && currentText && (
-          <div
-            onClick={() => isReady && inputRef.current?.focus()}
-            className={`max-h-38 sm:max-h-42 overflow-y-auto scroll-smooth hide-scrollbar text-2xl sm:text-4xl md:text-preset-1-regular leading-normal cursor-text transition-opacity duration-300 ${
-              !isReady || isPaused || isLoading ? 'blur-xs opacity-70' : ''
-            } ${textFading ? 'opacity-0' : ''}`}
-          >
-            {words.map((word, wordIdx) => (
-              <div
-                key={wordIdx}
-                ref={(el) => {
-                  wordsRef.current[wordIdx] = el;
-                }}
-                className="inline-block"
-              >
-                <WordDisplay
-                  word={word}
-                  typed={userInput[wordIdx] || ''}
-                  isCurrent={wordIdx === activeWordIndex}
-                  isReady={isReady}
-                  isStarted={isStarted}
-                />
-              </div>
-            ))}
-          </div>
+        {!showResults && (
+          <InlineSettings onPrepare={() => prepare()} />
         )}
 
-        <input
-          ref={inputRef}
-          className="absolute opacity-0 pointer-events-none"
-          autoComplete="off"
-          onKeyDown={(e) => handleKeyDown(e.key)}
-        />
-
-        {isPaused && (
-          <PauseWarning
-            onResume={() => {
-              resume();
-              setTimeout(() => inputRef.current?.focus(), 10);
-            }}
-          />
-        )}
-
-        {!isReady && !isCompleted && !isPaused && (
-          <div
-            onClick={handlePrepare}
-            className="absolute inset-0 flex flex-col items-center justify-center rounded-lg"
-          >
-            <Button size="lg" onClick={handlePrepare}>
-              Start Typing Test
-            </Button>
-            <p className="text-preset-5-semibold mt-4 text-neutral-400">
-              Or click the text and start typing
-            </p>
-          </div>
-        )}
-      </div>
-
-      <TagsContainer textCategory={category} />
-
-      <ActionButtons
-        onRandomize={onRandomize}
-        onRestart={onRestart}
-        onNext={onNextText}
-        isLoading={isLoading}
-        loadingButton={loadingButton}
-      />
-
-      {isSettingsOpen && (
-        <div className="fixed inset-0 z-50">
-          <div
-            className="absolute inset-0 "
-            onClick={() => setIsSettingsOpen(false)}
-          />
-          <div className="absolute bottom-0 left-0 w-full">
-            <SettingsPanel
-              onPrepare={() => prepare()}
-              setIsOpen={setIsSettingsOpen}
+        {showResults && (
+          <div className="animate-resultIn">
+            <ResultSection
+              metrics={metrics}
+              finishedTime={finishedTime}
+              chartData={chartData}
+              generalStats={generalStats}
+              keystrokes={keystrokes}
+              text={currentText}
             />
           </div>
+        )}
+
+        {!showResults && (
+          <MetricsPanel
+            isStarted={isStarted}
+            metrics={metrics}
+            mode={mode}
+            timeLeft={timeLeft}
+            progress={words.length > 0 ? activeWordIndex / words.length : 0}
+          />
+        )}
+
+        <div className="mt-8 relative">
+          {!showResults && !currentText && (
+            <div className="flex flex-col gap-4 py-2">
+              {[85, 65, 75, 50, 70].map((w, i) => (
+                <div
+                  key={i}
+                  className="h-8 rounded-lg bg-neutral-800 animate-pulse"
+                  style={{ width: `${w}%` }}
+                />
+              ))}
+            </div>
+          )}
+          {!showResults && currentText && (
+            <div
+              onClick={() => isReady && inputRef.current?.focus()}
+              className={`max-h-40 sm:max-h-44 overflow-y-auto scroll-smooth hide-scrollbar font-mono text-2xl sm:text-3xl leading-relaxed cursor-text transition-opacity duration-300 ${
+                !isReady || isPaused || isLoading ? 'blur-xs opacity-50' : ''
+              } ${textFading ? 'opacity-0' : ''}`}
+            >
+              {words.map((word, wordIdx) => (
+                <div
+                  key={wordIdx}
+                  ref={(el) => {
+                    wordsRef.current[wordIdx] = el;
+                  }}
+                  className="inline-block"
+                >
+                  <WordDisplay
+                    word={word}
+                    typed={userInput[wordIdx] || ''}
+                    isCurrent={wordIdx === activeWordIndex}
+                    isReady={isReady}
+                    isStarted={isStarted}
+                  />
+                </div>
+              ))}
+            </div>
+          )}
+
+          <input
+            ref={inputRef}
+            className="absolute opacity-0 pointer-events-none"
+            autoComplete="off"
+            onKeyDown={(e) => handleKeyDown(e.key)}
+          />
+
+          {isPaused && (
+            <PauseWarning
+              onResume={() => {
+                resume();
+                setTimeout(() => inputRef.current?.focus(), 10);
+              }}
+            />
+          )}
+
+          {!isReady && !isCompleted && !isPaused && (
+            <div
+              onClick={handlePrepare}
+              className="absolute inset-0 flex flex-col items-center justify-center rounded-lg"
+            >
+              <Button size="lg" onClick={handlePrepare}>
+                Start Typing Test
+              </Button>
+              <p className="text-preset-5-semibold mt-4 text-neutral-400">
+                Or click the text and start typing
+              </p>
+            </div>
+          )}
         </div>
-      )}
+
+        <ActionButtons
+          onRandomize={onRandomize}
+          onRestart={onRestart}
+          onNext={onNextText}
+          isLoading={isLoading}
+          loadingButton={loadingButton}
+        />
+      </div>
     </div>
   );
 }

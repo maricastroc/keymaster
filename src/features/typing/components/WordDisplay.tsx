@@ -24,7 +24,7 @@ export const WordDisplay = memo(
         if (charOriginal !== undefined) {
           displayChar = charOriginal;
           className =
-            charTyped === charOriginal ? 'text-green-400' : 'text-red-500';
+            charTyped === charOriginal ? 'text-yellow-500' : 'text-red-500';
         } else {
           displayChar = charTyped;
           className = 'text-red-500';
@@ -37,7 +37,7 @@ export const WordDisplay = memo(
       chars.push(
         <span
           key={i}
-          className={`${className} ${isCursor ? 'border-l-2 border-blue-400 animate-pulse' : ''}`}
+          className={`${className} ${isCursor ? 'border-l-[2px] border-yellow-500' : ''}`}
         >
           {displayChar}
         </span>

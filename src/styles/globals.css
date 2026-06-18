@@ -1,22 +1,22 @@
 @import "tailwindcss";
 
 :root {
-  --background: #121212;
-  --foreground: #ededed;
+  --background: #323437;
+  --foreground: #d1d0c9;
 
-  --neutral-900: #121212;
-  --neutral-800: #262626;
-  --neutral-700: #3a3a3a;
-  --neutral-500: #717178;
-  --neutral-400: #949497;
+  --neutral-900: #2c2e31;
+  --neutral-800: #3a3c3f;
+  --neutral-700: #4a4c50;
+  --neutral-500: #646669;
+  --neutral-400: #7e8186;
   --neutral-0: #ffffff;
 
   --blue-600: #177DFF;
   --blue-400: #4CA6FF;
 
-  --red-500: #D64D5B;
+  --red-500: #ca4754;
   --green-500: #4DD67B;
-  --yellow-500: #F4DC73;
+  --yellow-500: #e2b714;
 
   --font-sans: var(--font-sora);
   --font-mono: var(--font-roboto-mono);
@@ -175,11 +175,11 @@
 }
 
 .title-gradient {
-  background-image: linear-gradient(to top, var(--blue-400), #93c5fd, #e0eeff);
+  background-image: linear-gradient(to top, var(--yellow-500), #f5d47a, #fdf3c8);
 }
 
 [data-theme="light"] .title-gradient {
-  background-image: linear-gradient(to bottom right, var(--neutral-500), var(--blue-400));
+  background-image: linear-gradient(to bottom right, var(--neutral-500), var(--yellow-500));
 }
 
 [data-theme="light"] .trophy-icon {
