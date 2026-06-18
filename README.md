@@ -1,4 +1,7 @@
-# Typing Speed Test
+# Keymaster
+
+<img width="3204" height="1722" alt="type_speeding_preview" src="https://github.com/user-attachments/assets/906fb496-b55d-4827-9c1b-de04e37e0008" />
+
 
 A full-stack typing speed test built with Next.js and Prisma, featuring real-time metrics, performance history, user authentication, customizable sounds, and theme switching.
 
