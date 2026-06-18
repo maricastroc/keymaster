@@ -9,41 +9,33 @@ export const StatsDisplay = ({ stats }: StatsDisplayProps) => {
   return (
     <div className="flex flex-wrap items-center justify-center w-full gap-4 my-6 md:my-10">
       <StatCard
-        label="WPM:"
+        label="wpm"
         value={
           <>
-            <span className="text-neutral-0 font-bold text-xl md:text-preset-2">
-              {stats.wpm}
-            </span>
-            <span className="text-preset-5 text-neutral-400">avg</span>
+            <span className="font-mono font-bold text-2xl text-neutral-400">{stats.wpm}</span>
+            <span className="font-mono text-xs text-neutral-500">avg</span>
           </>
         }
       />
 
       <StatCard
-        label="Accuracy:"
+        label="accuracy"
         value={
           <>
-            <span
-              className={`text-neutral-0 font-bold text-xl md:text-preset-2 ${stats.accuracy === 100 ? 'text-green-500' : 'text-red-500'}`}
-            >
+            <span className={`font-mono font-bold text-2xl ${stats.accuracy === 100 ? 'text-yellow-500' : stats.accuracy >= 90 ? 'text-neutral-400' : 'text-red-500'}`}>
               {stats.accuracy}%
             </span>
-            <span className="text-preset-5 text-neutral-400">avg</span>
+            <span className="font-mono text-xs text-neutral-500">avg</span>
           </>
         }
       />
 
       <StatCard
-        label="Characters:"
+        label="characters"
         value={
-          <div className="flex gap-2 items-center justify-center">
-            <span className="font-bold text-xl md:text-preset-2 text-green-500">
-              {stats.characters.correct}
-            </span>
-            <span className="text-neutral-0 font-bold text-xl md:text-preset-2">
-              / {stats.characters.total}
-            </span>
+          <div className="flex gap-1 items-baseline">
+            <span className="font-mono font-bold text-2xl text-yellow-500">{stats.characters.correct}</span>
+            <span className="font-mono text-neutral-500 text-sm">/ {stats.characters.total}</span>
           </div>
         }
       />

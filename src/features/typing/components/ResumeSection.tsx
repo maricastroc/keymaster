@@ -21,47 +21,33 @@ export const ResumeSection = ({
   };
 
   return (
-    <div className="mt-8 w-full max-w-5xl">
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-6 w-full">
-        <div className="flex flex-col items-start justify-center p-4 rounded-lg border border-neutral-700/50">
-          <p className="text-preset-5-regular text-neutral-400 tracking-wider mb-1">
-            test type
-          </p>
-          <div className="flex flex-wrap gap-2 mt-1">
-            <span className="text-preset-6 text-blue-400 tracking-wider bg-blue-400/10 px-3 py-1 rounded-full">
+    <div className="mt-4 w-full max-w-5xl">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-0 w-full divide-x divide-neutral-800">
+        <div className="flex flex-col items-center justify-center px-6 py-4">
+          <p className="font-mono text-xs text-neutral-500 uppercase tracking-wider mb-2">test type</p>
+          <div className="flex flex-wrap gap-1.5 justify-center">
+            <span className="font-mono text-xs text-neutral-500 bg-neutral-800 px-2.5 py-1 rounded-full">
               {capitalize(mode)}
             </span>
-            <span className="text-preset-6 text-blue-400 tracking-wider bg-blue-400/10 px-3 py-1 rounded-full">
+            <span className="font-mono text-xs text-neutral-500 bg-neutral-800 px-2.5 py-1 rounded-full">
               {capitalize(category)}
             </span>
           </div>
         </div>
 
-        <div className="flex flex-col items-start justify-center p-4 rounded-lg border border-neutral-700/50">
-          <p className="text-preset-5-regular text-neutral-400 tracking-wider mb-1">
-            raw
-          </p>
-          <span className="text-preset-4-bold text-blue-400 tracking-wider">
-            {generalStats?.raw}
-          </span>
+        <div className="flex flex-col items-center justify-center px-6 py-4">
+          <p className="font-mono text-xs text-neutral-500 uppercase tracking-wider mb-1">raw</p>
+          <span className="font-mono font-bold text-xl text-neutral-400">{generalStats?.raw}</span>
         </div>
 
-        <div className="flex flex-col items-start justify-center p-4 rounded-lg border border-neutral-700/50">
-          <p className="text-preset-5-regular text-neutral-400 tracking-wider mb-1">
-            consistency
-          </p>
-          <span className="text-preset-4-bold text-blue-400 tracking-wider">
-            {generalStats?.consistency}%
-          </span>
+        <div className="flex flex-col items-center justify-center px-6 py-4">
+          <p className="font-mono text-xs text-neutral-500 uppercase tracking-wider mb-1">consistency</p>
+          <span className="font-mono font-bold text-xl text-neutral-400">{generalStats?.consistency}%</span>
         </div>
 
-        <div className="flex flex-col items-start justify-center p-4 rounded-lg border border-neutral-700/50">
-          <p className="text-preset-5-regular text-neutral-400 tracking-wider mb-1">
-            time
-          </p>
-          <span className="text-preset-4-bold text-blue-400 tracking-wider">
-            {formatTime(finishedTime)}
-          </span>
+        <div className="flex flex-col items-center justify-center px-6 py-4">
+          <p className="font-mono text-xs text-neutral-500 uppercase tracking-wider mb-1">time</p>
+          <span className="font-mono font-bold text-xl text-neutral-400">{formatTime(finishedTime)}</span>
         </div>
       </div>
     </div>

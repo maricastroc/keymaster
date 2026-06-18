@@ -17,6 +17,7 @@
   --red-500: #ca4754;
   --green-500: #4DD67B;
   --yellow-500: #e2b714;
+  --on-accent: #1a1b1e;
 
   --font-sans: var(--font-sora);
   --font-mono: var(--font-roboto-mono);
@@ -62,6 +63,7 @@
   --color-red-500: var(--red-500);
   --color-green-500: var(--green-500);
   --color-yellow-500: var(--yellow-500);
+  --color-on-accent: var(--on-accent);
 
   --font-sans: var(--font-sora);
   --font-mono: var(--font-roboto-mono);

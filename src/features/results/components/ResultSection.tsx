@@ -1,4 +1,3 @@
-import Image from 'next/image';
 import { ResultChart } from './ResultChart';
 import { StatsDisplay } from './StatsDisplay';
 import { GeneralStats } from '@/types/generalStats';
@@ -48,25 +47,11 @@ export const ResultSection = ({
   }, [finishedTime, metrics.wpm, metrics.accuracy, saveRound]);
 
   return (
-    <div className="mt-8 md:mt-18 flex flex-col items-center justify-center gap-3">
-      <div className="relative flex items-center justify-center w-32 h-32">
-        <div className="absolute w-full h-full rounded-full bg-green-500/10" />
-
-        <div className="absolute w-24 h-24 rounded-full bg-green-500/20" />
-
-        <div className="relative rounded-full bg-green-500 flex items-center justify-center">
-          <Image
-            alt=""
-            width={64}
-            height={64}
-            src={'/assets/images/icon-completed.svg'}
-          />
-        </div>
+    <div className="mt-8 md:mt-12 flex flex-col items-center justify-center gap-3 w-full">
+      <div className="flex flex-col items-center gap-1">
+        <h1 className="font-mono text-2xl font-semibold text-yellow-500">done</h1>
+        <p className="font-mono text-xs text-neutral-500">keep pushing to beat your best</p>
       </div>
-      <h1 className="text-preset-1-bold mt-6">Test Complete!</h1>
-      <p className="text-neutral-400 text-preset-3-regular">
-        Solid run. Keep pushing to beat your high score.
-      </p>
       <div className="w-full max-w-5xl flex flex-col gap-4 items-center justify-center">
         <StatsDisplay stats={generalStats} />
         <ResultChart data={chartData} />

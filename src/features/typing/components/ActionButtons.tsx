@@ -8,7 +8,6 @@ import {
   faSpinner,
 } from '@fortawesome/free-solid-svg-icons';
 import { Tooltip } from 'react-tooltip';
-import { Button } from '@/components/ui/button';
 
 interface ActionButtonsProps {
   onRandomize: () => void;
@@ -51,24 +50,19 @@ export const ActionButtons = ({
 
   return (
     <>
-      <div className="flex items-center justify-center gap-4 mt-14">
+      <div className="flex items-center justify-center gap-6 mt-14">
         {buttons.map((button) => (
-          <div
+          <button
             key={button.id}
+            onClick={button.onClick}
+            disabled={button.isLoading}
             data-tooltip-id={`${button.id}-tooltip`}
             data-tooltip-content={button.tooltip}
             data-tooltip-place="top"
+            className={`cursor-pointer text-neutral-500 hover:text-neutral-300 transition-colors p-1 ${button.isLoading ? 'animate-pulse' : ''}`}
           >
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={button.onClick}
-              disabled={button.isLoading}
-              className={`text-lg ${button.isLoading ? 'animate-pulse' : ''}`}
-            >
-              <FontAwesomeIcon icon={button.isLoading ? faSpinner : button.icon} spin={button.isLoading} />
-            </Button>
-          </div>
+            <FontAwesomeIcon icon={button.isLoading ? faSpinner : button.icon} spin={button.isLoading} size="sm" />
+          </button>
         ))}
       </div>
 
