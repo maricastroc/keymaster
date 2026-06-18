@@ -28,7 +28,7 @@ export const SettingsPanel = ({ setIsOpen, onPrepare }: SettingsPanelProps) => {
 
   return (
     <div
-      className="w-full shadow-2xl xl:px-28 animate-slideUp bg-background"
+      className="w-full shadow-2xl xl:px-28 animate-slideUp bg-neutral-900 border-t border-neutral-700"
       onClick={(e) => e.stopPropagation()}
     >
       <span className="w-full h-[0.05rem] bg-neutral-800 block" />

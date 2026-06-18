@@ -33,7 +33,7 @@ export const SelectInput = ({
       <label className="sr-only">{label}</label>
 
       <Select.Trigger
-        className={`flex items-center justify-between text-preset-5 text-white bg-blue-500 shadow-sm rounded-lg ${compact ? 'px-3 py-1 w-28' : 'px-4 py-2 w-36'}`}
+        className={`flex items-center justify-between text-preset-5 text-white bg-neutral-800 border border-neutral-700 shadow-sm rounded-lg ${compact ? 'px-3 py-1 w-28' : 'px-4 py-2 w-36'}`}
         aria-label={label}
       >
         <Select.Value className="text-grey-900" placeholder={placeholder} />
@@ -112,9 +112,9 @@ const SelectItem = React.forwardRef(
 
         hover:bg-neutral-700/40
         data-highlighted:bg-neutral-700/40
-        data-[state=checked]:bg-blue-500/10
-        data-[state=checked]:text-blue-400
-        data-[state=checked]:border-blue-500
+        data-[state=checked]:bg-neutral-800 border border-neutral-700/10
+        data-[state=checked]:text-yellow-500
+        data-[state=checked]:border-yellow-500/30
         data-[state=checked]:rounded-lg
         data-[state=checked]:border
       `}
@@ -126,11 +126,11 @@ const SelectItem = React.forwardRef(
           border-neutral-400
           flex items-center justify-center
           transition-all
-          data-[state=checked]:border-blue-400
+          data-[state=checked]:border-yellow-500
         `}
       >
         <Select.ItemIndicator>
-          <div className="w-2 h-2 rounded-full bg-blue-400" />
+          <div className="w-2 h-2 rounded-full bg-yellow-500" />
         </Select.ItemIndicator>
       </div>
 
