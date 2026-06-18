@@ -4,12 +4,11 @@ export default function Document() {
   return (
     <Html lang="en">
       <Head>
-        <title>Typing Speed Test</title>
-        <link
-          rel="icon"
-          type="image/svg"
-          href="/assets/images/logo-small.svg"
-        />
+        <title>keymaster</title>
+        <link rel="icon" type="image/svg" href="/assets/images/logo-keymaster.svg" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
       </Head>
       <body className="antialiased">
         <Main />

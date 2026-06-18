@@ -49,11 +49,16 @@ export const Header = ({ onOpenHistorySection }: HeaderProps) => {
 
   return (
     <div className="flex justify-between items-center w-full mb-8">
-      <div className="flex items-center gap-2">
-        <Image src="/assets/images/logo-small.svg" alt="Logo" width={24} height={24} className="opacity-80" />
-        <span className="font-mono text-sm font-bold text-neutral-400 tracking-widest uppercase">
-          speedtype
-        </span>
+      <div className="flex items-center gap-2.5">
+        <Image src="/assets/images/logo-keymaster.svg" alt="Keymaster logo" width={28} height={28} />
+        <div className="flex flex-col gap-0">
+          <span style={{ fontFamily: "'IBM Plex Mono', monospace" }} className="text-sm font-medium text-neutral-400 tracking-widest uppercase leading-none">
+            keymaster
+          </span>
+          <span style={{ fontFamily: "'IBM Plex Mono', monospace" }} className="text-[10px] text-neutral-600 tracking-wide leading-none mt-0.5 hidden md:block">
+            master your keystrokes
+          </span>
+        </div>
       </div>
 
       <div className="flex items-center gap-3">

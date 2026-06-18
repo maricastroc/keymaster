@@ -13,6 +13,7 @@ import { TextResponse } from '@/types/textResponse';
 import { api } from '@/lib/axios';
 
 import { Header } from '@/components/Header';
+import { Footer } from '@/components/Footer';
 import { Button } from '@/components/ui/button';
 import { InlineSettings } from '@/features/settings/components/InlineSettings';
 import { ActionButtons } from '@/features/typing/components/ActionButtons';
@@ -332,6 +333,7 @@ export default function Home() {
           loadingButton={loadingButton}
         />
 
+        <Footer />
       </div>
     </div>
   );
