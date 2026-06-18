@@ -21,6 +21,7 @@ import { PauseWarning } from '@/features/typing/components/PauseWarning';
 import { MetricsPanel } from '@/features/typing/components/MetricsPanel';
 import { ResultSection } from '@/features/results/components/ResultSection';
 import { HistorySection } from '@/features/results/components/HistorySection';
+import { SettingsPanel } from '@/features/settings/components/SettingsPanel';
 
 export default function Home() {
   const { playKeystroke, playErrorSound } = useSound();
@@ -232,22 +233,12 @@ export default function Home() {
       <div className="w-full max-w-3xl">
         <Header
           onOpenHistorySection={() => setShowHistorySection(true)}
-          onOpenSettings={() => {}}
+          onOpenSettings={() => setIsSettingsOpen(true)}
         />
 
-        <Dialog.Root
-          open={showHistorySection}
-          onOpenChange={setShowHistorySection}
-        >
-          <HistorySection
-            open={showHistorySection}
-            onOpenChange={setShowHistorySection}
-          />
+        <Dialog.Root open={showHistorySection} onOpenChange={setShowHistorySection}>
+          <HistorySection open={showHistorySection} onOpenChange={setShowHistorySection} />
         </Dialog.Root>
-
-        {!showResults && (
-          <InlineSettings onPrepare={() => prepare()} />
-        )}
 
         {showResults && (
           <div className="animate-resultIn">
@@ -272,7 +263,7 @@ export default function Home() {
           />
         )}
 
-        <div className="mt-8 relative">
+        <div className="mt-6 relative">
           {!showResults && !currentText && (
             <div className="flex flex-col gap-4 py-2">
               {[85, 65, 75, 50, 70].map((w, i) => (
@@ -294,9 +285,7 @@ export default function Home() {
               {words.map((word, wordIdx) => (
                 <div
                   key={wordIdx}
-                  ref={(el) => {
-                    wordsRef.current[wordIdx] = el;
-                  }}
+                  ref={(el) => { wordsRef.current[wordIdx] = el; }}
                   className="inline-block"
                 >
                   <WordDisplay
@@ -342,6 +331,10 @@ export default function Home() {
           )}
         </div>
 
+        {!showResults && (
+          <InlineSettings onPrepare={() => prepare()} />
+        )}
+
         <ActionButtons
           onRandomize={onRandomize}
           onRestart={onRestart}
@@ -349,6 +342,15 @@ export default function Home() {
           isLoading={isLoading}
           loadingButton={loadingButton}
         />
+
+        {isSettingsOpen && (
+          <div className="fixed inset-0 z-50">
+            <div className="absolute inset-0" onClick={() => setIsSettingsOpen(false)} />
+            <div className="absolute bottom-0 left-0 w-full">
+              <SettingsPanel onPrepare={() => prepare()} setIsOpen={setIsSettingsOpen} />
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

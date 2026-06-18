@@ -2,7 +2,7 @@
 
 import Image from 'next/image';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faClockRotateLeft, faRightFromBracket } from '@fortawesome/free-solid-svg-icons';
+import { faGear, faClockRotateLeft, faRightFromBracket } from '@fortawesome/free-solid-svg-icons';
 import { faGithub } from '@fortawesome/free-brands-svg-icons';
 import { usePersonalBest } from '@/features/typing/hooks/usePersonalBest';
 import { signIn, signOut, useSession } from 'next-auth/react';
@@ -48,6 +48,14 @@ export const Header = ({ onOpenSettings, onOpenHistorySection }: HeaderProps) =>
           title="History"
         >
           <FontAwesomeIcon icon={faClockRotateLeft} size="sm" />
+        </button>
+
+        <button
+          onClick={() => onOpenSettings(true)}
+          className="cursor-pointer text-neutral-500 hover:text-neutral-300 transition-colors p-1"
+          title="Settings"
+        >
+          <FontAwesomeIcon icon={faGear} size="sm" />
         </button>
 
 {status === 'authenticated' ? (
