@@ -230,7 +230,7 @@ export default function Home() {
 
   return (
     <div className="relative min-h-screen flex flex-col items-center px-4 py-6 md:py-10">
-      <div className="w-full max-w-3xl">
+      <div className="w-full max-w-5xl">
         <Header
           onOpenHistorySection={() => setShowHistorySection(true)}
           onOpenSettings={() => setIsSettingsOpen(true)}
