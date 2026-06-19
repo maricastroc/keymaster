@@ -98,8 +98,8 @@ src/
 **Prerequisites:** Node.js 18+, a PostgreSQL database
 
 ```bash
-git clone https://github.com/maricastroc/type-speeding-test.git
-cd type-speeding-test
+git clone https://github.com/maricastroc/keymaster.git
+cd keymaster
 npm install
 ```
 
