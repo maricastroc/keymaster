@@ -2,98 +2,120 @@
 
 <img width="3204" height="1722" alt="type_speeding_preview" src="https://github.com/user-attachments/assets/906fb496-b55d-4827-9c1b-de04e37e0008" />
 
+A full-stack typing speed test with real-time metrics, session replay, per-word heatmaps, and persistent history — built with Next.js, Prisma, and PostgreSQL.
 
-A full-stack typing speed test built with Next.js and Prisma, featuring real-time metrics, performance history, user authentication, customizable sounds, and theme switching.
+**[Live demo →](https://maricastroc-keymaster.vercel.app/)**
+
+---
+
+## Highlights
+
+**Typing engine built from scratch** — the core engine runs as a pure reducer (`engineReducer.ts`), making every state transition testable in isolation. No third-party typing library.
+
+**Session replay** — after each test, you can replay your typing session and watch exactly where you slowed down or made mistakes, keystroke by keystroke.
+
+**Per-word heatmap** — words are colored by relative speed, so you can immediately see which ones cost you the most time. Uses a bucket-based scoring system (`heatmap/logic/buckets.ts`) to normalize across sessions.
+
+**WPM smoothing** — the real-time WPM chart applies a smoothing algorithm (`smoothData.ts`) to avoid noisy spikes, giving a cleaner picture of your actual pacing.
+
+**Persistent history with personal bests** — sign in once and every result is saved. Personal bests are tracked per mode and difficulty and highlighted in the history view.
+
+---
 
 ## Features
 
-- **Real-time metrics** — WPM, accuracy, and time tracked as you type
+- **Real-time metrics** — WPM and accuracy tracked live as you type
 - **Multiple modes** — Timed (15s, 30s, 60s, 120s) and Passage mode
 - **Categories** — General, Lyrics, Quotes, and Code texts
-- **User authentication** — Sign in to sync your history across devices via NextAuth
-- **Performance history** — Results persisted per user with personal best tracking and deletion support
-- **Sound feedback** — Customizable keystroke sounds with volume control
-- **Light / Dark theme** — Fully themed UI with smooth transitions
-- **Results chart** — WPM and accuracy over time visualized after each test
+- **Difficulty levels** — texts filtered by difficulty per category
+- **User authentication** — OAuth sign-in via NextAuth, synced across devices
+- **Sound feedback** — customizable keystroke sounds with volume control
+- **Light / Dark theme** — fully themed UI with smooth transitions
+
+---
 
 ## Tech Stack
 
-- [Next.js 16](https://nextjs.org/) — React framework
-- [TypeScript](https://www.typescriptlang.org/) — Type safety
-- [Tailwind CSS v4](https://tailwindcss.com/) — Styling
-- [shadcn/ui](https://ui.shadcn.com/) — Component library built on Radix UI
-- [Prisma](https://www.prisma.io/) — Database ORM
-- [NextAuth.js](https://next-auth.js.org/) — Authentication
-- [Recharts](https://recharts.org/) — Data visualization
-- [Vitest](https://vitest.dev/) — Unit and integration testing
+| Layer | Tech |
+|---|---|
+| Framework | Next.js 16 (Pages Router) |
+| Language | TypeScript |
+| Styling | Tailwind CSS v4 + shadcn/ui |
+| Database | PostgreSQL via Prisma ORM |
+| Auth | NextAuth.js |
+| Charts | Recharts |
+| Testing | Vitest (unit + integration) |
+| Deploy | Vercel |
 
-## Getting Started
+---
 
-### Prerequisites
+## Testing
 
-- Node.js 18+
-- A database supported by Prisma (SQLite, PostgreSQL, etc.)
+The typing engine has extensive test coverage across multiple layers:
 
-### Installation
+```
+features/typing/
+├── hooks/engineReducer.test.ts        # Reducer unit tests
+├── logic/typing.test.ts               # Core logic unit tests
+├── tests/integration/mechanics.test.ts  # Engine integration tests
+├── tests/integration/sessions.test.ts   # Session flow tests
+├── tests/results/basic-input.test.ts    # Results: basic scenarios
+├── tests/results/corrections.test.ts    # Results: backspace handling
+├── tests/results/errors-skips.test.ts   # Results: error and skip edge cases
+└── tests/utils/session-validity.test.ts # Session validation
+```
 
 ```bash
-git clone https://github.com/your-username/type-speeding-test.git
-cd type-speeding-test
-npm install
+npm run test
 ```
 
-### Environment variables
-
-Create a `.env` file at the root:
-
-```env
-DATABASE_URL="file:./dev.db"
-NEXTAUTH_SECRET="your-secret"
-NEXTAUTH_URL="http://localhost:3000"
-```
-
-### Database setup
-
-```bash
-npx prisma migrate dev
-npx prisma db seed
-```
-
-### Running locally
-
-```bash
-npm run dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) in your browser.
+---
 
 ## Project Structure
 
 ```
 src/
 ├── features/
-│   ├── typing/        # Engine, reducer, hooks, word display, tests
+│   ├── typing/        # Engine reducer, hooks, word display, all tests
+│   ├── results/       # Chart, stats, heatmap, replay
 │   ├── settings/      # Config context, settings panel
-│   ├── sound/         # Audio context and playback
-│   └── results/       # Chart, stats, history section
-├── components/
-│   └── ui/            # shadcn/ui components (Button, etc.)
+│   └── sound/         # Audio context and playback
+├── components/ui/     # shadcn/ui components
 ├── hooks/             # Shared hooks (useLocalStorage)
-├── lib/               # Auth config, utility helpers
-├── pages/
-│   └── api/
-│       ├── auth/      # NextAuth handler
-│       └── rounds/    # REST endpoints for round history
+├── lib/               # Auth config, Prisma client, helpers
+├── pages/api/
+│   ├── auth/          # NextAuth handler
+│   └── rounds/        # REST endpoints for round history
 ├── services/          # API client (roundsApi)
-├── utils/             # Pure functions (calculateStats, smoothData)
-└── types/             # TypeScript types
+├── utils/             # Pure functions: calculateStats, smoothData, buildChartData
+└── types/             # Shared TypeScript types
 ```
 
-## Scripts
+---
+
+## Running Locally
+
+**Prerequisites:** Node.js 18+, a PostgreSQL database
 
 ```bash
-npm run dev        # Start development server
-npm run build      # Build for production
-npm run test       # Run unit tests
-npm run lint       # Lint the codebase
+git clone https://github.com/maricastroc/type-speeding-test.git
+cd type-speeding-test
+npm install
 ```
+
+Create a `.env` file:
+
+```env
+DATABASE_URL="postgresql://..."
+SHADOW_DATABASE_URL="postgresql://..."
+NEXTAUTH_SECRET="your-secret"
+NEXTAUTH_URL="http://localhost:3000"
+```
+
+```bash
+npx prisma migrate dev
+npx prisma db seed
+npm run dev
+```
+
+Open [http://localhost:3000](http://localhost:3000).
