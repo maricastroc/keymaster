@@ -7,6 +7,7 @@ import {
   ResponsiveContainer,
   CartesianGrid,
   Scatter,
+  Legend,
 } from 'recharts';
 import { useMemo } from 'react';
 import { CustomTooltip } from './CustomTooltip';
@@ -55,6 +56,13 @@ export const ResultChart = ({ data }: { data: ChartPoint[] }) => {
         />
 
         <Tooltip content={<CustomTooltip />} />
+
+        <Legend
+          verticalAlign="top"
+          height={28}
+          iconType="plainline"
+          wrapperStyle={{ fontSize: 11, color: 'var(--neutral-400)' }}
+        />
 
         <Line
           type="monotone"

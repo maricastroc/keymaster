@@ -44,6 +44,10 @@ export default function Home() {
 
   const isRandomizingRef = useRef(false);
   const skipNextSWREffectRef = useRef(false);
+  // Once the user has engaged with the test at least once, settings-driven text
+  // reloads should land ready-to-type instead of showing the Start overlay
+  // again. Stays false on the very first load so the initial overlay still shows.
+  const hasInteractedRef = useRef(false);
 
   const requestConfig = useMemo(() => {
     if (isRandomizingRef.current) return null;
@@ -67,6 +71,7 @@ export default function Home() {
 
   const onRandomize = async () => {
     isRandomizingRef.current = true;
+    hasInteractedRef.current = true;
     setLoadError(null);
 
     try {
@@ -93,20 +98,40 @@ export default function Home() {
   const onNextText = async () => {
     setIsNextLoading(true);
     setLoadError(null);
+    hasInteractedRef.current = true;
+
+    // The API returns 404 (axios rejects) when a filter bucket is empty, so
+    // treat any failure as "no text here".
+    const fetchText = async (cat: string) => {
+      try {
+        const res = await api.get<TextResponse>('/texts/random', {
+          params: { category: cat, difficulty, excludeId: currentTextId },
+        });
+        return res.data?.content ? res.data : null;
+      } catch {
+        return null;
+      }
+    };
 
     try {
-      const response = await api.get<TextResponse>('/texts/random', {
-        params: { category, difficulty, excludeId: currentTextId },
-      });
+      // Prefer another text in the current category; if that bucket is
+      // exhausted at this difficulty, fall back to any category so "Next"
+      // never silently dead-ends.
+      let next = await fetchText(category);
+      if (!next) next = await fetchText('any');
 
-      if (response.data?.content) {
-        setCurrentText(response.data.content);
-        setCurrentTextId(response.data.id ?? null);
-        reset(response.data.content);
+      if (next) {
+        if (next.category && next.category !== category) {
+          skipNextSWREffectRef.current = true;
+          setCategory(next.category);
+        }
+        setCurrentText(next.content);
+        setCurrentTextId(next.id ?? null);
+        reset(next.content);
         prepare();
+      } else {
+        setLoadError('No other texts available for these settings.');
       }
-    } catch {
-      setLoadError('Could not load the next text. Please try again.');
     } finally {
       setIsNextLoading(false);
     }
@@ -144,15 +169,16 @@ export default function Home() {
 
   const handlePrepare = () => {
     if (isReady) return;
+    hasInteractedRef.current = true;
     prepare();
     inputRef.current?.focus();
   };
 
   const onRestart = () => {
+    hasInteractedRef.current = true;
     reset(currentText);
-    if (isReady) {
-      setTimeout(() => inputRef.current?.focus(), 50);
-    }
+    prepare();
+    setTimeout(() => inputRef.current?.focus(), 50);
   };
 
   const generalStats = useMemo(
@@ -173,6 +199,9 @@ export default function Home() {
     setCurrentText(data.content);
     setCurrentTextId(data.id ?? null);
     reset(data.content);
+    // Keep the user ready to type after a category/difficulty change; the very
+    // first load leaves hasInteractedRef false so the Start overlay still shows.
+    if (hasInteractedRef.current) prepare();
   }, [data]);
 
   const handleRetryLoad = () => {
@@ -183,6 +212,9 @@ export default function Home() {
   useEffect(() => {
     if (!currentText) return;
     reset(currentText);
+    // Changing the timer duration shouldn't bounce the user back to the Start
+    // overlay if they've already been typing.
+    if (hasInteractedRef.current) prepare();
   }, [initialTime]);
 
   useEffect(() => {

@@ -73,13 +73,19 @@ export const Replay = ({ keystrokes, text, onKeystroke }: Props) => {
 
   return (
     <div className="w-full max-w-5xl flex flex-col gap-4 mt-10">
-      <div className="flex items-center justify-between">
-        <h2 className="text-neutral-400 font-semibold text-sm uppercase tracking-widest">
-          Replay
-        </h2>
-        <div className="flex items-center gap-3">
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <h2 className="text-neutral-400 font-semibold text-sm uppercase tracking-widest">
+            Replay
+          </h2>
+          <p className="text-xs text-neutral-500 mt-1">
+            Play back your run keystroke by keystroke — drag the bar to scrub.
+          </p>
+        </div>
+        <div className="flex items-center gap-3 flex-shrink-0">
           <button
             onClick={reset}
+            aria-label="Restart replay"
             className="cursor-pointer text-xs text-neutral-500 hover:text-neutral-300 transition"
             title="Reset"
           >
@@ -87,6 +93,7 @@ export const Replay = ({ keystrokes, text, onKeystroke }: Props) => {
           </button>
           <button
             onClick={isPlaying ? pause : play}
+            aria-label={isPlaying ? 'Pause replay' : 'Play replay'}
             className="cursor-pointer text-xs px-3 py-1 rounded bg-neutral-800 hover:bg-neutral-700 text-neutral-400 transition"
           >
             {isPlaying ? 'Pause' : currentIndex >= keystrokes.length ? 'Replay' : 'Play'}
@@ -106,6 +113,7 @@ export const Replay = ({ keystrokes, text, onKeystroke }: Props) => {
           max={keystrokes.length}
           value={currentIndex}
           onChange={(e) => { pause(); jumpToIndex(Number(e.target.value)); }}
+          aria-label="Replay position"
           className="absolute inset-0 w-full opacity-0 cursor-pointer"
         />
       </div>

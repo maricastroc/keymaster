@@ -41,6 +41,12 @@ export const Heatmap = ({ keystrokes, text }: Props) => {
         </button>
       </div>
 
+      <p className="text-xs text-neutral-500 -mt-2">
+        {isHeatmapVisible
+          ? 'Each word is shaded by how fast you typed it, relative to this run. Hover a word to see its WPM.'
+          : 'Words you mistyped are underlined in red. Hover a word to see its WPM.'}
+      </p>
+
       <div className="leading-loose text-base">
         {words.map((word, idx) => (
           <HeatmapWord

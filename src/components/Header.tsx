@@ -73,6 +73,7 @@ export const Header = ({ onOpenHistorySection }: HeaderProps) => {
         <button
           onClick={() => onOpenHistorySection(true)}
           className="cursor-pointer text-neutral-500 hover:text-neutral-300 transition-colors p-1"
+          aria-label="View history"
           title="History"
         >
           <FontAwesomeIcon icon={faClockRotateLeft} size="sm" />
@@ -83,6 +84,9 @@ export const Header = ({ onOpenHistorySection }: HeaderProps) => {
           <button
             onClick={() => setSoundPopover((v) => !v)}
             className="cursor-pointer text-neutral-500 hover:text-neutral-300 transition-colors p-1"
+            aria-label="Sound settings"
+            aria-haspopup="menu"
+            aria-expanded={soundPopover}
             title="Sound"
           >
             <FontAwesomeIcon icon={soundName === 'none' ? faVolumeXmark : faVolumeHigh} size="sm" />
@@ -111,6 +115,7 @@ export const Header = ({ onOpenHistorySection }: HeaderProps) => {
                     min="0" max="1" step="0.05"
                     value={volume}
                     onChange={(e) => setVolume(parseFloat(e.target.value))}
+                    aria-label="Volume"
                     className="flex-1 h-1 rounded-full accent-yellow-500 cursor-pointer"
                   />
                   <span className="text-neutral-500 font-mono text-xs w-8 text-right tabular-nums">
@@ -133,6 +138,7 @@ export const Header = ({ onOpenHistorySection }: HeaderProps) => {
         <button
           onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
           className="cursor-pointer text-neutral-500 hover:text-neutral-300 transition-colors p-1"
+          aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} theme`}
           title="Toggle theme"
         >
           <FontAwesomeIcon icon={theme === 'dark' ? faSun : faMoon} size="sm" />
@@ -144,6 +150,9 @@ export const Header = ({ onOpenHistorySection }: HeaderProps) => {
             <button
               onClick={() => setUserDropdown((v) => !v)}
               className="cursor-pointer flex items-center gap-2 hover:opacity-80 transition-opacity"
+              aria-label="Account menu"
+              aria-haspopup="menu"
+              aria-expanded={userDropdown}
             >
               {session.user.image ? (
                 <Image src={session.user.image} alt={session.user.name ?? 'User'} width={24} height={24} className="rounded-full opacity-80" />

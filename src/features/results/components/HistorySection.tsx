@@ -19,17 +19,15 @@ export function HistorySection({ open, onOpenChange }: Props) {
 
   const [isOpen, setIsOpen] = useState(open);
   const [shouldRender, setShouldRender] = useState(open);
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
 
   const { data: apiRounds, mutate } = useSWR(
     isLoggedIn ? '/api/rounds' : null,
     () => roundsApi.fetchRounds()
   );
 
-  const allRounds = isLoggedIn ? (apiRounds ?? []) : getHistory();
-  const rounds = allRounds.slice(0, 5);
-  // Best across the full history, not just the 5 rows shown — otherwise the
-  // crown lands on the best-of-recent-5 once older/better rounds scroll off.
-  const personalBest = allRounds.length > 0 ? Math.max(...allRounds.map((r) => r.wpm)) : 0;
+  const rounds = isLoggedIn ? (apiRounds ?? []) : getHistory();
+  const personalBest = rounds.length > 0 ? Math.max(...rounds.map((r) => r.wpm)) : 0;
 
   const handleDelete = async (id: string) => {
     if (isLoggedIn) {
@@ -46,6 +44,7 @@ export function HistorySection({ open, onOpenChange }: Props) {
       setShouldRender(true);
     } else {
       setIsOpen(false);
+      setConfirmDeleteId(null);
       const timer = setTimeout(() => setShouldRender(false), 250);
       return () => clearTimeout(timer);
     }
@@ -77,62 +76,89 @@ export function HistorySection({ open, onOpenChange }: Props) {
         >
           <h1 className="text-base font-semibold font-display text-neutral-400 text-center tracking-widest uppercase">History</h1>
           <p className="text-xs font-display text-neutral-600 mt-1 text-center">
-            {isLoggedIn ? 'Your saved rounds' : 'Review your type history'}
+            {rounds.length > 0
+              ? `${rounds.length} ${rounds.length === 1 ? 'round' : 'rounds'}`
+              : isLoggedIn
+                ? 'Your saved rounds'
+                : 'Review your type history'}
           </p>
 
-          <div className="mt-8 flex flex-col flex-1">
-            <div className="flex-1 divide-y divide-neutral-800">
+          <div className="mt-8 flex flex-col flex-1 min-h-0">
+            <div className="flex-1 min-h-0 overflow-y-auto divide-y divide-neutral-800">
               {rounds.length === 0 && (
                 <p className="text-neutral-500 text-center text-sm mt-8">No rounds yet.</p>
               )}
               {rounds.map((round) => {
                 const isBest = round.wpm === personalBest;
+                const isConfirming = confirmDeleteId === round.id;
 
                 return (
                   <div
                     key={round.id}
-                    className="group relative flex items-center justify-between py-4 transition-colors duration-200 hover:bg-neutral-800/20"
+                    className="group flex items-center justify-between py-4 transition-colors duration-200 hover:bg-neutral-800/20"
                   >
-                    {isBest && (
-                      <FontAwesomeIcon
-                        icon={faCrown}
-                        size="xs"
-                        className="absolute -left-1 top-3 text-yellow-500 opacity-70"
-                      />
-                    )}
-
-                    <div className="pl-4">
-                      <p className="text-preset-3-semibold text-yellow-500">
-                        {round.wpm}{' '}
-                        <span className="text-preset-7 text-neutral-500 font-mono">wpm</span>
-                      </p>
-                      <p className="text-preset-7 text-neutral-400 font-mono">
-                        {round.accuracy}% acc
-                        <span className="mx-1 text-neutral-600">•</span>
-                        {round.time}s
-                        <span className="mx-1 text-neutral-600">•</span>
-                        {round.mode}
-                      </p>
+                    <div className="flex items-center gap-2">
+                      <span className="w-3 flex-shrink-0 text-center">
+                        {isBest && (
+                          <FontAwesomeIcon
+                            icon={faCrown}
+                            size="xs"
+                            className="text-yellow-500 opacity-70"
+                            title="Personal best"
+                          />
+                        )}
+                      </span>
+                      <div>
+                        <p className="text-preset-3-semibold text-yellow-500">
+                          {round.wpm}{' '}
+                          <span className="text-preset-7 text-neutral-500 font-mono">wpm</span>
+                        </p>
+                        <p className="text-preset-7 text-neutral-400 font-mono">
+                          {round.accuracy}% acc
+                          <span className="mx-1 text-neutral-600">•</span>
+                          {round.time}s
+                          <span className="mx-1 text-neutral-600">•</span>
+                          {round.mode}
+                        </p>
+                      </div>
                     </div>
 
                     <div className="flex flex-col items-end gap-2">
                       <p className="text-xs text-neutral-600">
                         {formatDistanceToNow(round.timestamp, { addSuffix: true })}
                       </p>
-                      <button
-                        onClick={() => handleDelete(round.id)}
-                        className="cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity text-neutral-600 hover:text-red-400"
-                        title="Delete"
-                      >
-                        <FontAwesomeIcon icon={faTrash} size="sm" />
-                      </button>
+                      {isConfirming ? (
+                        <div className="flex items-center gap-2 font-mono text-xs">
+                          <button
+                            onClick={() => { handleDelete(round.id); setConfirmDeleteId(null); }}
+                            className="cursor-pointer text-red-400 hover:text-red-300 transition-colors"
+                          >
+                            Delete
+                          </button>
+                          <button
+                            onClick={() => setConfirmDeleteId(null)}
+                            className="cursor-pointer text-neutral-500 hover:text-neutral-300 transition-colors"
+                          >
+                            Cancel
+                          </button>
+                        </div>
+                      ) : (
+                        <button
+                          onClick={() => setConfirmDeleteId(round.id)}
+                          aria-label={`Delete round: ${round.wpm} wpm, ${round.mode}`}
+                          title="Delete"
+                          className="cursor-pointer opacity-100 sm:opacity-0 sm:group-hover:opacity-100 focus-visible:opacity-100 transition-opacity text-neutral-600 hover:text-red-400"
+                        >
+                          <FontAwesomeIcon icon={faTrash} size="sm" />
+                        </button>
+                      )}
                     </div>
                   </div>
                 );
               })}
             </div>
 
-            <Dialog.Close className="cursor-pointer mt-6 text-sm text-neutral-500 hover:text-neutral-300 transition-colors duration-200 text-center py-2">
+            <Dialog.Close className="cursor-pointer mt-6 text-sm text-neutral-500 hover:text-neutral-300 transition-colors duration-200 text-center py-2 flex-shrink-0">
               close
             </Dialog.Close>
           </div>
