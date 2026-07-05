@@ -56,11 +56,17 @@ describe('calculateGeneralStats', () => {
     expect(result.characters.total).toBe(1);
   });
 
-  it('takes wpm and raw from last chart point', () => {
-    const chartData = [point(40, 50), point(80, 90)];
-    const result = calculateGeneralStats([k('a', true)], chartData, 10);
-    expect(result.wpm).toBe(80);
-    expect(result.raw).toBe(90);
+  it('computes wpm and raw from keystrokes and total time', () => {
+    // 8 correct + 2 incorrect = 10 typed chars over 30s (0.5 min).
+    // wpm  = round(8 / 5 / 0.5) = 3 (correct chars only)
+    // raw  = round(10 / 5 / 0.5) = 4 (all typed chars)
+    const keystrokes = [
+      ...Array.from({ length: 8 }, () => k('a', true)),
+      ...Array.from({ length: 2 }, () => k('x', false)),
+    ];
+    const result = calculateGeneralStats(keystrokes, [point(40, 50), point(80, 90)], 30);
+    expect(result.wpm).toBe(3);
+    expect(result.raw).toBe(4);
   });
 
   it('calculates peakWPM and peakRaw correctly', () => {

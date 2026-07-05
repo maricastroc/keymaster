@@ -31,9 +31,13 @@ export const calculateGeneralStats = (
   const accuracy =
     totalTyped > 0 ? Math.round((totalCorrect / totalTyped) * 100) : 100;
 
-  const lastPoint = chartData[chartData.length - 1];
-  const wpm = lastPoint?.wpm || 0;
-  const raw = lastPoint?.raw || 0;
+  // Derive the headline WPM/raw directly from keystrokes and the final time,
+  // using the same formula as calculateMetrics (the live metric that gets
+  // saved). Reading them from the chart's last cumulative point used a
+  // different denominator, so the result screen could disagree with history.
+  const minutes = Math.max(0.01, totalTimeSeconds / 60);
+  const wpm = Math.round(totalCorrect / 5 / minutes);
+  const raw = Math.round(totalTyped / 5 / minutes);
 
   const peakWPM = Math.max(
     ...chartData.map((d) => d.wpm).filter((v) => !isNaN(v))

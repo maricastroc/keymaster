@@ -25,11 +25,18 @@ export const usePersonalBest = () => {
 
     compute();
 
+    // `storage` only fires in *other* tabs, so it never catches a round saved
+    // in this tab. StatsService dispatches a same-tab `statsUpdated` event on
+    // every save/delete — listen for both so the header PB updates immediately.
     const onStorage = (e: StorageEvent) => {
       if (e.key === '@typing-stats') compute();
     };
     window.addEventListener('storage', onStorage);
-    return () => window.removeEventListener('storage', onStorage);
+    window.addEventListener('statsUpdated', compute);
+    return () => {
+      window.removeEventListener('storage', onStorage);
+      window.removeEventListener('statsUpdated', compute);
+    };
   }, [isLoggedIn]);
 
   if (isLoggedIn) {

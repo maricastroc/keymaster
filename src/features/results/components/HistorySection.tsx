@@ -15,7 +15,7 @@ type Props = {
 };
 
 export function HistorySection({ open, onOpenChange }: Props) {
-  const { getRecentRounds, deleteRound, isLoggedIn } = useRoundStats();
+  const { getHistory, deleteRound, isLoggedIn } = useRoundStats();
 
   const [isOpen, setIsOpen] = useState(open);
   const [shouldRender, setShouldRender] = useState(open);
@@ -25,8 +25,11 @@ export function HistorySection({ open, onOpenChange }: Props) {
     () => roundsApi.fetchRounds()
   );
 
-  const rounds = isLoggedIn ? (apiRounds ?? []).slice(0, 5) : getRecentRounds(5);
-  const personalBest = rounds.length > 0 ? Math.max(...rounds.map((r) => r.wpm)) : 0;
+  const allRounds = isLoggedIn ? (apiRounds ?? []) : getHistory();
+  const rounds = allRounds.slice(0, 5);
+  // Best across the full history, not just the 5 rows shown — otherwise the
+  // crown lands on the best-of-recent-5 once older/better rounds scroll off.
+  const personalBest = allRounds.length > 0 ? Math.max(...allRounds.map((r) => r.wpm)) : 0;
 
   const handleDelete = async (id: string) => {
     if (isLoggedIn) {

@@ -18,7 +18,7 @@ A full-stack typing speed test with real-time metrics, session replay, per-word 
 
 **WPM smoothing** — the real-time WPM chart applies a smoothing algorithm (`smoothData.ts`) to avoid noisy spikes, giving a cleaner picture of your actual pacing.
 
-**Persistent history with personal bests** — sign in once and every result is saved. Personal bests are tracked per mode and difficulty and highlighted in the history view.
+**Persistent history with personal bests** — sign in once and every result is saved. Your all-time best WPM is shown in the header, and your best run is highlighted in the history view.
 
 ---
 
