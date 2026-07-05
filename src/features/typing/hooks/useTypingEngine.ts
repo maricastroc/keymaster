@@ -41,6 +41,7 @@ export const useTypingEngine = (text: string, options?: TypingOptions) => {
     resume: resumeTimer,
     isRunning,
     resetTimer,
+    getElapsedMs,
   } = useTimer(initialTime, mode);
 
   const elapsedSeconds = useMemo(
@@ -96,7 +97,12 @@ export const useTypingEngine = (text: string, options?: TypingOptions) => {
       const currentTyped = userInput[activeWordIndex];
       if (!currentWord || currentTyped === undefined) return;
 
-      const timestampMs = elapsed * 1000;
+      // Monotonic, sub-second timestamp from the timer's own clock. Using the
+      // displayed `elapsed` here was wrong: in timed mode it counts down, so
+      // keystrokes were stamped in reverse, and its whole-second rounding
+      // collapsed every key in the same second onto one point — breaking the
+      // chart, heatmap word-speeds, and replay pacing.
+      const timestampMs = getElapsedMs();
 
       if (key.length === 1 && key !== ' ') {
         if (!canTypeMoreChars(currentTyped, currentWord)) return;
@@ -122,7 +128,7 @@ export const useTypingEngine = (text: string, options?: TypingOptions) => {
         dispatch({ type: 'BACKSPACE', wordIndex: activeWordIndex });
       }
     },
-    [isRunning, isReady, isCompleted, startTimer, elapsed, words, activeWordIndex, userInput, options]
+    [isRunning, isReady, isCompleted, startTimer, getElapsedMs, words, activeWordIndex, userInput, options]
   );
 
   const prepare = useCallback(() => {

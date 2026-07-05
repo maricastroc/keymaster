@@ -28,6 +28,18 @@ export const useTimer = (initialTime: number, mode: 'timed' | 'passage') => {
     }
   }, []);
 
+  // Monotonic milliseconds elapsed since the timer first started, excluding
+  // paused spans. Unlike `elapsed` (which counts *down* in timed mode and is
+  // rounded to whole seconds), this always increases from 0 and keeps
+  // sub-second precision — the correct clock for stamping keystrokes.
+  const getElapsedMs = useCallback(() => {
+    if (startTimeRef.current === null) return 0;
+    const now = Date.now();
+    const pausedExtra =
+      pausedTimeRef.current !== null ? now - pausedTimeRef.current : 0;
+    return Math.max(0, now - startTimeRef.current - totalPausedRef.current - pausedExtra);
+  }, []);
+
   const tick = useCallback(() => {
     if (!startTimeRef.current || !isRunningRef.current) {
       cancelRaf();
@@ -111,5 +123,5 @@ export const useTimer = (initialTime: number, mode: 'timed' | 'passage') => {
     };
   }, [cancelRaf]);
 
-  return { elapsed, start, pause, resume, isRunning, resetTimer };
+  return { elapsed, start, pause, resume, isRunning, resetTimer, getElapsedMs };
 };

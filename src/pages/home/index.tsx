@@ -31,6 +31,8 @@ export default function Home() {
 
   const [isNextLoading, setIsNextLoading] = useState(false);
 
+  const [loadError, setLoadError] = useState<string | null>(null);
+
   const [showHistorySection, setShowHistorySection] = useState(false);
 
   const [currentText, setCurrentText] = useState('');
@@ -53,7 +55,7 @@ export default function Home() {
     };
   }, [category, difficulty]);
 
-  const { data, isValidating } = useRequest<TextResponse>(
+  const { data, isValidating, error, mutate } = useRequest<TextResponse>(
     requestConfig,
     {
       revalidateOnMount: true,
@@ -65,37 +67,49 @@ export default function Home() {
 
   const onRandomize = async () => {
     isRandomizingRef.current = true;
+    setLoadError(null);
 
-    const response = await api.get<TextResponse>('/texts/random', {
-      params: { category: 'any', difficulty, excludeId: currentTextId },
-    });
+    try {
+      const response = await api.get<TextResponse>('/texts/random', {
+        params: { category: 'any', difficulty, excludeId: currentTextId },
+      });
 
-    if (response.data) {
-      skipNextSWREffectRef.current = true;
-      setCategory(response.data.category);
-      setCurrentText(response.data.content);
-      setCurrentTextId(response.data.id);
-      reset(response.data.content);
-      prepare();
+      if (response.data) {
+        skipNextSWREffectRef.current = true;
+        setCategory(response.data.category);
+        setCurrentText(response.data.content);
+        setCurrentTextId(response.data.id);
+        reset(response.data.content);
+        prepare();
+      }
+    } catch {
+      setLoadError('Could not load a new text. Please try again.');
+    } finally {
+      // Must always reset: while true, requestConfig stays null and SWR is
+      // permanently disabled, so leaving it set on error would freeze loading.
+      isRandomizingRef.current = false;
     }
-
-    isRandomizingRef.current = false;
   };
   const onNextText = async () => {
     setIsNextLoading(true);
+    setLoadError(null);
 
-    const response = await api.get<TextResponse>('/texts/random', {
-      params: { category, difficulty, excludeId: currentTextId },
-    });
+    try {
+      const response = await api.get<TextResponse>('/texts/random', {
+        params: { category, difficulty, excludeId: currentTextId },
+      });
 
-    if (response.data?.content) {
-      setCurrentText(response.data.content);
-      setCurrentTextId(response.data.id ?? null);
-      reset(response.data.content);
-      prepare();
+      if (response.data?.content) {
+        setCurrentText(response.data.content);
+        setCurrentTextId(response.data.id ?? null);
+        reset(response.data.content);
+        prepare();
+      }
+    } catch {
+      setLoadError('Could not load the next text. Please try again.');
+    } finally {
+      setIsNextLoading(false);
     }
-
-    setIsNextLoading(false);
   };
 
   const {
@@ -149,6 +163,8 @@ export default function Home() {
   useEffect(() => {
     if (!data?.content) return;
 
+    setLoadError(null);
+
     if (skipNextSWREffectRef.current) {
       skipNextSWREffectRef.current = false;
       return;
@@ -158,6 +174,11 @@ export default function Home() {
     setCurrentTextId(data.id ?? null);
     reset(data.content);
   }, [data]);
+
+  const handleRetryLoad = () => {
+    setLoadError(null);
+    mutate();
+  };
 
   useEffect(() => {
     if (!currentText) return;
@@ -203,6 +224,7 @@ export default function Home() {
 
   const isLoading = isValidating || isNextLoading;
   const loadingButton = isNextLoading ? 'next' : isValidating ? 'randomize' : null;
+  const hasLoadError = !!error || !!loadError;
 
   const [showResults, setShowResults] = useState(false);
   const [textFading, setTextFading] = useState(false);
@@ -233,7 +255,6 @@ export default function Home() {
         {showResults && (
           <div className="animate-resultIn">
             <ResultSection
-              metrics={metrics}
               finishedTime={finishedTime}
               chartData={chartData}
               generalStats={generalStats}
@@ -254,7 +275,7 @@ export default function Home() {
         )}
 
         <div className="mt-6 relative">
-          {!showResults && !currentText && (
+          {!showResults && !currentText && !hasLoadError && (
             <div className="flex flex-col gap-4 py-2">
               {[85, 65, 75, 50, 70].map((w, i) => (
                 <div
@@ -263,6 +284,20 @@ export default function Home() {
                   style={{ width: `${w}%` }}
                 />
               ))}
+            </div>
+          )}
+          {!showResults && !currentText && hasLoadError && (
+            <div
+              role="alert"
+              className="flex flex-col items-center justify-center gap-3 py-12 text-center"
+            >
+              <p className="font-mono text-sm text-red-500">Couldn&apos;t load a text.</p>
+              <p className="text-preset-7 text-neutral-500 max-w-xs">
+                {loadError ?? 'Check your connection and try again.'}
+              </p>
+              <Button variant="outline" size="sm" onClick={handleRetryLoad}>
+                Try again
+              </Button>
             </div>
           )}
           {!showResults && currentText && (
@@ -323,6 +358,12 @@ export default function Home() {
 
         {!showResults && (
           <InlineSettings onPrepare={() => prepare()} />
+        )}
+
+        {loadError && currentText && !showResults && (
+          <p role="alert" className="mt-4 text-center font-mono text-xs text-red-500">
+            {loadError}
+          </p>
         )}
 
         <ActionButtons

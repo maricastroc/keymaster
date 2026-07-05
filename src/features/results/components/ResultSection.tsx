@@ -3,49 +3,28 @@ import { StatsDisplay } from './StatsDisplay';
 import { GeneralStats } from '@/types/generalStats';
 import { ChartPoint } from '@/types/chartPoint';
 import { ResumeSection } from '@/features/typing/components/ResumeSection';
-import { useRoundStats } from '@/features/typing/hooks/useRoundStats';
-import { useEffect, useRef } from 'react';
 import { Heatmap } from '@/features/results/heatmap/Heatmap';
 import { Replay } from '@/features/results/replay/Replay';
 import { Keystroke } from '@/types/keyStore';
 
+// Presentational only. Persistence is owned by the typing engine's `onFinished`
+// callback (see home/index.tsx) so a round is saved exactly once. Saving here as
+// well produced duplicate rows for authenticated users (no cross-instance dedupe).
 type ResultSectionProps = {
   generalStats: GeneralStats;
   chartData: ChartPoint[];
   finishedTime: number | null;
-  metrics: {
-    wpm: number;
-    accuracy: number;
-  };
   keystrokes: Keystroke[];
   text: string;
 };
 
 export const ResultSection = ({
-  metrics,
   finishedTime,
   chartData,
   generalStats,
   keystrokes,
   text,
 }: ResultSectionProps) => {
-  const { saveRound } = useRoundStats();
-  const hasSavedRef = useRef(false);
-
-  useEffect(() => {
-    if (!finishedTime || metrics.wpm <= 0) return;
-
-    if (hasSavedRef.current) return;
-
-    saveRound({
-      wpm: metrics.wpm,
-      accuracy: metrics.accuracy,
-      time: finishedTime,
-    });
-
-    hasSavedRef.current = true;
-  }, [finishedTime, metrics.wpm, metrics.accuracy, saveRound]);
-
   return (
     <div className="mt-8 md:mt-12 flex flex-col items-center justify-center gap-3 w-full">
       <div className="flex flex-col items-center gap-1">
