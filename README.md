@@ -4,7 +4,7 @@
 
 A full-stack typing speed test with real-time metrics, session replay, per-word heatmaps, and persistent history — built with Next.js, Prisma, and PostgreSQL.
 
-**[Live demo →](https://maricastroc-keymaster.vercel.app/)**
+**[Live demo →](https://keymaster.marianacastro.dev/)**
 
 ---
 
