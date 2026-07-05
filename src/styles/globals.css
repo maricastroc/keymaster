@@ -7,8 +7,13 @@
   --neutral-900: #141517;
   --neutral-800: #242628;
   --neutral-700: #3a3c3f;
+  --neutral-600: #525252;
   --neutral-500: #646669;
   --neutral-400: #9a9da3;
+  --neutral-300: #d4d4d4;
+  --neutral-200: #e5e5e5;
+  --neutral-100: #f5f5f5;
+  --neutral-50: #fafafa;
   --neutral-0: #ffffff;
 
   --blue-600: #177DFF;
@@ -16,6 +21,7 @@
 
   --red-500: #ca4754;
   --green-500: #4DD67B;
+  --orange-500: #c97f2a;
   --yellow-500: #dbb942;
   --on-accent: #1a1b1e;
 
@@ -33,15 +39,21 @@
   --neutral-900: #f0f0f0;
   --neutral-800: #e0e0e0;
   --neutral-700: #cccccc;
+  --neutral-600: #a3a3a3;
   --neutral-500: #777777;
   --neutral-400: #444444;
+  --neutral-300: #2f2f2f;
+  --neutral-200: #1f1f1f;
+  --neutral-100: #141414;
+  --neutral-50: #0a0a0a;
   --neutral-0: #000000;
 
   --blue-400: #1D4ED8;
 
   --red-500: #D64D5B;
   --green-500: #1A8754;
-  --yellow-500: #DB9F67;
+  --orange-500: #a85f1a;
+  --yellow-500: #9a7b1e;
 
   --chart-grid: rgba(0, 0, 0, 0.07);
 }
@@ -53,8 +65,13 @@
   --color-neutral-900: var(--neutral-900);
   --color-neutral-800: var(--neutral-800);
   --color-neutral-700: var(--neutral-700);
+  --color-neutral-600: var(--neutral-600);
   --color-neutral-500: var(--neutral-500);
   --color-neutral-400: var(--neutral-400);
+  --color-neutral-300: var(--neutral-300);
+  --color-neutral-200: var(--neutral-200);
+  --color-neutral-100: var(--neutral-100);
+  --color-neutral-50: var(--neutral-50);
   --color-neutral-0: var(--neutral-0);
 
   --color-blue-600: var(--blue-600);
@@ -62,6 +79,7 @@
 
   --color-red-500: var(--red-500);
   --color-green-500: var(--green-500);
+  --color-orange-500: var(--orange-500);
   --color-yellow-500: var(--yellow-500);
   --color-on-accent: var(--on-accent);
 

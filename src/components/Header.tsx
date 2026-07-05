@@ -99,7 +99,7 @@ export const Header = ({ onOpenHistorySection }: HeaderProps) => {
                   <button
                     key={opt.id}
                     onClick={() => setSoundName(opt.id)}
-                    className={`cursor-pointer text-left font-mono text-xs px-2.5 py-1.5 rounded transition-colors ${
+                    className={`cursor-pointer text-left font-mono text-xs px-2.5 py-1.5 rounded-md transition-colors ${
                       soundName === opt.id ? 'text-yellow-500' : 'text-neutral-500 hover:text-neutral-300'
                     }`}
                   >

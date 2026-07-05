@@ -94,7 +94,7 @@ export const Replay = ({ keystrokes, text, onKeystroke }: Props) => {
           <button
             onClick={isPlaying ? pause : play}
             aria-label={isPlaying ? 'Pause replay' : 'Play replay'}
-            className="cursor-pointer text-xs px-3 py-1 rounded bg-neutral-800 hover:bg-neutral-700 text-neutral-400 transition"
+            className="cursor-pointer text-xs px-3 py-1 rounded-md bg-neutral-800 hover:bg-neutral-700 text-neutral-400 transition"
           >
             {isPlaying ? 'Pause' : currentIndex >= keystrokes.length ? 'Replay' : 'Play'}
           </button>

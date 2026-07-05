@@ -67,7 +67,7 @@ export const ResultChart = ({ data }: { data: ChartPoint[] }) => {
         <Line
           type="monotone"
           dataKey="raw"
-          stroke="#4DD67B"
+          stroke="var(--green-500)"
           strokeWidth={2}
           dot={false}
           name="Raw"
@@ -76,7 +76,7 @@ export const ResultChart = ({ data }: { data: ChartPoint[] }) => {
         <Line
           type="monotone"
           dataKey="wpm"
-          stroke="#4CA6FF"
+          stroke="var(--blue-400)"
           strokeWidth={2}
           dot={false}
           name="WPM"
@@ -85,14 +85,14 @@ export const ResultChart = ({ data }: { data: ChartPoint[] }) => {
         <Line
           type="monotone"
           dataKey="burst"
-          stroke="#949497"
+          stroke="var(--neutral-400)"
           strokeDasharray="4 4"
           strokeWidth={2}
           dot={false}
           name="Burst"
         />
 
-        <Scatter dataKey="errors" fill="#D64D5B" name="Errors" />
+        <Scatter dataKey="errors" fill="var(--red-500)" name="Errors" />
       </LineChart>
     </ResponsiveContainer>
   );

@@ -5,7 +5,7 @@ import { Keystroke } from '@/types/keyStore';
 
 const HEATMAP_COLORS = [
   'var(--color-red-500)',
-  '#c97f2a',
+  'var(--color-orange-500)',
   'var(--color-neutral-500)',
   'var(--color-yellow-500)',
   'var(--color-neutral-0)',

@@ -71,7 +71,7 @@ export const ActionButtons = ({
       {buttons.map((button) => (
         <Tooltip
           key={button.id}
-          className="!bg-[#262626] !text-white !text-xs !px-3 !py-1 !rounded-md"
+          className="!bg-neutral-800 !text-neutral-0 !text-xs !px-3 !py-1 !rounded-md !border !border-neutral-700"
           id={`${button.id}-tooltip`}
         />
       ))}

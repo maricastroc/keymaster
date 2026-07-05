@@ -18,7 +18,7 @@ const PillGroup = ({ options, currentValue, onChange }: PillGroupProps) => (
       <button
         key={opt.value}
         onClick={() => onChange(opt.value)}
-        className={`cursor-pointer font-mono text-xs px-2.5 py-1 rounded transition-colors ${
+        className={`cursor-pointer font-mono text-xs px-2.5 py-1 rounded-md transition-colors ${
           currentValue === opt.value
             ? 'text-yellow-500'
             : 'text-neutral-500 hover:text-neutral-300'
