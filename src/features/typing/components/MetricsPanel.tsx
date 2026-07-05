@@ -37,8 +37,8 @@ export const MetricsPanel = ({
     value: React.ReactNode;
     valueClass?: string;
   }) => (
-    <div className="flex flex-col md:flex-row items-center justify-center gap-1 md:gap-3 px-4 md:px-8">
-      <p className="text-preset-4 font-medium text-neutral-500">{label}</p>
+    <div className="flex flex-col md:flex-row items-center justify-center gap-1 md:gap-3 px-2.5 sm:px-4 md:px-8">
+      <p className="text-sm md:text-lg font-medium text-neutral-500">{label}</p>
       <span className={`text-xl md:text-preset-2 font-mono ${valueClass}`}>{value}</span>
     </div>
   );

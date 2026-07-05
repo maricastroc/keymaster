@@ -22,8 +22,8 @@ export const ResumeSection = ({
 
   return (
     <div className="mt-4 w-full max-w-5xl">
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-0 w-full divide-x divide-neutral-800">
-        <div className="flex flex-col items-center justify-center px-6 py-4">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-px w-full bg-neutral-800">
+        <div className="bg-background flex flex-col items-center justify-center px-6 py-4">
           <p className="font-mono text-xs text-neutral-500 uppercase tracking-wider mb-2">test type</p>
           <div className="flex flex-wrap gap-1.5 justify-center">
             <span className="font-mono text-xs text-neutral-500 bg-neutral-800 px-2.5 py-1 rounded-full">
@@ -35,17 +35,17 @@ export const ResumeSection = ({
           </div>
         </div>
 
-        <div className="flex flex-col items-center justify-center px-6 py-4">
+        <div className="bg-background flex flex-col items-center justify-center px-6 py-4">
           <p className="font-mono text-xs text-neutral-500 uppercase tracking-wider mb-1">raw</p>
           <span className="font-mono font-bold text-xl text-neutral-400">{generalStats?.raw}</span>
         </div>
 
-        <div className="flex flex-col items-center justify-center px-6 py-4">
+        <div className="bg-background flex flex-col items-center justify-center px-6 py-4">
           <p className="font-mono text-xs text-neutral-500 uppercase tracking-wider mb-1">consistency</p>
           <span className="font-mono font-bold text-xl text-neutral-400">{generalStats?.consistency}%</span>
         </div>
 
-        <div className="flex flex-col items-center justify-center px-6 py-4">
+        <div className="bg-background flex flex-col items-center justify-center px-6 py-4">
           <p className="font-mono text-xs text-neutral-500 uppercase tracking-wider mb-1">time</p>
           <span className="font-mono font-bold text-xl text-neutral-400">{formatTime(finishedTime)}</span>
         </div>

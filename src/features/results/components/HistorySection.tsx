@@ -65,7 +65,7 @@ export function HistorySection({ open, onOpenChange }: Props) {
 
         <Dialog.Content
           className={`
-            fixed top-0 right-0 h-full w-105
+            fixed top-0 right-0 h-full w-full max-w-[420px]
             bg-neutral-900 border-l border-neutral-700
             p-8 shadow-2xl
             transition-transform duration-250 ease-out
@@ -147,7 +147,7 @@ export function HistorySection({ open, onOpenChange }: Props) {
                           onClick={() => setConfirmDeleteId(round.id)}
                           aria-label={`Delete round: ${round.wpm} wpm, ${round.mode}`}
                           title="Delete"
-                          className="cursor-pointer opacity-100 sm:opacity-0 sm:group-hover:opacity-100 focus-visible:opacity-100 transition-opacity text-neutral-600 hover:text-red-400"
+                          className="cursor-pointer p-1.5 -m-1.5 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 focus-visible:opacity-100 transition-opacity text-neutral-600 hover:text-red-400"
                         >
                           <FontAwesomeIcon icon={faTrash} size="sm" />
                         </button>

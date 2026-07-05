@@ -61,7 +61,7 @@ export const ActionButtons = ({
             data-tooltip-id={`${button.id}-tooltip`}
             data-tooltip-content={button.tooltip}
             data-tooltip-place="top"
-            className={`cursor-pointer text-neutral-500 hover:text-neutral-300 transition-colors p-1 ${button.isLoading ? 'animate-pulse' : ''}`}
+            className={`cursor-pointer inline-flex items-center justify-center min-h-11 min-w-11 text-neutral-500 hover:text-neutral-300 transition-colors ${button.isLoading ? 'animate-pulse' : ''}`}
           >
             <FontAwesomeIcon icon={button.isLoading ? faSpinner : button.icon} spin={button.isLoading} size="sm" />
           </button>

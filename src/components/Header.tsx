@@ -72,7 +72,7 @@ export const Header = ({ onOpenHistorySection }: HeaderProps) => {
 
         <button
           onClick={() => onOpenHistorySection(true)}
-          className="cursor-pointer text-neutral-500 hover:text-neutral-300 transition-colors p-1"
+          className="cursor-pointer text-neutral-500 hover:text-neutral-300 transition-colors p-1.5"
           aria-label="View history"
           title="History"
         >
@@ -83,7 +83,7 @@ export const Header = ({ onOpenHistorySection }: HeaderProps) => {
         <div ref={soundRef} className="relative">
           <button
             onClick={() => setSoundPopover((v) => !v)}
-            className="cursor-pointer text-neutral-500 hover:text-neutral-300 transition-colors p-1"
+            className="cursor-pointer text-neutral-500 hover:text-neutral-300 transition-colors p-1.5"
             aria-label="Sound settings"
             aria-haspopup="menu"
             aria-expanded={soundPopover}
@@ -137,7 +137,7 @@ export const Header = ({ onOpenHistorySection }: HeaderProps) => {
         {/* Theme toggle */}
         <button
           onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-          className="cursor-pointer text-neutral-500 hover:text-neutral-300 transition-colors p-1"
+          className="cursor-pointer text-neutral-500 hover:text-neutral-300 transition-colors p-1.5"
           aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} theme`}
           title="Toggle theme"
         >
