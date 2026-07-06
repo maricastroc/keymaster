@@ -11,7 +11,6 @@ import {
   calculateMetrics,
 } from '@/features/typing/logic/typing';
 
-import type { RoundStats } from '@/types/roundStats';
 import type { HistoryStats } from '@/types/historyStats';
 
 interface TypingOptions {
@@ -22,7 +21,7 @@ interface TypingOptions {
 }
 
 export const useTypingEngine = (text: string, options?: TypingOptions) => {
-  const { mode, difficulty } = useConfig();
+  const { mode } = useConfig();
 
   const words = useMemo(() => text.split(' '), [text]);
 
@@ -150,11 +149,6 @@ export const useTypingEngine = (text: string, options?: TypingOptions) => {
     [resetTimer]
   );
 
-  const start = useCallback(() => {
-    dispatch({ type: 'START' });
-    startTimer();
-  }, [startTimer]);
-
   useEffect(() => {
     if (isCompleted || !hasStarted) return;
 
@@ -164,11 +158,6 @@ export const useTypingEngine = (text: string, options?: TypingOptions) => {
 
     if (shouldFinish && !isFinishingRef.current) finishTest();
   }, [activeWordIndex, userInput, words, mode, elapsed, isRunning, isCompleted, hasStarted, finishTest]);
-
-  const getRoundStats = useCallback((): Omit<RoundStats, 'id' | 'timestamp'> | null => {
-    if (!finishedTime || !metrics.wpm) return null;
-    return { mode, difficulty, wpm: metrics.wpm, accuracy: metrics.accuracy, time: finishedTime };
-  }, [finishedTime, metrics, mode, difficulty]);
 
   return {
     isStarted: hasStarted,
@@ -183,8 +172,6 @@ export const useTypingEngine = (text: string, options?: TypingOptions) => {
     finishedTime,
     isReady,
     prepare,
-    getRoundStats,
-    start,
     handleKeyDown,
     reset,
     resume: resumeTimer,

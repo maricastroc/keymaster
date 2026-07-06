@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+import { Prisma } from '@prisma/client';
 import { prisma } from '@/lib/prisma';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { z } from 'zod';
@@ -20,7 +20,7 @@ export default async function handler(
   try {
     const { category, difficulty, excludeId } = querySchema.parse(req.query);
 
-    const where: any = { difficulty };
+    const where: Prisma.TextWhereInput = { difficulty };
 
     if (category !== 'any') {
       where.category = category;

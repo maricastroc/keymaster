@@ -1,5 +1,6 @@
 import { ConfigProvider } from '@/features/settings/context/ConfigContext';
 import { SoundProvider } from '@/features/sound/context/SoundContext';
+import { ErrorBoundary } from '@/components/ErrorBoundary';
 import '@/styles/globals.css';
 import type { AppProps } from 'next/app';
 import { Sora, Roboto_Mono } from 'next/font/google';
@@ -20,11 +21,13 @@ export default function App({ Component, pageProps: { session, ...pageProps } }:
   return (
     <SessionProvider session={session}>
       <main className={`${sora.className} ${robotoMono.variable}`}>
-        <ConfigProvider>
-          <SoundProvider>
-            <Component {...pageProps} />
-          </SoundProvider>
-        </ConfigProvider>
+        <ErrorBoundary>
+          <ConfigProvider>
+            <SoundProvider>
+              <Component {...pageProps} />
+            </SoundProvider>
+          </ConfigProvider>
+        </ErrorBoundary>
       </main>
     </SessionProvider>
   );

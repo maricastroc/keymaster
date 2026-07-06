@@ -63,46 +63,6 @@ export class StatsService {
     }
   }
 
-  static getAggregatedStats() {
-    const rounds = this.getStoredRounds();
-
-    if (rounds.length === 0) {
-      return {
-        totalRounds: 0,
-        averageWpm: 0,
-        bestWpm: 0,
-        averageAccuracy: 0,
-        bestAccuracy: 0,
-        totalTimeTyped: 0,
-      };
-    }
-
-    const totalRounds = rounds.length;
-    const totalWpm = rounds.reduce((sum, r) => sum + r.wpm, 0);
-    const totalAccuracy = rounds.reduce((sum, r) => sum + r.accuracy, 0);
-    const totalTime = rounds.reduce((sum, r) => sum + r.time, 0);
-
-    return {
-      totalRounds,
-      averageWpm: Math.round(totalWpm / totalRounds),
-      bestWpm: Math.max(...rounds.map((r) => r.wpm)),
-      averageAccuracy: Math.round(totalAccuracy / totalRounds),
-      bestAccuracy: Math.max(...rounds.map((r) => r.accuracy)),
-      totalTimeTyped: Math.round(totalTime / 60),
-
-      byMode: {
-        timed: rounds.filter((r) => r.mode === 'timed'),
-        passage: rounds.filter((r) => r.mode === 'passage'),
-      },
-
-      byDifficulty: {
-        easy: rounds.filter((r) => r.difficulty === 'easy'),
-        medium: rounds.filter((r) => r.difficulty === 'medium'),
-        hard: rounds.filter((r) => r.difficulty === 'hard'),
-      },
-    };
-  }
-
   private static cleanupOldRounds() {
     const rounds = this.getStoredRounds();
     if (rounds.length > MAX_STORED_ROUNDS) {

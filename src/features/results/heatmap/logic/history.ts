@@ -1,5 +1,6 @@
 import { getBuckets } from './buckets';
 import { Keystroke } from '@/types/keyStore';
+import { getWordRanges } from '@/utils/wordRanges';
 
 export type WordStats = {
   wpm: number;
@@ -16,22 +17,6 @@ export type HeatmapAnalysis = {
   buckets: number[];
   words: string[];
 };
-
-function getWordRanges(text: string) {
-  const wordRanges: { start: number; end: number }[] = [];
-  if (!text) return wordRanges;
-  let start = 0;
-  for (let i = 0; i < text.length; i++) {
-    const isLast = i === text.length - 1;
-    const isSpace = text[i] === ' ';
-    if (isSpace || isLast) {
-      const end = i + 1;
-      if (end > start) wordRanges.push({ start, end });
-      start = end;
-    }
-  }
-  return wordRanges;
-}
 
 function findWordIndexByCharIndex(charIndex: number, wordRanges: { start: number; end: number }[]) {
   for (let idx = 0; idx < wordRanges.length; idx++) {

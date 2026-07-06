@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
 import { Keystroke } from '@/types/keyStore';
+import { getWordRanges } from '@/utils/wordRanges';
 import { useReplay } from './useReplay';
 
 type Props = {
@@ -9,19 +10,6 @@ type Props = {
 };
 
 type CharState = 'untyped' | 'correct' | 'incorrect' | 'cursor';
-
-function buildWordRanges(text: string) {
-  const ranges: { start: number; end: number }[] = [];
-  let start = 0;
-  for (let i = 0; i < text.length; i++) {
-    if (text[i] === ' ' || i === text.length - 1) {
-      const end = i + 1;
-      if (end > start) ranges.push({ start, end });
-      start = end;
-    }
-  }
-  return ranges;
-}
 
 function buildCharStates(
   text: string,
@@ -62,7 +50,7 @@ export const Replay = ({ keystrokes, text, onKeystroke }: Props) => {
     onKeystroke,
   });
 
-  const wordRanges = useMemo(() => buildWordRanges(text), [text]);
+  const wordRanges = useMemo(() => getWordRanges(text), [text]);
 
   const fillPercent = keystrokes.length > 0 ? (currentIndex / keystrokes.length) * 100 : 0;
 

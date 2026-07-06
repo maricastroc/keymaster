@@ -6,7 +6,7 @@ import { mutate } from 'swr';
 import { useConfig } from '@/features/settings/context/ConfigContext';
 
 export const useRoundStats = () => {
-  const { mode, category, difficulty } = useConfig();
+  const { mode, difficulty } = useConfig();
   const { data: session } = useSession();
   const isLoggedIn = !!session?.user?.id;
 
@@ -41,39 +41,11 @@ export const useRoundStats = () => {
 
       return StatsService.saveRound(payload);
     },
-    [mode, category, difficulty, isLoggedIn]
+    [mode, difficulty, isLoggedIn]
   );
 
   const getHistory = useCallback(() => {
     return StatsService.getStoredRounds();
-  }, []);
-
-  const getRecentRounds = useCallback((limit: number = 10) => {
-    return StatsService.getStoredRounds().slice(0, limit);
-  }, []);
-
-  const getRoundsByMode = useCallback((targetMode: 'timed' | 'passage') => {
-    return StatsService.getStoredRounds().filter((r) => r.mode === targetMode);
-  }, []);
-
-  const cleanupDuplicates = useCallback(() => {
-    const rounds = StatsService.getStoredRounds();
-    const uniqueRounds: typeof rounds = [];
-    const seen = new Set<string>();
-
-    rounds.forEach((round) => {
-      const key = `${round.wpm}-${round.accuracy}-${round.time}-${round.mode}`;
-      if (!seen.has(key)) {
-        seen.add(key);
-        uniqueRounds.push(round);
-      }
-    });
-
-    if (uniqueRounds.length !== rounds.length) {
-      localStorage.setItem('@typing-stats', JSON.stringify(uniqueRounds));
-    }
-
-    return uniqueRounds;
   }, []);
 
   const deleteRound = useCallback((id: string) => {
@@ -84,9 +56,6 @@ export const useRoundStats = () => {
     isLoggedIn,
     saveRound,
     getHistory,
-    getRecentRounds,
-    getRoundsByMode,
-    cleanupDuplicates,
     deleteRound,
   };
 };
