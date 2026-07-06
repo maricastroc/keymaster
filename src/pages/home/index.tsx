@@ -7,12 +7,10 @@ import * as Dialog from '@radix-ui/react-dialog';
 import { useSound } from '@/features/sound/context/SoundContext';
 import { useConfig } from '@/features/settings/context/ConfigContext';
 import { useTypingEngine } from '@/features/typing/hooks/useTypingEngine';
-import useRequest from '@/features/typing/hooks/useRequest';
+import { useTextLoader } from '@/features/typing/hooks/useTextLoader';
 import { useRoundStats } from '@/features/typing/hooks/useRoundStats';
 import { usePersonalBest } from '@/features/typing/hooks/usePersonalBest';
 import { calculateGeneralStats } from '@/utils/calculateStats';
-import { TextResponse } from '@/types/textResponse';
-import { api } from '@/lib/axios';
 
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
@@ -40,7 +38,7 @@ const ResultSection = dynamic(
 export default function Home() {
   const { playKeystroke, playErrorSound, preload } = useSound();
 
-  const { category, setCategory, difficulty, initialTime } = useConfig();
+  const { initialTime } = useConfig();
 
   const { saveRound } = useRoundStats();
 
@@ -50,116 +48,31 @@ export default function Home() {
   const personalBestRef = useRef(0);
   const [isNewBest, setIsNewBest] = useState(false);
 
-  const [isNextLoading, setIsNextLoading] = useState(false);
-
-  const [loadError, setLoadError] = useState<string | null>(null);
-
   const [capsLockOn, setCapsLockOn] = useState(false);
 
   const [showHistorySection, setShowHistorySection] = useState(false);
   const [showCustomModal, setShowCustomModal] = useState(false);
 
-  const [currentText, setCurrentText] = useState('');
-  const [currentTextId, setCurrentTextId] = useState<string | null>(null);
-
   const inputRef = useRef<HTMLInputElement>(null);
 
   const wordsContainerRef = useRef<HTMLDivElement>(null);
 
-  const isRandomizingRef = useRef(false);
-  const skipNextSWREffectRef = useRef(false);
   // Once the user has engaged with the test at least once, settings-driven text
   // reloads should land ready-to-type instead of showing the Start overlay
   // again. Stays false on the very first load so the initial overlay still shows.
   const hasInteractedRef = useRef(false);
 
-  const requestConfig = useMemo(() => {
-    if (isRandomizingRef.current) return null;
-
-    return {
-      url: '/texts/random',
-      method: 'GET',
-      params: { category, difficulty },
-    };
-  }, [category, difficulty]);
-
-  const { data, isValidating, error, mutate } = useRequest<TextResponse>(
-    requestConfig,
-    {
-      revalidateOnMount: true,
-      revalidateIfStale: false,
-      revalidateOnFocus: false,
-      revalidateOnReconnect: false,
-    }
-  );
-
-  const onRandomize = async () => {
-    isRandomizingRef.current = true;
-    hasInteractedRef.current = true;
-    setLoadError(null);
-
-    try {
-      const response = await api.get<TextResponse>('/texts/random', {
-        params: { category: 'any', difficulty, excludeId: currentTextId },
-      });
-
-      if (response.data) {
-        skipNextSWREffectRef.current = true;
-        setCategory(response.data.category);
-        setCurrentText(response.data.content);
-        setCurrentTextId(response.data.id);
-        reset(response.data.content);
-        prepare();
-      }
-    } catch {
-      setLoadError('Could not load a new text. Please try again.');
-    } finally {
-      // Must always reset: while true, requestConfig stays null and SWR is
-      // permanently disabled, so leaving it set on error would freeze loading.
-      isRandomizingRef.current = false;
-    }
-  };
-  const onNextText = async () => {
-    setIsNextLoading(true);
-    setLoadError(null);
-    hasInteractedRef.current = true;
-
-    // The API returns 404 (axios rejects) when a filter bucket is empty, so
-    // treat any failure as "no text here".
-    const fetchText = async (cat: string) => {
-      try {
-        const res = await api.get<TextResponse>('/texts/random', {
-          params: { category: cat, difficulty, excludeId: currentTextId },
-        });
-        return res.data?.content ? res.data : null;
-      } catch {
-        return null;
-      }
-    };
-
-    try {
-      // Prefer another text in the current category; if that bucket is
-      // exhausted at this difficulty, fall back to any category so "Next"
-      // never silently dead-ends.
-      let next = await fetchText(category);
-      if (!next) next = await fetchText('any');
-
-      if (next) {
-        if (next.category && next.category !== category) {
-          skipNextSWREffectRef.current = true;
-          setCategory(next.category);
-        }
-        setCurrentText(next.content);
-        setCurrentTextId(next.id ?? null);
-        reset(next.content);
-        prepare();
-      } else {
-        setLoadError('No other texts available for these settings.');
-      }
-    } finally {
-      setIsNextLoading(false);
-    }
-  };
+  const {
+    currentText,
+    isNextLoading,
+    isValidating,
+    error,
+    loadError,
+    randomize,
+    next: loadNextText,
+    setCustomText,
+    retry,
+  } = useTextLoader(hasInteractedRef);
 
   const {
     isStarted,
@@ -209,14 +122,11 @@ export default function Home() {
   };
 
   const handleCustomText = (text: string) => {
-    hasInteractedRef.current = true;
-    setLoadError(null);
     setShowCustomModal(false);
-    setCurrentText(text);
-    setCurrentTextId(null);
-    reset(text);
-    prepare();
-    setTimeout(() => inputRef.current?.focus(), 50);
+    // setCustomText updates currentText → the reset effect below resets +
+    // prepares the engine; the ready effect then focuses the input.
+    setCustomText(text);
+    setTimeout(() => inputRef.current?.focus(), 60);
   };
 
   const generalStats = useMemo(
@@ -224,28 +134,15 @@ export default function Home() {
     [keystrokes, chartData, totalTime]
   );
 
+  // Reset the engine whenever the text changes — initial load, Randomize, Next,
+  // or a pasted custom text. Once the user has engaged, land ready-to-type
+  // rather than re-showing the Start overlay (the first load leaves
+  // hasInteractedRef false so the overlay still appears).
   useEffect(() => {
-    if (!data?.content) return;
-
-    setLoadError(null);
-
-    if (skipNextSWREffectRef.current) {
-      skipNextSWREffectRef.current = false;
-      return;
-    }
-
-    setCurrentText(data.content);
-    setCurrentTextId(data.id ?? null);
-    reset(data.content);
-    // Keep the user ready to type after a category/difficulty change; the very
-    // first load leaves hasInteractedRef false so the Start overlay still shows.
+    if (!currentText) return;
+    reset(currentText);
     if (hasInteractedRef.current) prepare();
-  }, [data]);
-
-  const handleRetryLoad = () => {
-    setLoadError(null);
-    mutate();
-  };
+  }, [currentText]);
 
   useEffect(() => {
     if (!currentText) return;
@@ -441,7 +338,7 @@ export default function Home() {
               <p className="text-preset-7 text-neutral-500 max-w-xs">
                 {loadError ?? 'Check your connection and try again.'}
               </p>
-              <Button variant="outline" size="sm" onClick={handleRetryLoad}>
+              <Button variant="outline" size="sm" onClick={retry}>
                 Try again
               </Button>
             </div>
@@ -526,9 +423,9 @@ export default function Home() {
         )}
 
         <ActionButtons
-          onRandomize={onRandomize}
+          onRandomize={randomize}
           onRestart={onRestart}
-          onNext={onNextText}
+          onNext={loadNextText}
           isLoading={isLoading}
           loadingButton={loadingButton}
         />
