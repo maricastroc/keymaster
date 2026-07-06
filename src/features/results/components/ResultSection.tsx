@@ -5,6 +5,8 @@ import { ChartPoint } from '@/types/chartPoint';
 import { ResumeSection } from '@/features/typing/components/ResumeSection';
 import { Heatmap } from '@/features/results/heatmap/Heatmap';
 import { Replay } from '@/features/results/replay/Replay';
+import { ShareResult } from './ShareResult';
+import { useConfig } from '@/features/settings/context/ConfigContext';
 import { Keystroke } from '@/types/keyStore';
 
 // Presentational only. Persistence is owned by the typing engine's `onFinished`
@@ -27,6 +29,8 @@ export const ResultSection = ({
   text,
   isNewBest = false,
 }: ResultSectionProps) => {
+  const { mode, difficulty } = useConfig();
+
   return (
     <div className="mt-8 md:mt-12 flex flex-col items-center justify-center gap-3 w-full">
       <div className="flex flex-col items-center gap-1">
@@ -41,6 +45,14 @@ export const ResultSection = ({
           {isNewBest ? 'you beat your personal best 🎉' : 'keep pushing to beat your best'}
         </p>
       </div>
+
+      <ShareResult
+        wpm={generalStats.wpm}
+        accuracy={generalStats.accuracy}
+        consistency={generalStats.consistency}
+        mode={mode}
+        difficulty={difficulty}
+      />
       <div className="w-full max-w-5xl flex flex-col gap-4 items-center justify-center">
         <StatsDisplay stats={generalStats} />
         <ResultChart data={chartData} />

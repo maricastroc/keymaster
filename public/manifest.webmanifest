@@ -1,0 +1,19 @@
+{
+  "name": "Keymaster — Typing Speed Test",
+  "short_name": "Keymaster",
+  "description": "A typing speed test with real-time metrics, session replay, per-word heatmaps, and persistent stats.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#1a1b1e",
+  "theme_color": "#1a1b1e",
+  "icons": [
+    {
+      "src": "/assets/images/logo-keymaster.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

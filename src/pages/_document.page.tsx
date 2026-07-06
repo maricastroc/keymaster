@@ -13,6 +13,11 @@ export default function Document() {
         />
         <title>keymaster</title>
         <link rel="icon" type="image/svg" href="/assets/images/logo-keymaster.svg" />
+        <link rel="manifest" href="/manifest.webmanifest" />
+        <meta name="theme-color" content="#1a1b1e" />
+        <link rel="apple-touch-icon" href="/assets/images/logo-keymaster.svg" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-title" content="Keymaster" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
