@@ -9,6 +9,7 @@ import { useConfig } from '@/features/settings/context/ConfigContext';
 import { useTypingEngine } from '@/features/typing/hooks/useTypingEngine';
 import useRequest from '@/features/typing/hooks/useRequest';
 import { useRoundStats } from '@/features/typing/hooks/useRoundStats';
+import { usePersonalBest } from '@/features/typing/hooks/usePersonalBest';
 import { calculateGeneralStats } from '@/utils/calculateStats';
 import { TextResponse } from '@/types/textResponse';
 import { api } from '@/lib/axios';
@@ -42,6 +43,12 @@ export default function Home() {
   const { category, setCategory, difficulty, initialTime } = useConfig();
 
   const { saveRound } = useRoundStats();
+
+  // Best for the current mode+difficulty, captured in a ref so we can compare a
+  // finished round against the *previous* best (before it gets saved).
+  const personalBest = usePersonalBest();
+  const personalBestRef = useRef(0);
+  const [isNewBest, setIsNewBest] = useState(false);
 
   const [isNextLoading, setIsNextLoading] = useState(false);
 
@@ -179,7 +186,10 @@ export default function Home() {
     onSuccess: playKeystroke,
     onFinished: (stats) => {
       inputRef.current?.blur();
-      if (stats) saveRound(stats);
+      if (stats) {
+        setIsNewBest(stats.wpm > personalBestRef.current);
+        saveRound(stats);
+      }
     },
     initialTime,
   });
@@ -336,9 +346,14 @@ export default function Home() {
   const [textFading, setTextFading] = useState(false);
 
   useEffect(() => {
+    personalBestRef.current = personalBest;
+  }, [personalBest]);
+
+  useEffect(() => {
     if (!isCompleted) {
       setShowResults(false);
       setTextFading(false);
+      setIsNewBest(false);
       return;
     }
     setTextFading(true);
@@ -382,6 +397,7 @@ export default function Home() {
               generalStats={generalStats}
               keystrokes={keystrokes}
               text={currentText}
+              isNewBest={isNewBest}
             />
           </div>
         )}

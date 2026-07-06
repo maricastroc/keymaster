@@ -66,6 +66,8 @@ export function HistorySection({ open, onOpenChange }: Props) {
   // Best within the current filter, so the crown reflects what's on screen.
   const personalBest = rounds.length > 0 ? Math.max(...rounds.map((r) => r.wpm)) : 0;
 
+  const isLoadingHistory = isLoggedIn && apiRounds === undefined;
+
   const handleDelete = async (id: string) => {
     if (isLoggedIn) {
       await roundsApi.deleteRound(id);
@@ -152,7 +154,14 @@ export function HistorySection({ open, onOpenChange }: Props) {
 
           <div className="mt-4 flex flex-col flex-1 min-h-0">
             <div className="flex-1 min-h-0 overflow-y-auto divide-y divide-neutral-800">
-              {rounds.length === 0 && (
+              {isLoadingHistory && (
+                <div className="flex flex-col gap-3 pt-4" aria-hidden>
+                  {Array.from({ length: 5 }).map((_, i) => (
+                    <div key={i} className="h-11 rounded-lg bg-neutral-800 animate-pulse" />
+                  ))}
+                </div>
+              )}
+              {!isLoadingHistory && rounds.length === 0 && (
                 <p className="text-neutral-500 text-center text-sm mt-8">
                   {allRounds.length === 0 ? 'No rounds yet.' : 'No rounds match these filters.'}
                 </p>

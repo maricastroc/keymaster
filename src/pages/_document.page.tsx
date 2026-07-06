@@ -4,6 +4,13 @@ export default function Document() {
   return (
     <Html lang="en">
       <Head>
+        {/* Apply the saved theme before first paint to avoid a flash of the
+            wrong theme (the React state hydrates to the default first). */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var t=localStorage.getItem('config:theme');t=t?JSON.parse(t):'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){document.documentElement.setAttribute('data-theme','dark');}})();`,
+          }}
+        />
         <title>keymaster</title>
         <link rel="icon" type="image/svg" href="/assets/images/logo-keymaster.svg" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />

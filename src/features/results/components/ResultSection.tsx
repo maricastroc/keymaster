@@ -16,6 +16,7 @@ type ResultSectionProps = {
   finishedTime: number | null;
   keystrokes: Keystroke[];
   text: string;
+  isNewBest?: boolean;
 };
 
 export const ResultSection = ({
@@ -24,12 +25,21 @@ export const ResultSection = ({
   generalStats,
   keystrokes,
   text,
+  isNewBest = false,
 }: ResultSectionProps) => {
   return (
     <div className="mt-8 md:mt-12 flex flex-col items-center justify-center gap-3 w-full">
       <div className="flex flex-col items-center gap-1">
-        <h1 className="font-mono text-2xl font-semibold text-yellow-500">done</h1>
-        <p className="font-mono text-xs text-neutral-500">keep pushing to beat your best</p>
+        <h1
+          className={`font-mono text-2xl font-semibold text-yellow-500 ${
+            isNewBest ? 'animate-countdownPop' : ''
+          }`}
+        >
+          {isNewBest ? 'new best!' : 'done'}
+        </h1>
+        <p className="font-mono text-xs text-neutral-500">
+          {isNewBest ? 'you beat your personal best 🎉' : 'keep pushing to beat your best'}
+        </p>
       </div>
       <div className="w-full max-w-5xl flex flex-col gap-4 items-center justify-center">
         <StatsDisplay stats={generalStats} />
