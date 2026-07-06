@@ -222,7 +222,14 @@ export default function Home() {
 
     const currentWordEl = wordsRef.current[activeWordIndex];
 
-    currentWordEl?.scrollIntoView({ block: 'center', behavior: 'smooth' });
+    const prefersReducedMotion = window.matchMedia?.(
+      '(prefers-reduced-motion: reduce)'
+    ).matches;
+
+    currentWordEl?.scrollIntoView({
+      block: 'center',
+      behavior: prefersReducedMotion ? 'auto' : 'smooth',
+    });
   }, [activeWordIndex, isStarted, isReady]);
 
 
@@ -258,6 +265,14 @@ export default function Home() {
   const loadingButton = isNextLoading ? 'next' : isValidating ? 'randomize' : null;
   const hasLoadError = !!error || !!loadError;
 
+  // Announced to screen readers via an aria-live region, since the typing UI
+  // itself is visual-only.
+  const srStatus = isCompleted
+    ? `Test complete. ${metrics.wpm} words per minute, ${metrics.accuracy} percent accuracy.`
+    : isPaused
+      ? 'Test paused.'
+      : '';
+
   const [showResults, setShowResults] = useState(false);
   const [textFading, setTextFading] = useState(false);
 
@@ -275,10 +290,20 @@ export default function Home() {
 
   return (
     <div className="relative min-h-screen flex flex-col items-center px-4 py-6 md:py-10">
+      <a
+        href="#typing-area"
+        className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:rounded-lg focus:bg-yellow-500 focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-black"
+      >
+        Skip to typing test
+      </a>
       <div className="w-full max-w-5xl">
         <Header
           onOpenHistorySection={() => setShowHistorySection(true)}
         />
+
+        <div role="status" aria-live="polite" className="sr-only">
+          {srStatus}
+        </div>
 
         <Dialog.Root open={showHistorySection} onOpenChange={setShowHistorySection}>
           <HistorySection open={showHistorySection} onOpenChange={setShowHistorySection} />
@@ -306,7 +331,7 @@ export default function Home() {
           />
         )}
 
-        <div className="mt-6 relative">
+        <div id="typing-area" tabIndex={-1} className="mt-6 relative outline-none">
           {!showResults && !currentText && !hasLoadError && (
             <div className="flex flex-col gap-4 py-2">
               {[85, 65, 75, 50, 70].map((w, i) => (
@@ -361,6 +386,7 @@ export default function Home() {
             ref={inputRef}
             className="absolute opacity-0 pointer-events-none"
             autoComplete="off"
+            aria-label="Typing test input"
             onKeyDown={(e) => handleKeyDown(e.key)}
           />
 

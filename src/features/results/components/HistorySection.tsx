@@ -74,14 +74,18 @@ export function HistorySection({ open, onOpenChange }: Props) {
           `}
           onEscapeKeyDown={() => onOpenChange(false)}
         >
-          <h1 className="text-base font-semibold font-display text-neutral-400 text-center tracking-widest uppercase">History</h1>
-          <p className="text-xs font-display text-neutral-600 mt-1 text-center">
-            {rounds.length > 0
-              ? `${rounds.length} ${rounds.length === 1 ? 'round' : 'rounds'}`
-              : isLoggedIn
-                ? 'Your saved rounds'
-                : 'Review your type history'}
-          </p>
+          <Dialog.Title asChild>
+            <h1 className="text-base font-semibold font-display text-neutral-400 text-center tracking-widest uppercase">History</h1>
+          </Dialog.Title>
+          <Dialog.Description asChild>
+            <p className="text-xs font-display text-neutral-600 mt-1 text-center">
+              {rounds.length > 0
+                ? `${rounds.length} ${rounds.length === 1 ? 'round' : 'rounds'}`
+                : isLoggedIn
+                  ? 'Your saved rounds'
+                  : 'Review your type history'}
+            </p>
+          </Dialog.Description>
 
           <div className="mt-8 flex flex-col flex-1 min-h-0">
             <div className="flex-1 min-h-0 overflow-y-auto divide-y divide-neutral-800">

@@ -48,7 +48,7 @@ export const Header = ({ onOpenHistorySection }: HeaderProps) => {
   }, []);
 
   return (
-    <div className="flex justify-between items-center w-full mb-8">
+    <header className="flex justify-between items-center w-full mb-8">
       <div className="flex items-center gap-2.5">
         <Image src="/assets/images/logo-keymaster.svg" alt="Keymaster logo" width={28} height={28} />
         <div className="flex flex-col gap-0">
@@ -191,6 +191,6 @@ export const Header = ({ onOpenHistorySection }: HeaderProps) => {
           </button>
         )}
       </div>
-    </div>
+    </header>
   );
 };

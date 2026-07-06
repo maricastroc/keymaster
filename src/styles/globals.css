@@ -8,7 +8,7 @@
   --neutral-800: #242628;
   --neutral-700: #3a3c3f;
   --neutral-600: #525252;
-  --neutral-500: #646669;
+  --neutral-500: #83868b;
   --neutral-400: #9a9da3;
   --neutral-300: #d4d4d4;
   --neutral-200: #e5e5e5;
@@ -40,7 +40,7 @@
   --neutral-800: #e0e0e0;
   --neutral-700: #cccccc;
   --neutral-600: #a3a3a3;
-  --neutral-500: #777777;
+  --neutral-500: #6e6e6e;
   --neutral-400: #444444;
   --neutral-300: #2f2f2f;
   --neutral-200: #1f1f1f;
@@ -294,6 +294,13 @@ body {
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
+/* Visible, consistent keyboard focus ring for every focusable element. */
+:focus-visible {
+  outline: 2px solid var(--yellow-500);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
 input[type="range"] {
   appearance: none;
   -webkit-appearance: none;
@@ -320,6 +327,19 @@ input[type="range"]::-moz-range-thumb {
   background: var(--yellow-500);
   border: none;
   cursor: pointer;
+}
+
+/* Respect users who ask for less motion: neutralize animations,
+   transitions, and smooth scrolling. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
 
 input[type="range"]::-webkit-slider-runnable-track {
