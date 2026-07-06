@@ -30,7 +30,7 @@ const SOUND_OPTIONS: { id: SoundOption; label: string }[] = [
 export const Header = ({ onOpenHistorySection }: HeaderProps) => {
   const personalBest = usePersonalBest();
   const { data: session, status } = useSession();
-  const { theme, setTheme } = useConfig();
+  const { theme, setTheme, mode, difficulty } = useConfig();
   const { soundName, setSoundName, volume, setVolume, playPreview } = useSound();
 
   const [userDropdown, setUserDropdown] = useState(false);
@@ -63,7 +63,10 @@ export const Header = ({ onOpenHistorySection }: HeaderProps) => {
 
       <div className="flex items-center gap-2 md:gap-3">
         {personalBest > 0 && (
-          <div className="hidden sm:flex items-center gap-1.5 text-neutral-500 text-sm font-mono">
+          <div
+            className="hidden sm:flex items-center gap-1.5 text-neutral-500 text-sm font-mono"
+            title={`Best for ${difficulty} · ${mode}`}
+          >
             <Image src="/assets/images/icon-personal-best.svg" alt="PB" width={14} height={14} className="opacity-50 trophy-icon" />
             <span className="text-yellow-500 font-bold">{personalBest}</span>
             <span className="text-xs">wpm</span>

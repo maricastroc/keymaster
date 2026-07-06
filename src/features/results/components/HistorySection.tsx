@@ -14,19 +14,56 @@ type Props = {
   onOpenChange: (open: boolean) => void;
 };
 
+type ModeFilter = 'all' | 'timed' | 'passage';
+type DifficultyFilter = 'all' | 'easy' | 'medium' | 'hard';
+
+function FilterPills<T extends string>({
+  value,
+  onChange,
+  options,
+}: {
+  value: T;
+  onChange: (value: T) => void;
+  options: { value: T; label: string }[];
+}) {
+  return (
+    <div className="flex items-center gap-0.5 flex-wrap">
+      {options.map((opt) => (
+        <button
+          key={opt.value}
+          onClick={() => onChange(opt.value)}
+          className={`cursor-pointer font-mono text-[11px] px-2 py-0.5 rounded-md transition-colors ${
+            value === opt.value ? 'text-yellow-500' : 'text-neutral-500 hover:text-neutral-300'
+          }`}
+        >
+          {opt.label}
+        </button>
+      ))}
+    </div>
+  );
+}
+
 export function HistorySection({ open, onOpenChange }: Props) {
   const { getHistory, deleteRound, isLoggedIn } = useRoundStats();
 
   const [isOpen, setIsOpen] = useState(open);
   const [shouldRender, setShouldRender] = useState(open);
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
+  const [filterMode, setFilterMode] = useState<ModeFilter>('all');
+  const [filterDifficulty, setFilterDifficulty] = useState<DifficultyFilter>('all');
 
   const { data: apiRounds, mutate } = useSWR(
     isLoggedIn ? '/api/rounds' : null,
     () => roundsApi.fetchRounds()
   );
 
-  const rounds = isLoggedIn ? (apiRounds ?? []) : getHistory();
+  const allRounds = isLoggedIn ? (apiRounds ?? []) : getHistory();
+  const rounds = allRounds.filter(
+    (r) =>
+      (filterMode === 'all' || r.mode === filterMode) &&
+      (filterDifficulty === 'all' || r.difficulty === filterDifficulty)
+  );
+  // Best within the current filter, so the crown reflects what's on screen.
   const personalBest = rounds.length > 0 ? Math.max(...rounds.map((r) => r.wpm)) : 0;
 
   const handleDelete = async (id: string) => {
@@ -45,6 +82,8 @@ export function HistorySection({ open, onOpenChange }: Props) {
     } else {
       setIsOpen(false);
       setConfirmDeleteId(null);
+      setFilterMode('all');
+      setFilterDifficulty('all');
       const timer = setTimeout(() => setShouldRender(false), 250);
       return () => clearTimeout(timer);
     }
@@ -87,10 +126,36 @@ export function HistorySection({ open, onOpenChange }: Props) {
             </p>
           </Dialog.Description>
 
-          <div className="mt-8 flex flex-col flex-1 min-h-0">
+          {allRounds.length > 0 && (
+            <div className="mt-6 flex flex-col gap-1.5 items-center">
+              <FilterPills
+                value={filterMode}
+                onChange={setFilterMode}
+                options={[
+                  { value: 'all', label: 'All' },
+                  { value: 'timed', label: 'Timed' },
+                  { value: 'passage', label: 'Passage' },
+                ]}
+              />
+              <FilterPills
+                value={filterDifficulty}
+                onChange={setFilterDifficulty}
+                options={[
+                  { value: 'all', label: 'All' },
+                  { value: 'easy', label: 'Easy' },
+                  { value: 'medium', label: 'Medium' },
+                  { value: 'hard', label: 'Hard' },
+                ]}
+              />
+            </div>
+          )}
+
+          <div className="mt-4 flex flex-col flex-1 min-h-0">
             <div className="flex-1 min-h-0 overflow-y-auto divide-y divide-neutral-800">
               {rounds.length === 0 && (
-                <p className="text-neutral-500 text-center text-sm mt-8">No rounds yet.</p>
+                <p className="text-neutral-500 text-center text-sm mt-8">
+                  {allRounds.length === 0 ? 'No rounds yet.' : 'No rounds match these filters.'}
+                </p>
               )}
               {rounds.map((round) => {
                 const isBest = round.wpm === personalBest;

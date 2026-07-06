@@ -46,6 +46,8 @@ export default function Home() {
 
   const [loadError, setLoadError] = useState<string | null>(null);
 
+  const [capsLockOn, setCapsLockOn] = useState(false);
+
   const [showHistorySection, setShowHistorySection] = useState(false);
 
   const [currentText, setCurrentText] = useState('');
@@ -285,6 +287,26 @@ export default function Home() {
     };
   }, [isStarted, isCompleted, isPaused, pause]);
 
+  // Caps Lock indicator + Esc-to-restart shortcut.
+  useEffect(() => {
+    const syncCaps = (e: KeyboardEvent) => setCapsLockOn(e.getModifierState('CapsLock'));
+    const onKeyDown = (e: KeyboardEvent) => {
+      syncCaps(e);
+      // Esc restarts the current text. Skip when the history drawer is open so
+      // Radix can use Esc to close it instead.
+      if (e.key === 'Escape' && !showHistorySection && currentText) {
+        e.preventDefault();
+        onRestart();
+      }
+    };
+    window.addEventListener('keydown', onKeyDown);
+    window.addEventListener('keyup', syncCaps);
+    return () => {
+      window.removeEventListener('keydown', onKeyDown);
+      window.removeEventListener('keyup', syncCaps);
+    };
+  }, [showHistorySection, currentText, onRestart]);
+
   const isLoading = isValidating || isNextLoading;
   const loadingButton = isNextLoading ? 'next' : isValidating ? 'randomize' : null;
   const hasLoadError = !!error || !!loadError;
@@ -353,6 +375,14 @@ export default function Home() {
             timeLeft={timeLeft}
             progress={words.length > 0 ? activeWordIndex / words.length : 0}
           />
+        )}
+
+        {capsLockOn && !showResults && (
+          <div className="mt-4 flex justify-center" role="status">
+            <span className="flex items-center gap-1.5 rounded-md bg-neutral-800 px-2.5 py-1 font-mono text-xs text-yellow-500">
+              <span aria-hidden>⇪</span> Caps Lock is on
+            </span>
+          </div>
         )}
 
         <div id="typing-area" tabIndex={-1} className="mt-6 relative outline-none">
@@ -456,6 +486,12 @@ export default function Home() {
           isLoading={isLoading}
           loadingButton={loadingButton}
         />
+
+        {currentText && !showResults && (
+          <p className="mt-3 text-center font-mono text-[11px] text-neutral-600">
+            press <span className="text-neutral-500">Esc</span> to restart
+          </p>
+        )}
 
         <Footer />
       </div>
