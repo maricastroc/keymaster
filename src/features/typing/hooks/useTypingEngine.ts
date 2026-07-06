@@ -59,9 +59,13 @@ export const useTypingEngine = (text: string, options?: TypingOptions) => {
     [finishedTime, elapsed]
   );
 
+  // The chart is only shown on the results screen, so there's no reason to
+  // rebuild it (an O(n) pass over every keystroke) on each keypress. Build it
+  // once the round completes. This also keeps calculateGeneralStats cheap
+  // mid-round, since it early-returns on empty chart data.
   const chartData = useMemo(
-    () => buildChartData(keystrokes, totalTimeSpent),
-    [keystrokes, totalTimeSpent]
+    () => (isCompleted ? buildChartData(keystrokes, totalTimeSpent) : []),
+    [isCompleted, keystrokes, totalTimeSpent]
   );
 
   const finishTest = useCallback(() => {

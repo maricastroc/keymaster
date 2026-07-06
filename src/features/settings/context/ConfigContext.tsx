@@ -1,7 +1,7 @@
 // contexts/ConfigContext.tsx
 'use client';
 
-import React, { createContext, useContext, useEffect } from 'react';
+import React, { createContext, useContext, useEffect, useMemo } from 'react';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
 
 type GameMode = 'timed' | 'passage';
@@ -40,23 +40,37 @@ export function ConfigProvider({ children }: { children: React.ReactNode }) {
     document.documentElement.setAttribute('data-theme', theme);
   }, [theme]);
 
+  // Stable identity (setters from useLocalStorage are memoized) so consumers of
+  // useConfig don't re-render on unrelated provider renders.
+  const value = useMemo(
+    () => ({
+      mode,
+      setMode,
+      category,
+      setCategory,
+      difficulty,
+      setDifficulty,
+      initialTime,
+      setInitialTime,
+      theme,
+      setTheme,
+    }),
+    [
+      mode,
+      setMode,
+      category,
+      setCategory,
+      difficulty,
+      setDifficulty,
+      initialTime,
+      setInitialTime,
+      theme,
+      setTheme,
+    ]
+  );
+
   return (
-    <ConfigContext.Provider
-      value={{
-        mode,
-        setMode,
-        category,
-        setCategory,
-        difficulty,
-        setDifficulty,
-        initialTime,
-        setInitialTime,
-        theme,
-        setTheme,
-      }}
-    >
-      {children}
-    </ConfigContext.Provider>
+    <ConfigContext.Provider value={value}>{children}</ConfigContext.Provider>
   );
 }
 

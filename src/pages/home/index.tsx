@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useRef, useState } from 'react';
+import dynamic from 'next/dynamic';
 import * as Dialog from '@radix-ui/react-dialog';
 
 import { useSound } from '@/features/sound/context/SoundContext';
@@ -20,10 +21,22 @@ import { ActionButtons } from '@/features/typing/components/ActionButtons';
 import { WordDisplay } from '@/features/typing/components/WordDisplay';
 import { PauseWarning } from '@/features/typing/components/PauseWarning';
 import { MetricsPanel } from '@/features/typing/components/MetricsPanel';
-import { ResultSection } from '@/features/results/components/ResultSection';
 import { HistorySection } from '@/features/results/components/HistorySection';
+
+// Results (which pull in the heavy Recharts dependency) only render after a
+// test completes, so code-split them out of the initial bundle.
+const ResultSection = dynamic(
+  () => import('@/features/results/components/ResultSection').then((m) => m.ResultSection),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="mt-8 text-center font-mono text-sm text-neutral-500">Loading results…</div>
+    ),
+  }
+);
+
 export default function Home() {
-  const { playKeystroke, playErrorSound } = useSound();
+  const { playKeystroke, playErrorSound, preload } = useSound();
 
   const { category, setCategory, difficulty, initialTime } = useConfig();
 
@@ -40,7 +53,7 @@ export default function Home() {
 
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const wordsRef = useRef<(HTMLDivElement | null)[]>([]);
+  const wordsContainerRef = useRef<HTMLDivElement>(null);
 
   const isRandomizingRef = useRef(false);
   const skipNextSWREffectRef = useRef(false);
@@ -220,7 +233,9 @@ export default function Home() {
   useEffect(() => {
     if (!isReady) return;
 
-    const currentWordEl = wordsRef.current[activeWordIndex];
+    const currentWordEl = wordsContainerRef.current?.querySelector<HTMLElement>(
+      `[data-word-index="${activeWordIndex}"]`
+    );
 
     const prefersReducedMotion = window.matchMedia?.(
       '(prefers-reduced-motion: reduce)'
@@ -236,8 +251,17 @@ export default function Home() {
   useEffect(() => {
     if (isReady && !isStarted) {
       inputRef.current?.focus();
+      // Warm the current sound's audio buffers now so the first keystroke
+      // doesn't stutter while it fetches + decodes.
+      preload();
     }
-  }, [isReady, isStarted]);
+  }, [isReady, isStarted, preload]);
+
+  // Prefetch the (lazy) results chunk once typing begins, so it's ready by the
+  // time the round completes.
+  useEffect(() => {
+    if (isStarted) import('@/features/results/components/ResultSection');
+  }, [isStarted]);
 
   useEffect(() => {
     const handleVisibilityChange = () => {
@@ -359,6 +383,7 @@ export default function Home() {
           )}
           {!showResults && currentText && (
             <div
+              ref={wordsContainerRef}
               onClick={() => isReady && inputRef.current?.focus()}
               className={`max-h-40 sm:max-h-48 overflow-y-auto scroll-smooth hide-scrollbar font-mono text-2xl sm:text-3xl leading-relaxed cursor-text transition-opacity duration-300 ${
                 !isReady || isPaused || isLoading ? 'blur-sm opacity-60' : ''
@@ -367,7 +392,7 @@ export default function Home() {
               {words.map((word, wordIdx) => (
                 <div
                   key={wordIdx}
-                  ref={(el) => { wordsRef.current[wordIdx] = el; }}
+                  data-word-index={wordIdx}
                   className="inline-block"
                 >
                   <WordDisplay

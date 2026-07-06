@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 export function useLocalStorage<T>(key: string, initialValue: T) {
   const [storedValue, setStoredValue] = useState<T>(initialValue);
@@ -14,14 +14,14 @@ export function useLocalStorage<T>(key: string, initialValue: T) {
     setMounted(true);
   }, [key]);
 
-  const setValue = (value: T) => {
+  const setValue = useCallback((value: T) => {
     setStoredValue(value);
     try {
       localStorage.setItem(key, JSON.stringify(value));
     } catch { /* ignore */
       // ignore storage errors
     }
-  };
+  }, [key]);
 
   return [mounted ? storedValue : initialValue, setValue] as const;
 }

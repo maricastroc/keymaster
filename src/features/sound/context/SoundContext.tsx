@@ -6,6 +6,7 @@ import React, {
   useContext,
   useRef,
   useCallback,
+  useMemo,
 } from 'react';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
 
@@ -29,6 +30,7 @@ interface SoundContextType {
   playKeystroke: () => void;
   playErrorSound: () => void;
   playPreview: () => void;
+  preload: () => void;
 }
 
 const SoundContext = createContext<SoundContextType | undefined>(undefined);
@@ -62,102 +64,71 @@ export function SoundProvider({ children }: { children: React.ReactNode }) {
     return audioCtxRef.current;
   };
 
-  const playKeystroke = useCallback(async () => {
-    if (soundName === 'none') return;
+  // Fetch + decode a sound's sample files once, caching the decoded buffers.
+  const loadBuffers = useCallback(async (name: string) => {
+    const cached = bufferCache.current.get(name);
+    if (cached) return cached;
 
     const ctx = getAudioCtx();
-
-    if (ctx.state === 'suspended') await ctx.resume();
-
-    if (!bufferCache.current.has(soundName)) {
-      const count = SOUND_FILES_COUNT[soundName] || 1;
-      const promises = Array.from({ length: count }).map((_, i) =>
-        fetch(`/assets/sounds/${soundName}/${soundName}${i + 1}.wav`)
-          .then((res) => res.arrayBuffer())
+    const count = SOUND_FILES_COUNT[name] || 1;
+    const buffers = await Promise.all(
+      Array.from({ length: count }).map((_, i) =>
+        fetch(`/assets/sounds/${name}/${name}${i + 1}.wav`)
+          .then((res) => {
+            if (!res.ok) throw new Error(`Failed to load ${name}${i + 1}.wav`);
+            return res.arrayBuffer();
+          })
           .then((data) => ctx.decodeAudioData(data))
-      );
+      )
+    );
 
-      bufferCache.current.set(soundName, await Promise.all(promises));
-    }
+    bufferCache.current.set(name, buffers);
+    return buffers;
+  }, []);
 
-    const buffers = bufferCache.current.get(soundName);
-    if (!buffers) return;
+  // Plays a random sample from a sound set at the current volume.
+  const playSample = useCallback(
+    async (name: SoundOption) => {
+      if (name === 'none') return;
 
-    const source = ctx.createBufferSource();
+      const ctx = getAudioCtx();
+      if (ctx.state === 'suspended') await ctx.resume();
 
-    source.buffer = buffers[Math.floor(Math.random() * buffers.length)];
+      let buffers: AudioBuffer[];
+      try {
+        buffers = await loadBuffers(name);
+      } catch {
+        return;
+      }
+      if (!buffers.length) return;
 
-    source.playbackRate.value = 0.95 + Math.random() * 0.1;
+      const source = ctx.createBufferSource();
+      source.buffer = buffers[Math.floor(Math.random() * buffers.length)];
+      source.playbackRate.value = 0.95 + Math.random() * 0.1;
 
-    const gainNode = ctx.createGain();
+      const gainNode = ctx.createGain();
+      gainNode.gain.value = volume;
 
-    gainNode.gain.value = volume;
+      source.connect(gainNode);
+      gainNode.connect(ctx.destination);
+      source.start(0);
+    },
+    [loadBuffers, volume]
+  );
 
-    source.connect(gainNode);
-
-    gainNode.connect(ctx.destination);
-
-    source.start(0);
-  }, [soundName, volume]);
-
-  const playPreview = useCallback(async () => {
-    if (soundName === 'none') return;
-
-    const ctx = getAudioCtx();
-    if (ctx.state === 'suspended') await ctx.resume();
-
-    if (!bufferCache.current.has(soundName)) {
-      const count = SOUND_FILES_COUNT[soundName] || 1;
-      const promises = Array.from({ length: count }).map((_, i) =>
-        fetch(`/assets/sounds/${soundName}/${soundName}${i + 1}.wav`)
-          .then((res) => res.arrayBuffer())
-          .then((data) => ctx.decodeAudioData(data))
-      );
-      bufferCache.current.set(soundName, await Promise.all(promises));
-    }
-
-    const buffers = bufferCache.current.get(soundName);
-    if (!buffers) return;
-
-    const source = ctx.createBufferSource();
-    source.buffer = buffers[Math.floor(Math.random() * buffers.length)];
-    source.playbackRate.value = 0.95 + Math.random() * 0.1;
-
-    const gainNode = ctx.createGain();
-    gainNode.gain.value = volume;
-
-    source.connect(gainNode);
-    gainNode.connect(ctx.destination);
-    source.start(0);
-  }, [soundName, volume]);
+  const playKeystroke = useCallback(() => playSample(soundName), [playSample, soundName]);
 
   const playErrorSound = useCallback(async () => {
     const ctx = getAudioCtx();
     if (ctx.state === 'suspended') await ctx.resume();
 
-    if (!bufferCache.current.has('error')) {
-      try {
-        const count = SOUND_FILES_COUNT['error'] || 1;
-
-        const promises = Array.from({ length: count }).map((_, i) =>
-          fetch(`/assets/sounds/error/error${i + 1}.wav`)
-            .then((res) => {
-              if (!res.ok) throw new Error('File not found');
-              return res.arrayBuffer();
-            })
-            .then((data) => ctx.decodeAudioData(data))
-        );
-
-        const buffers = await Promise.all(promises);
-        bufferCache.current.set('error', buffers);
-      } catch (err) {
-        console.error('Erro ao carregar som de erro:', err);
-        return;
-      }
+    let buffers: AudioBuffer[];
+    try {
+      buffers = await loadBuffers('error');
+    } catch {
+      return;
     }
-
-    const buffers = bufferCache.current.get('error');
-    if (!buffers) return;
+    if (!buffers.length) return;
 
     const source = ctx.createBufferSource();
     source.buffer = buffers[0];
@@ -168,15 +139,30 @@ export function SoundProvider({ children }: { children: React.ReactNode }) {
     source.connect(gainNode);
     gainNode.connect(ctx.destination);
     source.start(0);
-  }, []);
+  }, [loadBuffers]);
 
-  return (
-    <SoundContext.Provider
-      value={{ playKeystroke, playErrorSound, playPreview, setSoundName, soundName, volume, setVolume }}
-    >
-      {children}
-    </SoundContext.Provider>
+  // Warm the current sound (and the error sound) so the first keystroke of a
+  // round doesn't stutter while samples are fetched and decoded.
+  const preload = useCallback(() => {
+    if (soundName !== 'none') void loadBuffers(soundName).catch(() => {});
+    void loadBuffers('error').catch(() => {});
+  }, [soundName, loadBuffers]);
+
+  const value = useMemo(
+    () => ({
+      playKeystroke,
+      playErrorSound,
+      playPreview: playKeystroke,
+      preload,
+      setSoundName,
+      soundName,
+      volume,
+      setVolume,
+    }),
+    [playKeystroke, playErrorSound, preload, setSoundName, soundName, volume, setVolume]
   );
+
+  return <SoundContext.Provider value={value}>{children}</SoundContext.Provider>;
 }
 
 export const useSound = () => {
