@@ -35,14 +35,14 @@ function BreakdownTable({
   rows: { label: string; stats: BucketStats }[];
 }) {
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex h-full flex-col gap-2">
       <h2 className="font-mono text-xs uppercase tracking-widest text-neutral-500">{title}</h2>
-      <div className="overflow-hidden rounded-lg border border-neutral-800">
+      <div className="flex-1 overflow-hidden rounded-lg border border-neutral-800 bg-neutral-900">
         <div className="grid grid-cols-4 gap-px bg-neutral-800 font-mono text-[11px]">
-          <div className="bg-neutral-900 px-3 py-2 text-neutral-600 uppercase tracking-wider">Type</div>
-          <div className="bg-neutral-900 px-3 py-2 text-right text-neutral-600 uppercase tracking-wider">Rounds</div>
-          <div className="bg-neutral-900 px-3 py-2 text-right text-neutral-600 uppercase tracking-wider">Avg</div>
-          <div className="bg-neutral-900 px-3 py-2 text-right text-neutral-600 uppercase tracking-wider">Best</div>
+          <div className="bg-neutral-900 px-3 py-2 text-neutral-500 uppercase tracking-wider">Type</div>
+          <div className="bg-neutral-900 px-3 py-2 text-right text-neutral-500 uppercase tracking-wider">Rounds</div>
+          <div className="bg-neutral-900 px-3 py-2 text-right text-neutral-500 uppercase tracking-wider">Avg</div>
+          <div className="bg-neutral-900 px-3 py-2 text-right text-neutral-500 uppercase tracking-wider">Best</div>
           {rows.map((row) => (
             <Row key={row.label} label={row.label} stats={row.stats} />
           ))}
@@ -112,11 +112,12 @@ export default function StatsPage() {
           </div>
         ) : (
           <div className="flex flex-col gap-10">
-            <div className="grid grid-cols-2 md:grid-cols-5 gap-px bg-neutral-800 rounded-lg overflow-hidden border border-neutral-800">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-px bg-neutral-800 rounded-lg overflow-hidden border border-neutral-800">
               <StatTile label="Rounds" value={stats.totalRounds} />
               <StatTile label="Avg WPM" value={stats.avgWpm} />
               <StatTile label="Best WPM" value={<span className="text-yellow-500">{stats.bestWpm}</span>} />
               <StatTile label="Avg Acc" value={`${stats.avgAccuracy}%`} />
+              <StatTile label="Consistency" value={stats.totalRounds >= 2 ? `${stats.consistency}%` : '—'} />
               <StatTile label="Time" value={formatDuration(stats.totalTimeSec)} />
             </div>
 

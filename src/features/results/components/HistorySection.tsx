@@ -27,13 +27,15 @@ function FilterPills<T extends string>({
   options: { value: T; label: string }[];
 }) {
   return (
-    <div className="flex items-center gap-0.5 flex-wrap">
+    <div className="flex items-center gap-1.5 flex-wrap justify-center">
       {options.map((opt) => (
         <button
           key={opt.value}
           onClick={() => onChange(opt.value)}
-          className={`cursor-pointer font-mono text-[11px] px-2 py-0.5 rounded-md transition-colors ${
-            value === opt.value ? 'text-yellow-500' : 'text-neutral-500 hover:text-neutral-300'
+          className={`cursor-pointer font-mono text-[11px] px-2.5 py-1 rounded-md border transition-colors ${
+            value === opt.value
+              ? 'bg-yellow-500 border-yellow-500 text-black'
+              : 'bg-neutral-800 border-neutral-700 text-neutral-400 hover:text-neutral-300 hover:border-neutral-600'
           }`}
         >
           {opt.label}
@@ -153,7 +155,7 @@ export function HistorySection({ open, onOpenChange }: Props) {
           )}
 
           <div className="mt-4 flex flex-col flex-1 min-h-0">
-            <div className="flex-1 min-h-0 overflow-y-auto divide-y divide-neutral-800">
+            <div className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden divide-y divide-neutral-800">
               {isLoadingHistory && (
                 <div className="flex flex-col gap-3 pt-4" aria-hidden>
                   {Array.from({ length: 5 }).map((_, i) => (
@@ -225,7 +227,7 @@ export function HistorySection({ open, onOpenChange }: Props) {
                           onClick={() => setConfirmDeleteId(round.id)}
                           aria-label={`Delete round: ${round.wpm} wpm, ${round.mode}`}
                           title="Delete"
-                          className="cursor-pointer p-1.5 -m-1.5 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 focus-visible:opacity-100 transition-opacity text-neutral-600 hover:text-red-400"
+                          className="cursor-pointer p-1.5 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 focus-visible:opacity-100 transition-opacity text-neutral-500 hover:text-red-400"
                         >
                           <FontAwesomeIcon icon={faTrash} size="sm" />
                         </button>

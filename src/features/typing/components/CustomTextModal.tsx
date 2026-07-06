@@ -61,7 +61,7 @@ export function CustomTextModal({ open, onOpenChange, onSubmit }: Props) {
               <button
                 onClick={handleStart}
                 disabled={!normalized}
-                className="cursor-pointer rounded-lg bg-yellow-500 px-4 py-1.5 text-sm font-semibold text-black transition hover:brightness-110 disabled:pointer-events-none disabled:opacity-50"
+                className="cursor-pointer rounded-lg bg-yellow-500 px-4 py-1.5 text-sm font-semibold text-black transition hover:brightness-90 disabled:pointer-events-none disabled:opacity-50"
               >
                 Start
               </button>

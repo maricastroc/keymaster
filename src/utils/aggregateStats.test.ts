@@ -46,6 +46,17 @@ describe('aggregateStats', () => {
     expect(s.byDifficulty.medium.count).toBe(0);
   });
 
+  it('reports full consistency for identical WPM and lower for varied WPM', () => {
+    const steady = aggregateStats([r({ wpm: 50 }), r({ wpm: 50 }), r({ wpm: 50 })]);
+    expect(steady.consistency).toBe(100);
+
+    const varied = aggregateStats([r({ wpm: 10 }), r({ wpm: 90 }), r({ wpm: 10 })]);
+    expect(varied.consistency).toBeLessThan(50);
+
+    // A single round can't have a meaningful consistency.
+    expect(aggregateStats([r({ wpm: 50 })]).consistency).toBe(0);
+  });
+
   it('orders the trend oldest → newest regardless of input order', () => {
     const s = aggregateStats([
       r({ timestamp: 300, wpm: 3 }),

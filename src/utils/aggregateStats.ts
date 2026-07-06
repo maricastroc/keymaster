@@ -19,11 +19,25 @@ export type AggregatedStats = {
   avgWpm: number;
   bestWpm: number;
   avgAccuracy: number;
+  consistency: number;
   totalTimeSec: number;
   byMode: Record<RoundStats['mode'], BucketStats>;
   byDifficulty: Record<RoundStats['difficulty'], BucketStats>;
   trend: TrendPoint[];
 };
+
+/**
+ * How steady WPM is across rounds: 100 minus the coefficient of variation,
+ * clamped to 0–100. Needs at least 2 rounds to mean anything.
+ */
+function consistencyOf(wpms: number[]): number {
+  if (wpms.length < 2) return 0;
+  const mean = wpms.reduce((a, b) => a + b, 0) / wpms.length;
+  if (mean === 0) return 0;
+  const variance = wpms.reduce((a, b) => a + (b - mean) ** 2, 0) / wpms.length;
+  const cv = (Math.sqrt(variance) / mean) * 100;
+  return Math.max(0, Math.min(100, Math.round(100 - cv)));
+}
 
 function bucketize(rounds: RoundStats[]): BucketStats {
   if (rounds.length === 0) {
@@ -56,6 +70,7 @@ export function aggregateStats(rounds: RoundStats[]): AggregatedStats {
     avgWpm: overall.avgWpm,
     bestWpm: overall.bestWpm,
     avgAccuracy: overall.avgAccuracy,
+    consistency: consistencyOf(rounds.map((r) => r.wpm)),
     totalTimeSec: Math.round(rounds.reduce((s, r) => s + r.time, 0)),
     byMode: {
       timed: bucketize(rounds.filter((r) => r.mode === 'timed')),
