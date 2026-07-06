@@ -21,6 +21,7 @@ import { ActionButtons } from '@/features/typing/components/ActionButtons';
 import { WordDisplay } from '@/features/typing/components/WordDisplay';
 import { PauseWarning } from '@/features/typing/components/PauseWarning';
 import { MetricsPanel } from '@/features/typing/components/MetricsPanel';
+import { CustomTextModal } from '@/features/typing/components/CustomTextModal';
 import { HistorySection } from '@/features/results/components/HistorySection';
 
 // Results (which pull in the heavy Recharts dependency) only render after a
@@ -49,6 +50,7 @@ export default function Home() {
   const [capsLockOn, setCapsLockOn] = useState(false);
 
   const [showHistorySection, setShowHistorySection] = useState(false);
+  const [showCustomModal, setShowCustomModal] = useState(false);
 
   const [currentText, setCurrentText] = useState('');
   const [currentTextId, setCurrentTextId] = useState<string | null>(null);
@@ -192,6 +194,17 @@ export default function Home() {
   const onRestart = () => {
     hasInteractedRef.current = true;
     reset(currentText);
+    prepare();
+    setTimeout(() => inputRef.current?.focus(), 50);
+  };
+
+  const handleCustomText = (text: string) => {
+    hasInteractedRef.current = true;
+    setLoadError(null);
+    setShowCustomModal(false);
+    setCurrentText(text);
+    setCurrentTextId(null);
+    reset(text);
     prepare();
     setTimeout(() => inputRef.current?.focus(), 50);
   };
@@ -355,6 +368,12 @@ export default function Home() {
           <HistorySection open={showHistorySection} onOpenChange={setShowHistorySection} />
         </Dialog.Root>
 
+        <CustomTextModal
+          open={showCustomModal}
+          onOpenChange={setShowCustomModal}
+          onSubmit={handleCustomText}
+        />
+
         {showResults && (
           <div className="animate-resultIn">
             <ResultSection
@@ -471,6 +490,17 @@ export default function Home() {
 
         {!showResults && (
           <InlineSettings onPrepare={() => prepare()} />
+        )}
+
+        {!showResults && (
+          <div className="-mt-3 mb-4 flex justify-center">
+            <button
+              onClick={() => setShowCustomModal(true)}
+              className="cursor-pointer font-mono text-xs text-neutral-500 hover:text-neutral-300 transition-colors"
+            >
+              paste your own text
+            </button>
+          </div>
         )}
 
         {loadError && currentText && !showResults && (
