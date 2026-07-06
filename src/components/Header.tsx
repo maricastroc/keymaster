@@ -197,10 +197,11 @@ export const Header = ({ onOpenHistorySection }: HeaderProps) => {
         ) : (
           <button
             onClick={() => signIn('github')}
-            className="cursor-pointer flex items-center gap-1.5 text-xs font-mono text-neutral-500 hover:text-neutral-300 transition-colors border border-neutral-700 hover:border-neutral-500 px-3 py-1.5 rounded-lg"
+            aria-label="Log in with GitHub"
+            className="cursor-pointer flex items-center gap-1.5 text-xs font-mono text-neutral-500 hover:text-neutral-300 transition-colors border border-neutral-700 hover:border-neutral-500 px-2.5 sm:px-3 py-1.5 rounded-lg"
           >
             <FontAwesomeIcon icon={faGithub} size="sm" />
-            login
+            <span className="hidden sm:inline">login</span>
           </button>
         )}
       </div>

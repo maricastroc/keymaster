@@ -489,7 +489,7 @@ export default function Home() {
             />
           )}
 
-          {!isReady && !isCompleted && !isPaused && (
+          {!isReady && !isCompleted && !isPaused && currentText && (
             <div
               onClick={handlePrepare}
               className="absolute inset-0 flex flex-col items-center justify-center rounded-lg"
