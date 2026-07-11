@@ -1,7 +1,5 @@
 # Keymaster
 
-<img width="3204" height="1722" alt="type_speeding_preview" src="https://github.com/user-attachments/assets/906fb496-b55d-4827-9c1b-de04e37e0008" />
-
 A full-stack typing speed test with real-time metrics, session replay, per-word heatmaps, and persistent history — built with Next.js, Prisma, and PostgreSQL.
 
 **[Live demo →](https://keymaster.marianacastro.dev/)**
@@ -48,6 +46,22 @@ A full-stack typing speed test with real-time metrics, session replay, per-word 
 | Deploy | Vercel |
 
 ---
+
+## 🖼️ Screenshots
+
+<table>
+  <tr>
+    <td align="center" width="62%"><strong>Desktop</strong></td>
+    <td align="center" width="38%"><strong>Mobile</strong></td>
+  </tr>
+  <tr>
+    <td valign="top"><img src="docs/home-desktop.png" alt="Home — Desktop" /></td>
+    <td rowspan="2" valign="top"><img src="docs/home-mobile.png" alt="Home - Mobile" /></td>
+  </tr>
+  <tr>
+    <td valign="top"><img src="docs/results-desktop.png" alt="Results — Desktop" /></td>
+  </tr>
+</table>
 
 ## Testing
 
