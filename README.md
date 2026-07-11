@@ -56,7 +56,7 @@ A full-stack typing speed test with real-time metrics, session replay, per-word 
   </tr>
   <tr>
     <td valign="top"><img src="docs/home-desktop.png" alt="Home — Desktop" /></td>
-    <td rowspan="2" valign="top"><img src="docs/home-mobile.png" alt="Home - Mobile" /></td>
+    <td rowspan="2" valign="top"><img src="docs/home-mobilee.png" alt="Home - Mobile" /></td>
   </tr>
   <tr>
     <td valign="top"><img src="docs/results-desktop.png" alt="Results — Desktop" /></td>
