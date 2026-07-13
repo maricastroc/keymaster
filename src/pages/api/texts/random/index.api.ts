@@ -6,6 +6,7 @@ import { z } from 'zod';
 const querySchema = z.object({
   category: z.enum(['general', 'lyrics', 'quotes', 'code', 'any']),
   difficulty: z.enum(['easy', 'medium', 'hard']),
+  language: z.enum(['en', 'pt', 'es', 'fr', 'de']).default('en'),
   excludeId: z.string().optional(),
 });
 
@@ -18,19 +19,26 @@ export default async function handler(
   }
 
   try {
-    const { category, difficulty, excludeId } = querySchema.parse(req.query);
+    const { category, difficulty, language, excludeId } = querySchema.parse(req.query);
 
-    const where: Prisma.TextWhereInput = { difficulty };
+    // Language is authoritative; difficulty always applies. Category is a
+    // preference — if a language doesn't yet have texts in the chosen category,
+    // we fall back to any category (in the same language + difficulty) so the
+    // user never dead-ends on an empty bucket.
+    const buildWhere = (withCategory: boolean): Prisma.TextWhereInput => {
+      const w: Prisma.TextWhereInput = { difficulty, language };
+      if (withCategory && category !== 'any') w.category = category;
+      if (excludeId) w.id = { not: excludeId };
+      return w;
+    };
 
-    if (category !== 'any') {
-      where.category = category;
+    let where = buildWhere(true);
+    let count = await prisma.text.count({ where });
+
+    if (count === 0 && category !== 'any') {
+      where = buildWhere(false);
+      count = await prisma.text.count({ where });
     }
-
-    if (excludeId) {
-      where.id = { not: excludeId };
-    }
-
-    const count = await prisma.text.count({ where });
 
     if (count === 0) {
       return res

@@ -9,6 +9,7 @@ type Theme = 'dark' | 'light';
 
 type Category = 'general' | 'lyrics' | 'quotes' | 'code';
 type Difficulty = 'easy' | 'medium' | 'hard';
+export type Language = 'en' | 'pt' | 'es' | 'fr' | 'de';
 
 interface ConfigContextType {
   mode: GameMode;
@@ -19,6 +20,9 @@ interface ConfigContextType {
 
   difficulty: Difficulty;
   setDifficulty: (difficulty: Difficulty) => void;
+
+  language: Language;
+  setLanguage: (language: Language) => void;
 
   initialTime: number;
   setInitialTime: (time: number) => void;
@@ -38,6 +42,7 @@ export function ConfigProvider({ children }: { children: React.ReactNode }) {
   const [mode, setMode] = useLocalStorage<GameMode>('config:mode', 'timed');
   const [category, setCategory] = useLocalStorage<Category>('config:category', 'general');
   const [difficulty, setDifficulty] = useLocalStorage<Difficulty>('config:difficulty', 'easy');
+  const [language, setLanguage] = useLocalStorage<Language>('config:language', 'en');
   const [initialTime, setInitialTime] = useLocalStorage<number>('config:initialTime', 60);
   const [practice, setPractice] = useLocalStorage<boolean>('config:practice', false);
   const [theme, setTheme] = useLocalStorage<Theme>('config:theme', 'dark');
@@ -56,6 +61,8 @@ export function ConfigProvider({ children }: { children: React.ReactNode }) {
       setCategory,
       difficulty,
       setDifficulty,
+      language,
+      setLanguage,
       initialTime,
       setInitialTime,
       practice,
@@ -70,6 +77,8 @@ export function ConfigProvider({ children }: { children: React.ReactNode }) {
       setCategory,
       difficulty,
       setDifficulty,
+      language,
+      setLanguage,
       initialTime,
       setInitialTime,
       practice,

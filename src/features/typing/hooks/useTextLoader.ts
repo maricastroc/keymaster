@@ -28,7 +28,7 @@ export function useTextLoader(
   practice: boolean,
   makeDrill: () => string,
 ) {
-  const { category, setCategory, difficulty } = useConfig();
+  const { category, setCategory, difficulty, language } = useConfig();
 
   const [currentText, setCurrentText] = useState('');
   const [currentTextId, setCurrentTextId] = useState<string | null>(null);
@@ -51,9 +51,9 @@ export function useTextLoader(
     return {
       url: '/texts/random',
       method: 'GET',
-      params: { category, difficulty },
+      params: { category, difficulty, language },
     };
-  }, [category, difficulty, practice]);
+  }, [category, difficulty, language, practice]);
 
   const { data, isValidating, error, mutate } = useRequest<TextResponse>(
     requestConfig,
@@ -88,7 +88,7 @@ export function useTextLoader(
     setLoadError(null);
     try {
       const res = await api.get<TextResponse>('/texts/random', {
-        params: { category, difficulty },
+        params: { category, difficulty, language },
       });
       if (res.data?.content) {
         setCurrentText(res.data.content);
@@ -144,7 +144,7 @@ export function useTextLoader(
 
     try {
       const response = await api.get<TextResponse>('/texts/random', {
-        params: { category: 'any', difficulty, excludeId: currentTextId },
+        params: { category: 'any', difficulty, language, excludeId: currentTextId },
       });
 
       if (response.data) {
@@ -181,7 +181,7 @@ export function useTextLoader(
     const fetchText = async (cat: string) => {
       try {
         const res = await api.get<TextResponse>('/texts/random', {
-          params: { category: cat, difficulty, excludeId: currentTextId },
+          params: { category: cat, difficulty, language, excludeId: currentTextId },
         });
         return res.data?.content ? res.data : null;
       } catch {

@@ -3,7 +3,7 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBullseye } from '@fortawesome/free-solid-svg-icons';
 
-import { useConfig } from '@/features/settings/context/ConfigContext';
+import { useConfig, type Language } from '@/features/settings/context/ConfigContext';
 
 type InlineSettingsProps = {
   onPrepare: () => void;
@@ -46,6 +46,8 @@ export const InlineSettings = ({ onPrepare }: InlineSettingsProps) => {
     setCategory,
     difficulty,
     setDifficulty,
+    language,
+    setLanguage,
     initialTime,
     setInitialTime,
     practice,
@@ -110,6 +112,20 @@ export const InlineSettings = ({ onPrepare }: InlineSettingsProps) => {
             ]}
             currentValue={category}
             onChange={(v) => { setCategory(v as 'general' | 'lyrics' | 'quotes' | 'code'); onPrepare(); }}
+          />
+
+          <Separator />
+
+          <PillGroup
+            options={[
+              { label: 'en', value: 'en' },
+              { label: 'pt', value: 'pt' },
+              { label: 'es', value: 'es' },
+              { label: 'fr', value: 'fr' },
+              { label: 'de', value: 'de' },
+            ]}
+            currentValue={language}
+            onChange={(v) => { setLanguage(v as Language); onPrepare(); }}
           />
 
           <Separator />
