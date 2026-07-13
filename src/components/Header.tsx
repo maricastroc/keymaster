@@ -112,8 +112,9 @@ export const Header = ({ onOpenHistorySection }: HeaderProps) => {
                   <button
                     key={opt.id}
                     onClick={() => setSoundName(opt.id)}
+                    aria-pressed={soundName === opt.id}
                     className={`cursor-pointer text-left font-mono text-xs px-2.5 py-1.5 rounded-md transition-colors ${
-                      soundName === opt.id ? 'text-yellow-500' : 'text-neutral-500 hover:text-neutral-300'
+                      soundName === opt.id ? 'text-yellow-500 font-semibold bg-yellow-500/10' : 'text-neutral-500 hover:text-neutral-300 hover:bg-neutral-800/60'
                     }`}
                   >
                     {opt.label}

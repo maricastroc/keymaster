@@ -3,7 +3,7 @@ import { faEnvelope } from '@fortawesome/free-solid-svg-icons';
 import { faGithub, faLinkedin } from '@fortawesome/free-brands-svg-icons';
 
 export const Footer = () => (
-  <footer className="w-full mt-16 pb-8 flex items-center justify-center gap-4">
+  <footer className="w-full mt-auto pt-16 pb-8 flex items-center justify-center gap-4">
     <span className="font-display text-xs text-neutral-600">
       Mariana Castro
     </span>

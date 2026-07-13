@@ -1,3 +1,5 @@
+import { useEffect } from 'react';
+
 import { ResultChart } from './ResultChart';
 import { StatsDisplay } from './StatsDisplay';
 import { GeneralStats } from '@/types/generalStats';
@@ -5,7 +7,10 @@ import { ChartPoint } from '@/types/chartPoint';
 import { ResumeSection } from '@/features/typing/components/ResumeSection';
 import { Heatmap } from '@/features/results/heatmap/Heatmap';
 import { Replay } from '@/features/results/replay/Replay';
+import { KeyInsights } from '@/features/results/keys/KeyInsights';
+import type { KeyStat } from '@/features/results/keys/logic/keyStats';
 import { ShareResult } from './ShareResult';
+import { Confetti } from './Confetti';
 import { useConfig } from '@/features/settings/context/ConfigContext';
 import { Keystroke } from '@/types/keyStore';
 
@@ -19,6 +24,9 @@ type ResultSectionProps = {
   keystrokes: Keystroke[];
   text: string;
   isNewBest?: boolean;
+  accumulatedWeak: KeyStat[];
+  onRecordRound: (keystrokes: Keystroke[]) => void;
+  onPracticeWeakKeys: () => void;
 };
 
 export const ResultSection = ({
@@ -28,11 +36,22 @@ export const ResultSection = ({
   keystrokes,
   text,
   isNewBest = false,
+  accumulatedWeak,
+  onRecordRound,
+  onPracticeWeakKeys,
 }: ResultSectionProps) => {
   const { mode, difficulty } = useConfig();
 
+  // Fold this round into the long-term key profile exactly once. The section
+  // only mounts on a completed round, so `keystrokes` is final here; the hook
+  // dedupes against StrictMode double-mounts.
+  useEffect(() => {
+    onRecordRound(keystrokes);
+  }, []);
+
   return (
     <div className="mt-8 md:mt-12 flex flex-col items-center justify-center gap-3 w-full">
+      {isNewBest && <Confetti />}
       <div className="flex flex-col items-center gap-1">
         <h1
           className={`font-mono text-2xl font-semibold text-yellow-500 ${
@@ -57,6 +76,11 @@ export const ResultSection = ({
         <StatsDisplay stats={generalStats} />
         <ResultChart data={chartData} />
         <Heatmap keystrokes={keystrokes} text={text} />
+        <KeyInsights
+          keystrokes={keystrokes}
+          accumulatedWeak={accumulatedWeak}
+          onPractice={onPracticeWeakKeys}
+        />
         <Replay keystrokes={keystrokes} text={text} />
       </div>
 

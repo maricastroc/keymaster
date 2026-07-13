@@ -1,18 +1,21 @@
 import { GeneralStats } from '@/types/generalStats';
 import { StatCard } from './StatCard';
+import { useCountUp } from '@/hooks/useCountUp';
 
 type StatsDisplayProps = {
   stats: GeneralStats;
 };
 
 export const StatsDisplay = ({ stats }: StatsDisplayProps) => {
+  const wpmCount = useCountUp(stats.wpm);
+
   return (
     <div className="flex flex-wrap items-center justify-center w-full gap-4 my-6 md:my-10">
       <StatCard
         label="wpm"
         value={
           <>
-            <span className="font-mono font-bold text-2xl text-neutral-400">{stats.wpm}</span>
+            <span className="font-mono font-bold text-2xl text-neutral-400 tabular-nums">{wpmCount}</span>
             <span className="font-mono text-xs text-neutral-500">avg</span>
           </>
         }

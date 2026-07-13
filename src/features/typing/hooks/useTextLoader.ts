@@ -18,8 +18,16 @@ import { api } from '@/lib/axios';
  *
  * `hasInteractedRef` is shared with the consumer: once the user has engaged,
  * text loads should land ready-to-type rather than re-showing the Start overlay.
+ *
+ * In practice mode the text source flips entirely: the database fetch is
+ * disabled and every text-producing action (initial load, Randomize, Next)
+ * yields a freshly generated weak-key drill via `makeDrill`.
  */
-export function useTextLoader(hasInteractedRef: MutableRefObject<boolean>) {
+export function useTextLoader(
+  hasInteractedRef: MutableRefObject<boolean>,
+  practice: boolean,
+  makeDrill: () => string,
+) {
   const { category, setCategory, difficulty } = useConfig();
 
   const [currentText, setCurrentText] = useState('');
@@ -30,14 +38,22 @@ export function useTextLoader(hasInteractedRef: MutableRefObject<boolean>) {
   const isRandomizingRef = useRef(false);
   const skipNextSWREffectRef = useRef(false);
 
+  // Always call the latest generator (it closes over weak keys, which change as
+  // rounds complete) without making the practice effect depend on its identity.
+  const makeDrillRef = useRef(makeDrill);
+  useEffect(() => {
+    makeDrillRef.current = makeDrill;
+  });
+
   const requestConfig = useMemo(() => {
-    if (isRandomizingRef.current) return null;
+    // Disable the DB fetch entirely in practice mode so it can't clobber a drill.
+    if (isRandomizingRef.current || practice) return null;
     return {
       url: '/texts/random',
       method: 'GET',
       params: { category, difficulty },
     };
-  }, [category, difficulty]);
+  }, [category, difficulty, practice]);
 
   const { data, isValidating, error, mutate } = useRequest<TextResponse>(
     requestConfig,
@@ -64,7 +80,64 @@ export function useTextLoader(hasInteractedRef: MutableRefObject<boolean>) {
     setCurrentTextId(data.id ?? null);
   }, [data]);
 
+  // Imperatively pull a fresh DB text for the current filters. Used when leaving
+  // practice mode, where SWR would otherwise return its (unchanged) cached text
+  // without re-running the effect above.
+  const loadFromDb = async () => {
+    setIsNextLoading(true);
+    setLoadError(null);
+    try {
+      const res = await api.get<TextResponse>('/texts/random', {
+        params: { category, difficulty },
+      });
+      if (res.data?.content) {
+        setCurrentText(res.data.content);
+        setCurrentTextId(res.data.id ?? null);
+      } else {
+        setLoadError('No texts available for these settings.');
+      }
+    } catch {
+      setLoadError('Could not load a new text. Please try again.');
+    } finally {
+      setIsNextLoading(false);
+    }
+  };
+
+  // React to entering/leaving practice mode. The first run only establishes the
+  // baseline: a non-practice mount is handled by SWR, but a mount that's already
+  // in practice needs its first drill generated here.
+  const practiceInitRef = useRef(false);
+  useEffect(() => {
+    if (!practiceInitRef.current) {
+      practiceInitRef.current = true;
+      if (practice) {
+        setCurrentTextId(null);
+        setCurrentText(makeDrillRef.current());
+      }
+      return;
+    }
+
+    hasInteractedRef.current = true;
+    if (practice) {
+      setLoadError(null);
+      setCurrentTextId(null);
+      setCurrentText(makeDrillRef.current());
+    } else {
+      void loadFromDb();
+    }
+    // Only the practice flag should drive this; makeDrill is read via ref.
+  }, [practice]);
+
   const randomize = async () => {
+    // In practice mode, "randomize" just rolls a new weak-key drill.
+    if (practice) {
+      hasInteractedRef.current = true;
+      setLoadError(null);
+      setCurrentTextId(null);
+      setCurrentText(makeDrillRef.current());
+      return;
+    }
+
     isRandomizingRef.current = true;
     hasInteractedRef.current = true;
     setLoadError(null);
@@ -90,6 +163,15 @@ export function useTextLoader(hasInteractedRef: MutableRefObject<boolean>) {
   };
 
   const next = async () => {
+    // In practice mode, "next" generates the next weak-key drill.
+    if (practice) {
+      hasInteractedRef.current = true;
+      setLoadError(null);
+      setCurrentTextId(null);
+      setCurrentText(makeDrillRef.current());
+      return;
+    }
+
     setIsNextLoading(true);
     setLoadError(null);
     hasInteractedRef.current = true;

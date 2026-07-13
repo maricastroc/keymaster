@@ -10,10 +10,14 @@ import { useTypingEngine } from '@/features/typing/hooks/useTypingEngine';
 import { useTextLoader } from '@/features/typing/hooks/useTextLoader';
 import { useRoundStats } from '@/features/typing/hooks/useRoundStats';
 import { usePersonalBest } from '@/features/typing/hooks/usePersonalBest';
+import { useKeyProfile } from '@/features/results/keys/useKeyProfile';
+import { generatePractice } from '@/features/results/keys/logic/generatePractice';
+import { practiceWords } from '@/data/practiceWords';
 import { calculateGeneralStats } from '@/utils/calculateStats';
 
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
+import { OnboardingHint } from '@/components/OnboardingHint';
 import { Button } from '@/components/ui/button';
 import { InlineSettings } from '@/features/settings/components/InlineSettings';
 import { ActionButtons } from '@/features/typing/components/ActionButtons';
@@ -38,9 +42,13 @@ const ResultSection = dynamic(
 export default function Home() {
   const { playKeystroke, playErrorSound, preload } = useSound();
 
-  const { initialTime } = useConfig();
+  const { initialTime, practice, setPractice } = useConfig();
 
   const { saveRound } = useRoundStats();
+
+  // Per-key profile accumulated across rounds, powering the results-screen key
+  // analysis and the "practice your weak keys" drill.
+  const { recordRound, weakKeys } = useKeyProfile();
 
   // Best for the current mode+difficulty, captured in a ref so we can compare a
   // finished round against the *previous* best (before it gets saved).
@@ -62,6 +70,10 @@ export default function Home() {
   // again. Stays false on the very first load so the initial overlay still shows.
   const hasInteractedRef = useRef(false);
 
+  // Generates a fresh drill from the current weak keys. Read live by the text
+  // loader (via a ref), so it always reflects the latest profile.
+  const makeDrill = () => generatePractice(weakKeys.map((k) => k.key), practiceWords);
+
   const {
     currentText,
     isNextLoading,
@@ -72,7 +84,7 @@ export default function Home() {
     next: loadNextText,
     setCustomText,
     retry,
-  } = useTextLoader(hasInteractedRef);
+  } = useTextLoader(hasInteractedRef, practice, makeDrill);
 
   const {
     isStarted,
@@ -126,6 +138,15 @@ export default function Home() {
     // setCustomText updates currentText → the reset effect below resets +
     // prepares the engine; the ready effect then focuses the input.
     setCustomText(text);
+    setTimeout(() => inputRef.current?.focus(), 60);
+  };
+
+  // Turn on persistent practice mode (which loads the first drill). If already
+  // in practice, roll a fresh drill instead so the button never dead-ends.
+  const handlePracticeWeakKeys = () => {
+    hasInteractedRef.current = true;
+    if (practice) loadNextText();
+    else setPractice(true);
     setTimeout(() => inputRef.current?.focus(), 60);
   };
 
@@ -267,7 +288,7 @@ export default function Home() {
       >
         Skip to typing test
       </a>
-      <div className="w-full max-w-5xl">
+      <div className="w-full max-w-5xl flex flex-1 flex-col">
         <Header
           onOpenHistorySection={() => setShowHistorySection(true)}
         />
@@ -275,6 +296,8 @@ export default function Home() {
         <div role="status" aria-live="polite" className="sr-only">
           {srStatus}
         </div>
+
+        {!showResults && !isStarted && <OnboardingHint />}
 
         <Dialog.Root open={showHistorySection} onOpenChange={setShowHistorySection}>
           <HistorySection open={showHistorySection} onOpenChange={setShowHistorySection} />
@@ -295,6 +318,9 @@ export default function Home() {
               keystrokes={keystrokes}
               text={currentText}
               isNewBest={isNewBest}
+              accumulatedWeak={weakKeys}
+              onRecordRound={recordRound}
+              onPracticeWeakKeys={handlePracticeWeakKeys}
             />
           </div>
         )}

@@ -1,5 +1,8 @@
 'use client';
 
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faBullseye } from '@fortawesome/free-solid-svg-icons';
+
 import { useConfig } from '@/features/settings/context/ConfigContext';
 
 type InlineSettingsProps = {
@@ -18,10 +21,11 @@ const PillGroup = ({ options, currentValue, onChange }: PillGroupProps) => (
       <button
         key={opt.value}
         onClick={() => onChange(opt.value)}
+        aria-pressed={currentValue === opt.value}
         className={`cursor-pointer font-mono text-xs px-2.5 py-1 rounded-md transition-colors ${
           currentValue === opt.value
-            ? 'text-yellow-500'
-            : 'text-neutral-500 hover:text-neutral-300'
+            ? 'text-yellow-500 font-semibold bg-yellow-500/10'
+            : 'text-neutral-500 hover:text-neutral-300 hover:bg-neutral-800/60'
         }`}
       >
         {opt.label}
@@ -35,8 +39,18 @@ const Separator = () => (
 );
 
 export const InlineSettings = ({ onPrepare }: InlineSettingsProps) => {
-  const { mode, setMode, category, setCategory, difficulty, setDifficulty, initialTime, setInitialTime } =
-    useConfig();
+  const {
+    mode,
+    setMode,
+    category,
+    setCategory,
+    difficulty,
+    setDifficulty,
+    initialTime,
+    setInitialTime,
+    practice,
+    setPractice,
+  } = useConfig();
 
   const currentModeValue = mode === 'passage' ? 'passage' : String(initialTime);
 
@@ -47,6 +61,11 @@ export const InlineSettings = ({ onPrepare }: InlineSettingsProps) => {
       setMode('timed');
       setInitialTime(Number(value));
     }
+    onPrepare();
+  };
+
+  const handlePracticeToggle = () => {
+    setPractice(!practice);
     onPrepare();
   };
 
@@ -66,29 +85,49 @@ export const InlineSettings = ({ onPrepare }: InlineSettingsProps) => {
 
       <Separator />
 
-      <PillGroup
-        options={[
-          { label: 'easy', value: 'easy' },
-          { label: 'medium', value: 'medium' },
-          { label: 'hard', value: 'hard' },
-        ]}
-        currentValue={difficulty}
-        onChange={(v) => setDifficulty(v as 'easy' | 'medium' | 'hard')}
-      />
+      {/* Category and difficulty pick a database text; in practice mode the text
+          is generated from weak keys, so they don't apply and are hidden. */}
+      {!practice && (
+        <>
+          <PillGroup
+            options={[
+              { label: 'easy', value: 'easy' },
+              { label: 'medium', value: 'medium' },
+              { label: 'hard', value: 'hard' },
+            ]}
+            currentValue={difficulty}
+            onChange={(v) => setDifficulty(v as 'easy' | 'medium' | 'hard')}
+          />
 
-      <Separator />
+          <Separator />
 
-      <PillGroup
-        options={[
-          { label: 'general', value: 'general' },
-          { label: 'lyrics', value: 'lyrics' },
-          { label: 'quotes', value: 'quotes' },
-          { label: 'code', value: 'code' },
-        ]}
-        currentValue={category}
-        onChange={(v) => { setCategory(v as 'general' | 'lyrics' | 'quotes' | 'code'); onPrepare(); }}
-      />
+          <PillGroup
+            options={[
+              { label: 'general', value: 'general' },
+              { label: 'lyrics', value: 'lyrics' },
+              { label: 'quotes', value: 'quotes' },
+              { label: 'code', value: 'code' },
+            ]}
+            currentValue={category}
+            onChange={(v) => { setCategory(v as 'general' | 'lyrics' | 'quotes' | 'code'); onPrepare(); }}
+          />
 
+          <Separator />
+        </>
+      )}
+
+      <button
+        onClick={handlePracticeToggle}
+        aria-pressed={practice}
+        className={`flex cursor-pointer items-center gap-1.5 rounded-md px-2.5 py-1 font-mono text-xs transition-colors ${
+          practice
+            ? 'bg-yellow-500/10 font-semibold text-yellow-500'
+            : 'text-neutral-500 hover:bg-neutral-800/60 hover:text-neutral-300'
+        }`}
+      >
+        <FontAwesomeIcon icon={faBullseye} size="sm" />
+        practice
+      </button>
     </div>
   );
 };

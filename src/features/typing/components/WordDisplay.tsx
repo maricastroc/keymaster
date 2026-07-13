@@ -17,7 +17,7 @@ export const WordDisplay = memo(
       const charOriginal = word[i];
       const charTyped = typed[i];
 
-      let className = 'text-neutral-500 font-mono';
+      let className = 'text-neutral-400 font-mono';
       let displayChar = charOriginal;
 
       if (charTyped !== undefined) {

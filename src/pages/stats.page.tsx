@@ -15,6 +15,9 @@ import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 
 import { useRounds } from '@/features/typing/hooks/useRounds';
 import { aggregateStats, type BucketStats } from '@/utils/aggregateStats';
+import { useKeyProfile } from '@/features/results/keys/useKeyProfile';
+import { profileToStats, selectWeakKeys, type KeyStat } from '@/features/results/keys/logic/keyStats';
+import { KeyboardHeatmap } from '@/features/results/keys/KeyboardHeatmap';
 import { Footer } from '@/components/Footer';
 
 function StatTile({ label, value, sub }: { label: string; value: React.ReactNode; sub?: string }) {
@@ -71,9 +74,49 @@ function formatDuration(sec: number) {
   return `${m}m ${s}s`;
 }
 
+function KeyboardPanel({ keyStats }: { keyStats: KeyStat[] }) {
+  if (keyStats.length === 0) return null;
+
+  const weak = selectWeakKeys(keyStats);
+
+  return (
+    <div className="flex flex-col gap-4">
+      <h2 className="font-mono text-xs uppercase tracking-widest text-neutral-500">
+        Keyboard — all time
+      </h2>
+      <div className="rounded-lg border border-neutral-800 bg-neutral-900 px-4 py-6">
+        <KeyboardHeatmap stats={keyStats} />
+      </div>
+      {weak.length > 0 && (
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="font-mono text-xs uppercase tracking-wider text-neutral-500">
+            weakest keys
+          </span>
+          {weak.map((s) => (
+            <span
+              key={s.key}
+              title={`${s.accuracy}% accuracy${s.avgMs ? `, ${s.avgMs}ms avg` : ''}`}
+              className="flex items-center gap-1 rounded-md border border-neutral-800 bg-background px-2 py-1 font-mono text-xs"
+            >
+              <span className="font-bold text-red-500">{s.key.toUpperCase()}</span>
+              <span className="text-neutral-500">{s.accuracy}%</span>
+            </span>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function StatsPage() {
   const { rounds, isLoading } = useRounds();
   const stats = aggregateStats(rounds);
+
+  // Per-key profile is local (localStorage), independent of saved rounds — so it
+  // can show even for signed-out users with no persisted rounds.
+  const { profile } = useKeyProfile();
+  const keyStats = profileToStats(profile);
+  const hasKeyData = keyStats.length > 0;
 
   return (
     <div className="relative min-h-screen flex flex-col items-center px-4 py-6 md:py-10">
@@ -97,7 +140,7 @@ export default function StatsPage() {
               <div key={i} className="h-24 rounded-lg bg-neutral-800 animate-pulse" style={{ width: `${w}%` }} />
             ))}
           </div>
-        ) : stats.totalRounds === 0 ? (
+        ) : stats.totalRounds === 0 && !hasKeyData ? (
           <div className="flex flex-col items-center justify-center gap-3 py-24 text-center">
             <p className="font-mono text-sm text-neutral-400">No rounds yet.</p>
             <p className="font-mono text-xs text-neutral-500 max-w-xs">
@@ -112,6 +155,8 @@ export default function StatsPage() {
           </div>
         ) : (
           <div className="flex flex-col gap-10">
+            {stats.totalRounds > 0 && (
+            <>
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-px bg-neutral-800 rounded-lg overflow-hidden border border-neutral-800">
               <StatTile label="Rounds" value={stats.totalRounds} />
               <StatTile label="Avg WPM" value={stats.avgWpm} />
@@ -164,6 +209,10 @@ export default function StatsPage() {
                 ]}
               />
             </div>
+            </>
+            )}
+
+            {hasKeyData && <KeyboardPanel keyStats={keyStats} />}
           </div>
         )}
 

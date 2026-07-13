@@ -23,6 +23,11 @@ interface ConfigContextType {
   initialTime: number;
   setInitialTime: (time: number) => void;
 
+  // When on, the app serves generated drills targeting the user's weak keys
+  // instead of database texts. Orthogonal to timed/passage.
+  practice: boolean;
+  setPractice: (practice: boolean) => void;
+
   theme: Theme;
   setTheme: (theme: Theme) => void;
 }
@@ -34,6 +39,7 @@ export function ConfigProvider({ children }: { children: React.ReactNode }) {
   const [category, setCategory] = useLocalStorage<Category>('config:category', 'general');
   const [difficulty, setDifficulty] = useLocalStorage<Difficulty>('config:difficulty', 'easy');
   const [initialTime, setInitialTime] = useLocalStorage<number>('config:initialTime', 60);
+  const [practice, setPractice] = useLocalStorage<boolean>('config:practice', false);
   const [theme, setTheme] = useLocalStorage<Theme>('config:theme', 'dark');
 
   useEffect(() => {
@@ -52,6 +58,8 @@ export function ConfigProvider({ children }: { children: React.ReactNode }) {
       setDifficulty,
       initialTime,
       setInitialTime,
+      practice,
+      setPractice,
       theme,
       setTheme,
     }),
@@ -64,6 +72,8 @@ export function ConfigProvider({ children }: { children: React.ReactNode }) {
       setDifficulty,
       initialTime,
       setInitialTime,
+      practice,
+      setPractice,
       theme,
       setTheme,
     ]

@@ -255,6 +255,31 @@
   animation: countdownPop 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
+@keyframes confettiFall {
+  0% {
+    transform: translate3d(0, -12vh, 0) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translate3d(var(--drift, 0), 108vh, 0) rotate(var(--spin, 720deg));
+    opacity: 0;
+  }
+}
+
+.confetti-piece {
+  position: absolute;
+  top: 0;
+  will-change: transform, opacity;
+  animation: confettiFall var(--duration, 2.4s) cubic-bezier(0.2, 0.6, 0.4, 1) var(--delay, 0s) forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .confetti-piece {
+    animation: none;
+    display: none;
+  }
+}
+
 @keyframes overlayShow {
   from { opacity: 0; }
   to { opacity: 1; }
