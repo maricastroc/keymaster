@@ -4,7 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useState, useRef, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faClockRotateLeft, faChartLine, faRightFromBracket, faSun, faMoon, faVolumeHigh, faVolumeXmark, faPlay } from '@fortawesome/free-solid-svg-icons';
+import { faClockRotateLeft, faChartLine, faTrophy, faRightFromBracket, faSun, faMoon, faVolumeHigh, faVolumeXmark, faPlay } from '@fortawesome/free-solid-svg-icons';
 import { faGithub } from '@fortawesome/free-brands-svg-icons';
 import { usePersonalBest } from '@/features/typing/hooks/usePersonalBest';
 import { signIn, signOut, useSession } from 'next-auth/react';
@@ -90,6 +90,15 @@ export const Header = ({ onOpenHistorySection }: HeaderProps) => {
           title="Statistics"
         >
           <FontAwesomeIcon icon={faChartLine} size="sm" />
+        </Link>
+
+        <Link
+          href="/leaderboard"
+          className="cursor-pointer text-neutral-500 hover:text-neutral-300 transition-colors p-1.5"
+          aria-label="View leaderboard"
+          title="Leaderboard"
+        >
+          <FontAwesomeIcon icon={faTrophy} size="sm" />
         </Link>
 
         {/* Sound popover */}
