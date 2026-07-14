@@ -9,7 +9,7 @@ export function useLocalStorage<T>(key: string, initialValue: T) {
       const item = localStorage.getItem(key);
       if (item) setStoredValue(JSON.parse(item) as T);
     } catch { /* ignore */
-      // ignore parse errors
+      //
     }
     setMounted(true);
   }, [key]);
@@ -19,7 +19,7 @@ export function useLocalStorage<T>(key: string, initialValue: T) {
     try {
       localStorage.setItem(key, JSON.stringify(value));
     } catch { /* ignore */
-      // ignore storage errors
+      //
     }
   }, [key]);
 

@@ -26,18 +26,18 @@ describe('corrections — backspace ignored in metrics', () => {
       makeKeystroke('h', 'h', 300),
     ];
     const result = calculateMetrics(keystrokes, 60);
-    // only 2 non-backspace chars, both correct
+
     expect(result.accuracy).toBe(100);
   });
 
   it('backspace does not reduce accuracy when re-typed correctly', () => {
     const keystrokes: Keystroke[] = [
-      makeKeystroke('x', 'h', 100), // wrong
+      makeKeystroke('x', 'h', 100),
       makeKeystroke('Backspace', 'h', 200),
-      makeKeystroke('h', 'h', 300), // corrected
+      makeKeystroke('h', 'h', 300),
     ];
     const result = calculateMetrics(keystrokes, 60);
-    // valid chars: 'x' (wrong) and 'h' (correct) = 1/2 = 50%
+
     expect(result.accuracy).toBe(50);
   });
 
@@ -48,7 +48,7 @@ describe('corrections — backspace ignored in metrics', () => {
       makeKeystroke('h', 'h', 300),
     ];
     const result = calculateMetrics(keystrokes, 60);
-    // 2 correct non-backspace / 5 / 1 min = ~0.4 → rounds to 0
+
     expect(result.wpm).toBeGreaterThanOrEqual(0);
   });
 });
@@ -64,19 +64,17 @@ describe('corrections — backspace ignored in calculateGeneralStats', () => {
     const chartData = buildChartData(keystrokes, 5);
     const stats = calculateGeneralStats(keystrokes, chartData, 5);
 
-    // 3 non-backspace chars: h(correct), e(correct), e(correct)
     expect(stats.characters.total).toBe(3);
     expect(stats.characters.correct).toBe(3);
   });
 
   it('accuracy stays 100% when all errors are corrected via backspace', () => {
     const keystrokes: Keystroke[] = [
-      makeKeystroke('x', 'h', 100), // wrong
+      makeKeystroke('x', 'h', 100),
       makeKeystroke('Backspace', 'h', 200),
-      makeKeystroke('h', 'h', 300), // correct
+      makeKeystroke('h', 'h', 300),
     ];
-    // Note: the wrong 'x' is still in the keystrokes — backspace doesn't remove it
-    // accuracy = 1 correct / 2 total valid = 50%
+
     const chartData = buildChartData(keystrokes, 5);
     const stats = calculateGeneralStats(keystrokes, chartData, 5);
 
@@ -91,7 +89,7 @@ describe('corrections — backspace ignored in calculateGeneralStats', () => {
     ];
     const chartData = buildChartData(keystrokes, 2);
     const errorCounts = chartData.map((p) => p.errorCount);
-    // backspace should not be counted as an error
+
     expect(errorCounts.every((e) => e === 0)).toBe(true);
   });
 });

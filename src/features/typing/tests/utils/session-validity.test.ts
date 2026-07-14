@@ -35,7 +35,7 @@ describe('session validity — edge cases', () => {
     const keystrokes: Keystroke[] = [
       { charIndex: 0, expectedChar: 'a', typedChar: 'a', isCorrect: true, timestampMs: 10 },
     ];
-    // elapsedSeconds = 0 → calculateMetrics uses Math.max(0.01, ...)
+
     const result = calculateMetrics(keystrokes, 0);
     expect(result.wpm).toBeGreaterThanOrEqual(0);
     expect(Number.isFinite(result.wpm)).toBe(true);
@@ -52,7 +52,6 @@ describe('session validity — edge cases', () => {
     ];
     const data = buildChartData(keystrokes, 5);
     expect(data).toHaveLength(5);
-    // seconds 2-5 should have 0 burst and cumulative wpm
     expect(data[1].burst).toBe(0);
     expect(data[4].burst).toBe(0);
   });

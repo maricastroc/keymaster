@@ -13,7 +13,6 @@ const querySchema = z.object({
 const WEEK_MS = 7 * 24 * 60 * 60 * 1000;
 const LIMIT = 50;
 
-// One row per user: their single best round in the period, with display fields.
 type RawRow = {
   userId: string;
   wpm: number;
@@ -36,8 +35,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
   const { period } = parsed.data;
 
-  // Anyone can view the board; the signed-in user's own row is highlighted and
-  // pinned even when they're outside the top 50.
   const session = await getServerSession(req, res, authOptions);
   const meId = session?.user?.id ?? null;
 
@@ -45,8 +42,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   const sinceFilter = since ? Prisma.sql`WHERE r."createdAt" >= ${since}` : Prisma.empty;
 
   try {
-    // DISTINCT ON keeps each user's best round (ties broken by who reached it
-    // first), then we order those bests to build the ranking.
     const rows = await prisma.$queryRaw<RawRow[]>(Prisma.sql`
       SELECT best."userId", best.wpm, best.accuracy, best.mode, best.difficulty,
              best."createdAt", best.name, best.image
@@ -78,7 +73,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     let me: LeaderboardEntry | null = entries.find((e) => e.isMe) ?? null;
 
-    // If signed in but outside the top LIMIT, compute the true rank separately.
     if (meId && !me) {
       const agg = await prisma.round.aggregate({
         where: { userId: meId, ...(since ? { createdAt: { gte: since } } : {}) },

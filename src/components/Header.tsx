@@ -11,6 +11,7 @@ import { signIn, signOut, useSession } from 'next-auth/react';
 import { useConfig } from '@/features/settings/context/ConfigContext';
 import { useSound } from '@/features/sound/context/SoundContext';
 import type { SoundOption } from '@/features/sound/context/SoundContext';
+import { AppTooltip } from '@/components/ui/tooltip';
 
 type HeaderProps = {
   onOpenHistorySection: (value: boolean) => void;
@@ -52,7 +53,9 @@ export const Header = ({ onOpenHistorySection }: HeaderProps) => {
     <header className="flex justify-between items-center w-full mb-8">
       <div className="flex items-center gap-2.5">
         <Image src="/assets/images/logo-keymaster.svg" alt="Keymaster logo" width={28} height={28} />
-        <div className="flex flex-col gap-0">
+        {/* Wordmark hides on the narrowest phones so the icon row never collides
+            with it; the logo alone still carries the brand there. */}
+        <div className="hidden min-[380px]:flex flex-col gap-0">
           <span className="font-display text-sm font-medium text-neutral-400 tracking-widest uppercase leading-none">
             keymaster
           </span>
@@ -62,11 +65,12 @@ export const Header = ({ onOpenHistorySection }: HeaderProps) => {
         </div>
       </div>
 
-      <div className="flex items-center gap-2 md:gap-3">
+      <div className="flex items-center gap-1 sm:gap-2 md:gap-3">
         {personalBest > 0 && (
           <div
             className="hidden sm:flex items-center gap-1.5 text-neutral-500 text-sm font-mono"
-            title={`Best for ${difficulty} · ${mode}`}
+            data-tooltip-id="header-tip"
+            data-tooltip-content={`Personal best · ${difficulty} · ${mode}`}
           >
             <Image src="/assets/images/icon-personal-best.svg" alt="PB" width={14} height={14} className="opacity-50 trophy-icon" />
             <span className="text-yellow-500 font-bold">{personalBest}</span>
@@ -78,7 +82,8 @@ export const Header = ({ onOpenHistorySection }: HeaderProps) => {
           onClick={() => onOpenHistorySection(true)}
           className="cursor-pointer text-neutral-500 hover:text-neutral-300 transition-colors p-1.5"
           aria-label="View history"
-          title="History"
+          data-tooltip-id="header-tip"
+          data-tooltip-content="History"
         >
           <FontAwesomeIcon icon={faClockRotateLeft} size="sm" />
         </button>
@@ -87,7 +92,8 @@ export const Header = ({ onOpenHistorySection }: HeaderProps) => {
           href="/stats"
           className="cursor-pointer text-neutral-500 hover:text-neutral-300 transition-colors p-1.5"
           aria-label="View statistics"
-          title="Statistics"
+          data-tooltip-id="header-tip"
+          data-tooltip-content="Statistics"
         >
           <FontAwesomeIcon icon={faChartLine} size="sm" />
         </Link>
@@ -96,7 +102,8 @@ export const Header = ({ onOpenHistorySection }: HeaderProps) => {
           href="/leaderboard"
           className="cursor-pointer text-neutral-500 hover:text-neutral-300 transition-colors p-1.5"
           aria-label="View leaderboard"
-          title="Leaderboard"
+          data-tooltip-id="header-tip"
+          data-tooltip-content="Leaderboard"
         >
           <FontAwesomeIcon icon={faTrophy} size="sm" />
         </Link>
@@ -109,7 +116,8 @@ export const Header = ({ onOpenHistorySection }: HeaderProps) => {
             aria-label="Sound settings"
             aria-haspopup="menu"
             aria-expanded={soundPopover}
-            title="Sound"
+            data-tooltip-id="header-tip"
+            data-tooltip-content="Sound"
           >
             <FontAwesomeIcon icon={soundName === 'none' ? faVolumeXmark : faVolumeHigh} size="sm" />
           </button>
@@ -162,7 +170,8 @@ export const Header = ({ onOpenHistorySection }: HeaderProps) => {
           onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
           className="cursor-pointer text-neutral-500 hover:text-neutral-300 transition-colors p-1.5"
           aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} theme`}
-          title="Toggle theme"
+          data-tooltip-id="header-tip"
+          data-tooltip-content={theme === 'dark' ? 'Light mode' : 'Dark mode'}
         >
           <FontAwesomeIcon icon={theme === 'dark' ? faSun : faMoon} size="sm" />
         </button>
@@ -176,6 +185,8 @@ export const Header = ({ onOpenHistorySection }: HeaderProps) => {
               aria-label="Account menu"
               aria-haspopup="menu"
               aria-expanded={userDropdown}
+              data-tooltip-id="header-tip"
+              data-tooltip-content="Account"
             >
               {session.user.image ? (
                 <Image src={session.user.image} alt={session.user.name ?? 'User'} width={24} height={24} className="rounded-full opacity-80" />
@@ -215,6 +226,8 @@ export const Header = ({ onOpenHistorySection }: HeaderProps) => {
           </button>
         )}
       </div>
+
+      <AppTooltip id="header-tip" place="bottom" />
     </header>
   );
 };

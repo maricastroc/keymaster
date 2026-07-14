@@ -39,7 +39,6 @@ export function ShareResult({ wpm, accuracy, consistency, mode, difficulty }: Pr
         await navigator.share({ title: 'Keymaster', text: summary, url: APP_URL });
         setDoneLabel('Shared');
       } else {
-        // No Web Share: download the card and copy the summary to the clipboard.
         if (blob) {
           const href = URL.createObjectURL(blob);
           const a = document.createElement('a');
@@ -56,7 +55,6 @@ export function ShareResult({ wpm, accuracy, consistency, mode, difficulty }: Pr
         setDoneLabel(blob ? 'Saved & copied' : 'Copied');
       }
     } catch {
-      // Share cancelled or failed — silently reset.
       setState('idle');
       return;
     }

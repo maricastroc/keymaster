@@ -42,7 +42,7 @@ describe('canTypeMoreChars', () => {
   });
 
   it('returns false when typed reaches word length + 10', () => {
-    const typed = 'hello     extra'; // 15 chars, word is 5
+    const typed = 'hello     extra';
     expect(canTypeMoreChars(typed, 'hello')).toBe(false);
   });
 
@@ -66,8 +66,8 @@ describe('calculateMetrics', () => {
       { charIndex: 5, expectedChar: 'w', typedChar: 'x', isCorrect: false, timestampMs: 6000 },
     ];
     const result = calculateMetrics(keystrokes, 60);
-    expect(result.wpm).toBe(1); // 5 correct / 5 chars per word / 1 min
-    expect(result.accuracy).toBe(83); // 5/6
+    expect(result.wpm).toBe(1);
+    expect(result.accuracy).toBe(83);
   });
 
   it('ignores Backspace keystrokes in accuracy', () => {
@@ -76,6 +76,6 @@ describe('calculateMetrics', () => {
       { charIndex: 0, expectedChar: 'a', typedChar: 'Backspace', isCorrect: false, timestampMs: 2000 },
     ];
     const result = calculateMetrics(keystrokes, 60);
-    expect(result.accuracy).toBe(100); // backspace ignored, 1 correct / 1 total
+    expect(result.accuracy).toBe(100);
   });
 });

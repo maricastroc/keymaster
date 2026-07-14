@@ -27,8 +27,6 @@ import { MetricsPanel } from '@/features/typing/components/MetricsPanel';
 import { CustomTextModal } from '@/features/typing/components/CustomTextModal';
 import { HistorySection } from '@/features/results/components/HistorySection';
 
-// Results (which pull in the heavy Recharts dependency) only render after a
-// test completes, so code-split them out of the initial bundle.
 const ResultSection = dynamic(
   () => import('@/features/results/components/ResultSection').then((m) => m.ResultSection),
   {
@@ -46,12 +44,8 @@ export default function Home() {
 
   const { saveRound } = useRoundStats();
 
-  // Per-key profile accumulated across rounds, powering the results-screen key
-  // analysis and the "practice your weak keys" drill.
   const { recordRound, weakKeys } = useKeyProfile();
 
-  // Best for the current mode+difficulty, captured in a ref so we can compare a
-  // finished round against the *previous* best (before it gets saved).
   const personalBest = usePersonalBest();
   const personalBestRef = useRef(0);
   const [isNewBest, setIsNewBest] = useState(false);
@@ -65,13 +59,8 @@ export default function Home() {
 
   const wordsContainerRef = useRef<HTMLDivElement>(null);
 
-  // Once the user has engaged with the test at least once, settings-driven text
-  // reloads should land ready-to-type instead of showing the Start overlay
-  // again. Stays false on the very first load so the initial overlay still shows.
   const hasInteractedRef = useRef(false);
 
-  // Generates a fresh drill from the current weak keys. Read live by the text
-  // loader (via a ref), so it always reflects the latest profile.
   const makeDrill = () => generatePractice(weakKeys.map((k) => k.key), practiceWords);
 
   const {
@@ -135,14 +124,11 @@ export default function Home() {
 
   const handleCustomText = (text: string) => {
     setShowCustomModal(false);
-    // setCustomText updates currentText → the reset effect below resets +
-    // prepares the engine; the ready effect then focuses the input.
+
     setCustomText(text);
     setTimeout(() => inputRef.current?.focus(), 60);
   };
 
-  // Turn on persistent practice mode (which loads the first drill). If already
-  // in practice, roll a fresh drill instead so the button never dead-ends.
   const handlePracticeWeakKeys = () => {
     hasInteractedRef.current = true;
     if (practice) loadNextText();
@@ -155,10 +141,6 @@ export default function Home() {
     [keystrokes, chartData, totalTime]
   );
 
-  // Reset the engine whenever the text changes — initial load, Randomize, Next,
-  // or a pasted custom text. Once the user has engaged, land ready-to-type
-  // rather than re-showing the Start overlay (the first load leaves
-  // hasInteractedRef false so the overlay still appears).
   useEffect(() => {
     if (!currentText) return;
     reset(currentText);
@@ -168,8 +150,7 @@ export default function Home() {
   useEffect(() => {
     if (!currentText) return;
     reset(currentText);
-    // Changing the timer duration shouldn't bounce the user back to the Start
-    // overlay if they've already been typing.
+
     if (hasInteractedRef.current) prepare();
   }, [initialTime]);
 
@@ -194,14 +175,10 @@ export default function Home() {
   useEffect(() => {
     if (isReady && !isStarted) {
       inputRef.current?.focus();
-      // Warm the current sound's audio buffers now so the first keystroke
-      // doesn't stutter while it fetches + decodes.
       preload();
     }
   }, [isReady, isStarted, preload]);
 
-  // Prefetch the (lazy) results chunk once typing begins, so it's ready by the
-  // time the round completes.
   useEffect(() => {
     if (isStarted) import('@/features/results/components/ResultSection');
   }, [isStarted]);
@@ -228,13 +205,10 @@ export default function Home() {
     };
   }, [isStarted, isCompleted, isPaused, pause]);
 
-  // Caps Lock indicator + Esc-to-restart shortcut.
   useEffect(() => {
     const syncCaps = (e: KeyboardEvent) => setCapsLockOn(e.getModifierState('CapsLock'));
     const onKeyDown = (e: KeyboardEvent) => {
       syncCaps(e);
-      // Esc restarts the current text. Skip when the history drawer is open so
-      // Radix can use Esc to close it instead.
       if (e.key === 'Escape' && !showHistorySection && currentText) {
         e.preventDefault();
         onRestart();
@@ -252,8 +226,6 @@ export default function Home() {
   const loadingButton = isNextLoading ? 'next' : isValidating ? 'randomize' : null;
   const hasLoadError = !!error || !!loadError;
 
-  // Announced to screen readers via an aria-live region, since the typing UI
-  // itself is visual-only.
   const srStatus = isCompleted
     ? `Test complete. ${metrics.wpm} words per minute, ${metrics.accuracy} percent accuracy.`
     : isPaused
@@ -457,8 +429,8 @@ export default function Home() {
         />
 
         {currentText && !showResults && (
-          <p className="mt-3 text-center font-mono text-[11px] text-neutral-600">
-            press <span className="text-neutral-500">Esc</span> to restart
+          <p className="mt-3 text-center font-mono text-[11px] text-neutral-500">
+            press <span className="text-neutral-300">Esc</span> to restart
           </p>
         )}
 

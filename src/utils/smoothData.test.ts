@@ -18,7 +18,7 @@ describe('smoothData', () => {
       { second: 3, wpm: 0 },
     ];
     const result = smoothData(data, 3);
-    expect(result[1].wpm).toBe(20); // (0 + 60 + 0) / 3
+    expect(result[1].wpm).toBe(20);
   });
 
   it('preserves the "second" key without averaging', () => {

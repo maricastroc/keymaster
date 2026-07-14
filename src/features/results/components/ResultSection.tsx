@@ -14,9 +14,6 @@ import { Confetti } from './Confetti';
 import { useConfig } from '@/features/settings/context/ConfigContext';
 import { Keystroke } from '@/types/keyStore';
 
-// Presentational only. Persistence is owned by the typing engine's `onFinished`
-// callback (see home/index.tsx) so a round is saved exactly once. Saving here as
-// well produced duplicate rows for authenticated users (no cross-instance dedupe).
 type ResultSectionProps = {
   generalStats: GeneralStats;
   chartData: ChartPoint[];
@@ -42,9 +39,6 @@ export const ResultSection = ({
 }: ResultSectionProps) => {
   const { mode, difficulty } = useConfig();
 
-  // Fold this round into the long-term key profile exactly once. The section
-  // only mounts on a completed round, so `keystrokes` is final here; the hook
-  // dedupes against StrictMode double-mounts.
   useEffect(() => {
     onRecordRound(keystrokes);
   }, []);

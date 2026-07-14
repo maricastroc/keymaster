@@ -14,8 +14,6 @@ type Props = {
 export function CustomTextModal({ open, onOpenChange, onSubmit }: Props) {
   const [value, setValue] = useState('');
 
-  // Collapse all whitespace (newlines, tabs, runs of spaces) to single spaces
-  // so the space-delimited typing engine treats pasted prose as clean words.
   const normalized = value.replace(/\s+/g, ' ').trim();
 
   const handleStart = () => {
@@ -47,11 +45,11 @@ export function CustomTextModal({ open, onOpenChange, onSubmit }: Props) {
             placeholder="Paste or type your text here…"
             rows={6}
             aria-label="Custom text"
-            className="w-full resize-none rounded-lg border border-neutral-700 bg-neutral-800 p-3 font-mono text-sm text-neutral-300 outline-none placeholder:text-neutral-600 focus:border-yellow-500"
+            className="w-full resize-none rounded-lg border border-neutral-700 bg-neutral-800 p-3 font-mono text-sm text-neutral-300 outline-none placeholder:text-neutral-500 focus:border-yellow-500"
           />
 
           <div className="flex items-center justify-between">
-            <span className="font-mono text-xs text-neutral-600 tabular-nums">
+            <span className="font-mono text-xs text-neutral-500 tabular-nums">
               {normalized.length}/{MAX_LENGTH}
             </span>
             <div className="flex items-center gap-2">

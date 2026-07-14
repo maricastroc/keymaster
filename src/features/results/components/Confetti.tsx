@@ -2,10 +2,6 @@
 
 import { useMemo } from 'react';
 
-// Lightweight, dependency-free celebration burst shown on a new personal best.
-// Pieces are pure CSS-animated; the whole thing is decorative (aria-hidden) and
-// disabled under prefers-reduced-motion via the `.confetti-piece` rule in globals.css.
-
 const COLORS = ['#dbb942', '#f5d47a', '#4DD67B', '#4CA6FF', '#ca4754', '#fdf3c8'];
 const PIECE_COUNT = 44;
 

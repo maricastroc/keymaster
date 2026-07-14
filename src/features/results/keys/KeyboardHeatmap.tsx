@@ -1,8 +1,6 @@
 import { useMemo, useState } from 'react';
 import type { KeyStat } from './logic/keyStats';
 
-// slow/inaccurate → fast/accurate. Same palette as the word Heatmap so the
-// whole results screen reads in one visual language.
 const SCALE = [
   'var(--color-red-500)',
   'var(--color-orange-500)',
@@ -23,8 +21,6 @@ function accuracyBucket(accuracy: number): number {
   return 0;
 }
 
-// Lower dwell = faster = better bucket. Relative to the run's own median so it
-// adapts to the typist's overall speed rather than a fixed WPM.
 function makeSpeedBucket(msValues: number[]) {
   const sorted = [...msValues].sort((a, b) => a - b);
   const median = sorted.length ? sorted[Math.floor(sorted.length / 2)] : 0;
@@ -80,8 +76,6 @@ export const KeyboardHeatmap = ({ stats }: Props) => {
                       : {
                           borderColor: 'transparent',
                           backgroundColor: SCALE[bucket],
-                          // Bright "very fast/accurate" fill needs dark text;
-                          // the darker buckets need light text.
                           color: bucket >= 3 ? 'var(--color-neutral-900)' : 'var(--color-neutral-0)',
                         }
                   }

@@ -68,7 +68,7 @@ export const Heatmap = ({ keystrokes, text }: Props) => {
               />
               <span className="text-xs text-neutral-500">{label}</span>
               {buckets[i] !== undefined && buckets[i + 1] !== undefined && (
-                <span className="text-xs text-neutral-600">
+                <span className="text-xs text-neutral-500">
                   ({buckets[i]}–{buckets[i + 1]} wpm)
                 </span>
               )}

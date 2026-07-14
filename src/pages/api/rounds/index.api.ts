@@ -37,9 +37,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(400).json({ message: 'Invalid round data' });
     }
 
-    // Idempotency guard: a rapid double-submit (double-click, retry, or a
-    // duplicated client call) with identical stats returns the existing row
-    // instead of creating a duplicate.
     const recentDuplicate = await prisma.round.findFirst({
       where: {
         userId,

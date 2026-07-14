@@ -1,45 +1,26 @@
 import type { Keystroke } from '@/types/keyStore';
 
-/**
- * Per-key typing analysis, derived entirely from the keystroke stream that the
- * engine already records (`expectedChar` + `isCorrect` + `timestampMs`). No DB
- * schema or engine changes are needed — this is a pure transform, mirroring the
- * word heatmap in `../../heatmap/logic/history.ts`.
- */
-
-/** Raw, additive aggregate for a single key. Safe to sum across rounds. */
 export type KeyAgg = {
-  presses: number; // times this key was the *expected* character
-  errors: number; // times it was mistyped
-  totalMs: number; // summed dwell time (ms) for the timed presses
-  timed: number; // number of presses that contributed a dwell sample
+  presses: number;
+  errors: number;
+  totalMs: number;
+  timed: number;
 };
 
-/** A user's key profile: char (`a`–`z`) → aggregate. Serialized to localStorage. */
 export type KeyProfile = Record<string, KeyAgg>;
 
-/** A display-ready, derived view of one key. */
 export type KeyStat = {
   key: string;
   presses: number;
   errors: number;
-  accuracy: number; // 0–100
-  avgMs: number; // avg dwell time; 0 when there were no timed samples
+  accuracy: number;
+  avgMs: number;
 };
 
-// Dwell samples above this are almost certainly pauses (tab-out, thinking,
-// pause/resume) rather than the time it took to reach the key, so they'd skew
-// the average. Cap mirrors the 300ms replay cap in spirit, but is looser since
-// a single slow-but-real keypress can still exceed 300ms.
 const MAX_DWELL_MS = 1000;
 
 const isLetter = (ch: string) => /^[a-z]$/.test(ch);
 
-/**
- * Fold a keystroke stream into a per-key aggregate. Only letter keys are
- * tracked; the "dwell" for a key is the time since the previous keystroke
- * (whatever it was), attributed to the key being reached.
- */
 export function analyzeKeys(keystrokes: Keystroke[]): KeyProfile {
   if (!keystrokes || keystrokes.length === 0) return {};
 
@@ -70,7 +51,6 @@ export function analyzeKeys(keystrokes: Keystroke[]): KeyProfile {
   return profile;
 }
 
-/** Sum two profiles key-by-key. Used to accumulate rounds over time. */
 export function mergeProfiles(a: KeyProfile, b: KeyProfile): KeyProfile {
   const out: KeyProfile = {};
   for (const key of new Set([...Object.keys(a), ...Object.keys(b)])) {
@@ -86,7 +66,6 @@ export function mergeProfiles(a: KeyProfile, b: KeyProfile): KeyProfile {
   return out;
 }
 
-/** Derive display stats, sorted alphabetically for a stable keyboard render. */
 export function profileToStats(profile: KeyProfile): KeyStat[] {
   return Object.entries(profile)
     .map(([key, agg]) => ({
@@ -101,15 +80,9 @@ export function profileToStats(profile: KeyProfile): KeyStat[] {
 
 export type WeakKeyOptions = {
   limit?: number;
-  /** Ignore keys with too few samples to be meaningful. */
   minPresses?: number;
 };
 
-/**
- * Rank the keys most worth practicing. A key is "weak" when it's error-prone
- * or slow relative to the user's own other keys. Returns at most `limit`,
- * ranked worst-first. Returns `[]` when there isn't enough data to judge.
- */
 export function selectWeakKeys(stats: KeyStat[], options: WeakKeyOptions = {}): KeyStat[] {
   const { limit = 5, minPresses = 3 } = options;
 
@@ -121,21 +94,14 @@ export function selectWeakKeys(stats: KeyStat[], options: WeakKeyOptions = {}): 
   const sortedMs = [...timed].sort((a, b) => a - b);
   const medianMs = sortedMs.length ? sortedMs[Math.floor(sortedMs.length / 2)] : 0;
 
-  // Blend error rate (dominant) with relative slowness so a flawless-but-sluggish
-  // key can still surface, without letting speed noise outrank real mistakes.
   const score = (s: KeyStat) => {
     const errorRate = s.errors / s.presses;
     const relSlow = maxMs > 0 ? s.avgMs / maxMs : 0;
     return 0.65 * errorRate + 0.35 * relSlow;
   };
 
-  // A key only counts as weak if it actually misbehaves: has errors, or is
-  // slower than the user's median. Otherwise a clean run would yield "weak"
-  // keys that aren't.
   let weak = candidates.filter((s) => s.errors > 0 || (medianMs > 0 && s.avgMs > medianMs));
 
-  // Flawless, even-paced run: fall back to the slowest keys so practice still
-  // has something to target.
   if (weak.length === 0) {
     weak = [...candidates].sort((a, b) => b.avgMs - a.avgMs);
   } else {

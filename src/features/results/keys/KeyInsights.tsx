@@ -19,8 +19,6 @@ export const KeyInsights = ({ keystrokes, accumulatedWeak, onPractice }: Props) 
   const roundStats = useMemo(() => profileToStats(analyzeKeys(keystrokes)), [keystrokes]);
   const roundWeak = useMemo(() => selectWeakKeys(roundStats), [roundStats]);
 
-  // Prefer the long-term profile once it has enough signal; otherwise fall back
-  // to this round so the drill always has something concrete to target.
   const weak = accumulatedWeak.length >= 3 ? accumulatedWeak : roundWeak;
 
   if (roundStats.length === 0) return null;

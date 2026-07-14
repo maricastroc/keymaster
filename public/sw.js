@@ -1,7 +1,3 @@
-// Keymaster service worker — network-first with an offline cache fallback.
-// Network-first means a fresh deploy always wins while online; the cache only
-// serves when the network is unavailable, so users never get stuck on stale
-// hashed chunks.
 const CACHE = 'keymaster-v1';
 
 self.addEventListener('install', () => {
@@ -22,8 +18,8 @@ self.addEventListener('fetch', (event) => {
   if (request.method !== 'GET') return;
 
   const url = new URL(request.url);
-  if (url.origin !== self.location.origin) return; // skip cross-origin (fonts, avatars)
-  if (url.pathname.startsWith('/api/')) return; // never cache API responses
+  if (url.origin !== self.location.origin) return;
+  if (url.pathname.startsWith('/api/')) return;
 
   event.respondWith(
     fetch(request)

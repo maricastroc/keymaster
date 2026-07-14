@@ -5,14 +5,10 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faLightbulb, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
 
-// One-time, dismissible hint that surfaces the app's less-discoverable features
-// (session replay, per-word heatmap, and the history/stats icons in the header).
-// Gated on localStorage so it appears only on a visitor's first session.
 export const OnboardingHint = () => {
   const [seen, setSeen] = useLocalStorage('km-onboarding-seen', false);
   const [mounted, setMounted] = useState(false);
 
-  // Avoid a flash for returning users: render nothing until we've read storage.
   useEffect(() => setMounted(true), []);
 
   if (!mounted || seen) return null;

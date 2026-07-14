@@ -11,7 +11,11 @@ export default function Document() {
             __html: `(function(){try{var t=localStorage.getItem('config:theme');t=t?JSON.parse(t):'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){document.documentElement.setAttribute('data-theme','dark');}})();`,
           }}
         />
-        <title>keymaster</title>
+        <title>keymaster — master your keystrokes</title>
+        <meta
+          name="description"
+          content="A fast, minimal typing test. Measure your WPM and accuracy, track your progress, drill your weakest keys, and climb the leaderboard."
+        />
         <link rel="icon" type="image/svg" href="/assets/images/logo-keymaster.svg" />
         <link rel="manifest" href="/manifest.webmanifest" />
         <meta name="theme-color" content="#1a1b1e" />

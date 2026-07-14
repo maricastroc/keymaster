@@ -23,7 +23,6 @@ export async function generateResultCard(data: ResultCardData): Promise<Blob | n
   const ctx = canvas.getContext('2d');
   if (!ctx) return null;
 
-  // Best-effort: wait for the branded font before drawing text.
   try {
     await (document as unknown as { fonts?: { ready?: Promise<unknown> } }).fonts?.ready;
   } catch {
@@ -45,7 +44,6 @@ export async function generateResultCard(data: ResultCardData): Promise<Blob | n
   ctx.textAlign = 'left';
   ctx.textBaseline = 'alphabetic';
 
-  // Wordmark
   ctx.fillStyle = dim;
   ctx.font = `600 40px ${font}`;
   ctx.fillText('KEYMASTER', 80, 130);
@@ -53,7 +51,6 @@ export async function generateResultCard(data: ResultCardData): Promise<Blob | n
   ctx.font = `400 24px ${font}`;
   ctx.fillText('master your keystrokes', 80, 168);
 
-  // Big WPM number + label
   ctx.fillStyle = gold;
   ctx.font = `700 220px ${font}`;
   const wpmStr = String(data.wpm);
@@ -63,7 +60,6 @@ export async function generateResultCard(data: ResultCardData): Promise<Blob | n
   ctx.font = `500 56px ${font}`;
   ctx.fillText('wpm', 76 + wpmWidth + 28, 430);
 
-  // Secondary stats line
   const parts = [
     `${data.accuracy}% acc`,
     `${data.consistency}% consistency`,
@@ -84,7 +80,6 @@ export async function generateResultCard(data: ResultCardData): Promise<Blob | n
     }
   });
 
-  // Footer URL
   ctx.fillStyle = faint;
   ctx.font = `400 28px ${font}`;
   ctx.fillText('keymaster.marianacastro.dev', 80, 588);

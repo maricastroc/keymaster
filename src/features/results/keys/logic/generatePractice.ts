@@ -50,14 +50,13 @@ export function generatePractice(
 
   const out: string[] = [];
   let last = '';
-  // Bounded loop: with a tiny bank the immediate-repeat guard could otherwise
-  // spin, so cap total attempts rather than risk a hang.
+
   let attempts = 0;
   const maxAttempts = words * 20;
   while (out.length < words && attempts < maxAttempts) {
     attempts += 1;
     const picked = pickOne();
-    if (picked === last && wordBank.length > 1) continue; // avoid back-to-back repeats
+    if (picked === last && wordBank.length > 1) continue;
     out.push(picked);
     last = picked;
   }

@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { Keystroke } from '@/types/keyStore';
 import { getWordRanges } from '@/utils/wordRanges';
+import { AppTooltip } from '@/components/ui/tooltip';
 import { useReplay } from './useReplay';
 
 type Props = {
@@ -75,10 +76,12 @@ export const Replay = ({ keystrokes, text, onKeystroke }: Props) => {
             onClick={reset}
             aria-label="Restart replay"
             className="cursor-pointer text-xs text-neutral-500 hover:text-neutral-300 transition"
-            title="Reset"
+            data-tooltip-id="replay-tip"
+            data-tooltip-content="Restart replay"
           >
             ↩
           </button>
+          <AppTooltip id="replay-tip" />
           <button
             onClick={isPlaying ? pause : play}
             aria-label={isPlaying ? 'Pause replay' : 'Play replay'}
@@ -129,7 +132,7 @@ export const Replay = ({ keystrokes, text, onKeystroke }: Props) => {
         })}
       </div>
 
-      <div className="text-xs text-neutral-600 text-right">
+      <div className="text-xs text-neutral-500 text-right">
         {currentIndex} / {keystrokes.length} keystrokes
       </div>
     </div>

@@ -58,10 +58,6 @@ export const useTypingEngine = (text: string, options?: TypingOptions) => {
     [finishedTime, elapsed]
   );
 
-  // The chart is only shown on the results screen, so there's no reason to
-  // rebuild it (an O(n) pass over every keystroke) on each keypress. Build it
-  // once the round completes. This also keeps calculateGeneralStats cheap
-  // mid-round, since it early-returns on empty chart data.
   const chartData = useMemo(
     () => (isCompleted ? buildChartData(keystrokes, totalTimeSpent) : []),
     [isCompleted, keystrokes, totalTimeSpent]
@@ -100,11 +96,6 @@ export const useTypingEngine = (text: string, options?: TypingOptions) => {
       const currentTyped = userInput[activeWordIndex];
       if (!currentWord || currentTyped === undefined) return;
 
-      // Monotonic, sub-second timestamp from the timer's own clock. Using the
-      // displayed `elapsed` here was wrong: in timed mode it counts down, so
-      // keystrokes were stamped in reverse, and its whole-second rounding
-      // collapsed every key in the same second onto one point — breaking the
-      // chart, heatmap word-speeds, and replay pacing.
       const timestampMs = getElapsedMs();
 
       if (key.length === 1 && key !== ' ') {

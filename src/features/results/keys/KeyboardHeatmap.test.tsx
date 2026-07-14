@@ -18,7 +18,6 @@ describe('KeyboardHeatmap', () => {
   it('renders all 26 letter keys', () => {
     render(<KeyboardHeatmap stats={[]} />);
     for (const ch of 'abcdefghijklmnopqrstuvwxyz') {
-      // Each key exposes a title; untyped keys read "not typed".
       expect(screen.getByTitle(new RegExp(`^${ch.toUpperCase()} —`))).toBeTruthy();
     }
   });
@@ -44,7 +43,6 @@ describe('KeyboardHeatmap', () => {
     const accuracyBtn = screen.getByRole('button', { name: 'accuracy' });
     const speedBtn = screen.getByRole('button', { name: 'speed' });
 
-    // Accuracy is the default active metric.
     expect(accuracyBtn.className).toContain('text-neutral-300');
     expect(speedBtn.className).not.toContain('text-neutral-300');
 

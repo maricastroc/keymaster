@@ -7,6 +7,8 @@ import { useEffect, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCrown, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { roundsApi } from '@/services/roundsApi';
+import { AppTooltip } from '@/components/ui/tooltip';
+import { Pills } from '@/components/ui/pills';
 import useSWR from 'swr';
 
 type Props = {
@@ -16,34 +18,6 @@ type Props = {
 
 type ModeFilter = 'all' | 'timed' | 'passage';
 type DifficultyFilter = 'all' | 'easy' | 'medium' | 'hard';
-
-function FilterPills<T extends string>({
-  value,
-  onChange,
-  options,
-}: {
-  value: T;
-  onChange: (value: T) => void;
-  options: { value: T; label: string }[];
-}) {
-  return (
-    <div className="flex items-center gap-1.5 flex-wrap justify-center">
-      {options.map((opt) => (
-        <button
-          key={opt.value}
-          onClick={() => onChange(opt.value)}
-          className={`cursor-pointer font-mono text-[11px] px-2.5 py-1 rounded-md border transition-colors ${
-            value === opt.value
-              ? 'bg-yellow-500 border-yellow-500 text-black'
-              : 'bg-neutral-800 border-neutral-700 text-neutral-400 hover:text-neutral-300 hover:border-neutral-600'
-          }`}
-        >
-          {opt.label}
-        </button>
-      ))}
-    </div>
-  );
-}
 
 export function HistorySection({ open, onOpenChange }: Props) {
   const { getHistory, deleteRound, isLoggedIn } = useRoundStats();
@@ -65,7 +39,7 @@ export function HistorySection({ open, onOpenChange }: Props) {
       (filterMode === 'all' || r.mode === filterMode) &&
       (filterDifficulty === 'all' || r.difficulty === filterDifficulty)
   );
-  // Best within the current filter, so the crown reflects what's on screen.
+
   const personalBest = rounds.length > 0 ? Math.max(...rounds.map((r) => r.wpm)) : 0;
 
   const isLoadingHistory = isLoggedIn && apiRounds === undefined;
@@ -121,7 +95,7 @@ export function HistorySection({ open, onOpenChange }: Props) {
             <h1 className="text-base font-semibold font-display text-neutral-400 text-center tracking-widest uppercase">History</h1>
           </Dialog.Title>
           <Dialog.Description asChild>
-            <p className="text-xs font-display text-neutral-600 mt-1 text-center">
+            <p className="text-xs font-display text-neutral-500 mt-1 text-center">
               {rounds.length > 0
                 ? `${rounds.length} ${rounds.length === 1 ? 'round' : 'rounds'}`
                 : isLoggedIn
@@ -132,7 +106,9 @@ export function HistorySection({ open, onOpenChange }: Props) {
 
           {allRounds.length > 0 && (
             <div className="mt-6 flex flex-col gap-1.5 items-center">
-              <FilterPills
+              <Pills
+                label="Filter by mode"
+                className="flex-wrap justify-center gap-1.5"
                 value={filterMode}
                 onChange={setFilterMode}
                 options={[
@@ -141,7 +117,9 @@ export function HistorySection({ open, onOpenChange }: Props) {
                   { value: 'passage', label: 'Passage' },
                 ]}
               />
-              <FilterPills
+              <Pills
+                label="Filter by difficulty"
+                className="flex-wrap justify-center gap-1.5"
                 value={filterDifficulty}
                 onChange={setFilterDifficulty}
                 options={[
@@ -204,7 +182,7 @@ export function HistorySection({ open, onOpenChange }: Props) {
                     </div>
 
                     <div className="flex flex-col items-end gap-2">
-                      <p className="text-xs text-neutral-600">
+                      <p className="text-xs text-neutral-500">
                         {formatDistanceToNow(round.timestamp, { addSuffix: true })}
                       </p>
                       {isConfirming ? (
@@ -226,7 +204,8 @@ export function HistorySection({ open, onOpenChange }: Props) {
                         <button
                           onClick={() => setConfirmDeleteId(round.id)}
                           aria-label={`Delete round: ${round.wpm} wpm, ${round.mode}`}
-                          title="Delete"
+                          data-tooltip-id="history-tip"
+                          data-tooltip-content="Delete"
                           className="cursor-pointer p-1.5 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 focus-visible:opacity-100 transition-opacity text-neutral-500 hover:text-red-400"
                         >
                           <FontAwesomeIcon icon={faTrash} size="sm" />
@@ -241,6 +220,8 @@ export function HistorySection({ open, onOpenChange }: Props) {
             <Dialog.Close className="cursor-pointer mt-6 text-sm text-neutral-500 hover:text-neutral-300 transition-colors duration-200 text-center py-2 flex-shrink-0">
               close
             </Dialog.Close>
+
+            <AppTooltip id="history-tip" place="left" />
           </div>
         </Dialog.Content>
       </Dialog.Portal>

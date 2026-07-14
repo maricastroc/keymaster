@@ -55,7 +55,6 @@ function bucketize(rounds: RoundStats[]): BucketStats {
 export function aggregateStats(rounds: RoundStats[]): AggregatedStats {
   const overall = bucketize(rounds);
 
-  // Oldest → newest so the trend chart reads left-to-right as progress.
   const trend = [...rounds]
     .sort((a, b) => a.timestamp - b.timestamp)
     .map((r, i) => ({

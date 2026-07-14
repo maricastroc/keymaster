@@ -7,7 +7,7 @@ describe('practiceWeight', () => {
   });
 
   it('scales with the number of weak-key letters in the word', () => {
-    expect(practiceWeight('pizza', new Set(['z']))).toBe(6); // two z's * 3
+    expect(practiceWeight('pizza', new Set(['z']))).toBe(6);
     expect(practiceWeight('zoo', new Set(['z']))).toBe(3);
   });
 
@@ -38,15 +38,12 @@ describe('generatePractice', () => {
   });
 
   it('favors words containing the weak keys', () => {
-    // With a heavy bias toward 'z', z-words should dominate over the long run.
     const produced = generatePractice(['z'], bank, { words: 200, random: Math.random }).split(' ');
     const zWords = produced.filter((w) => w.includes('z')).length;
     expect(zWords).toBeGreaterThan(produced.length / 2);
   });
 });
 
-// Deterministic RNG cycling through fixed fractions, to exercise selection
-// without depending on Math.random.
 function cyclicRandom() {
   const seq = [0.05, 0.27, 0.51, 0.73, 0.92, 0.4];
   let i = 0;

@@ -36,7 +36,6 @@ describe('complete session flow', () => {
     const words = ['hello', 'world'];
     const state = simulateSession(words, ['hello', 'world']);
 
-    // 5 chars per word = 10 total
     expect(state.keystrokes).toHaveLength(10);
   });
 
@@ -90,7 +89,7 @@ describe('complete session flow', () => {
 
   it('session without start still records input when dispatched directly', () => {
     const words = ['hello'];
-    // dispatching TYPE_CHAR without START — reducer doesn't gate on hasStarted
+
     let state = createInitialState(words);
     state = engineReducer(state, {
       type: 'TYPE_CHAR',

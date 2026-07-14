@@ -8,8 +8,6 @@ export function rankTier(rank: number): RankTier {
   return null;
 }
 
-// CSS-variable colors per tier, reusing the app's palette. `null` keeps the
-// muted default used for ranks 4+.
 export const TIER_COLOR: Record<Exclude<RankTier, null>, string> = {
   gold: 'var(--color-yellow-500)',
   silver: 'var(--color-neutral-300)',

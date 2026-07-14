@@ -45,12 +45,10 @@ describe('engine mechanics — typing', () => {
   });
 
   it('typing beyond word length + 10 is blocked by canTypeMoreChars', () => {
-    // canTypeMoreChars allows up to word.length + 10
-    // this test verifies the boundary is word.length + 10
-    const word = 'hi'; // length 2, max 12 chars
+    const word = 'hi';
     let state = createInitialState([word]);
     state = engineReducer(state, { type: 'START' });
-    // type 12 chars (2 + 10)
+
     state = typeWord(state, 0, 'hi          ', word, 0);
     expect(state.userInput[0].length).toBeLessThanOrEqual(word.length + 10);
   });

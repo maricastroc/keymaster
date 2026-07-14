@@ -31,7 +31,7 @@ describe('buildChartData', () => {
   it('ignores Backspace in wpm and raw calculation', () => {
     const keystrokes = [k('a', true, 500), k('Backspace', false, 600)];
     const data = buildChartData(keystrokes, 1);
-    expect(data[0].raw).toBe(12); // 1 char / 5 / (1/60)
+    expect(data[0].raw).toBe(12);
     expect(data[0].wpm).toBe(12);
   });
 

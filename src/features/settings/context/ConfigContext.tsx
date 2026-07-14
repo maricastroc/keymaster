@@ -1,4 +1,3 @@
-// contexts/ConfigContext.tsx
 'use client';
 
 import React, { createContext, useContext, useEffect, useMemo } from 'react';
@@ -27,8 +26,6 @@ interface ConfigContextType {
   initialTime: number;
   setInitialTime: (time: number) => void;
 
-  // When on, the app serves generated drills targeting the user's weak keys
-  // instead of database texts. Orthogonal to timed/passage.
   practice: boolean;
   setPractice: (practice: boolean) => void;
 
@@ -51,8 +48,6 @@ export function ConfigProvider({ children }: { children: React.ReactNode }) {
     document.documentElement.setAttribute('data-theme', theme);
   }, [theme]);
 
-  // Stable identity (setters from useLocalStorage are memoized) so consumers of
-  // useConfig don't re-render on unrelated provider renders.
   const value = useMemo(
     () => ({
       mode,

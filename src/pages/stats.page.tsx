@@ -10,22 +10,20 @@ import {
   CartesianGrid,
   ResponsiveContainer,
 } from 'recharts';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
-
 import { useRounds } from '@/features/typing/hooks/useRounds';
 import { aggregateStats, type BucketStats } from '@/utils/aggregateStats';
 import { useKeyProfile } from '@/features/results/keys/useKeyProfile';
 import { profileToStats, selectWeakKeys, type KeyStat } from '@/features/results/keys/logic/keyStats';
 import { KeyboardHeatmap } from '@/features/results/keys/KeyboardHeatmap';
 import { Footer } from '@/components/Footer';
+import { PageNav } from '@/components/PageNav';
 
 function StatTile({ label, value, sub }: { label: string; value: React.ReactNode; sub?: string }) {
   return (
     <div className="flex flex-col items-center justify-center gap-1 bg-background px-4 py-5">
       <span className="font-mono text-2xl font-bold text-neutral-300">{value}</span>
       <span className="font-mono text-xs text-neutral-500 uppercase tracking-wider">{label}</span>
-      {sub && <span className="font-mono text-[11px] text-neutral-600">{sub}</span>}
+      {sub && <span className="font-mono text-[11px] text-neutral-500">{sub}</span>}
     </div>
   );
 }
@@ -39,7 +37,7 @@ function BreakdownTable({
 }) {
   return (
     <div className="flex h-full flex-col gap-2">
-      <h2 className="font-mono text-xs uppercase tracking-widest text-neutral-500">{title}</h2>
+      <h2 className="text-sm font-semibold uppercase tracking-widest text-neutral-400">{title}</h2>
       <div className="flex-1 overflow-hidden rounded-lg border border-neutral-800 bg-neutral-900">
         <div className="grid grid-cols-4 gap-px bg-neutral-800 font-mono text-[11px]">
           <div className="bg-neutral-900 px-3 py-2 text-neutral-500 uppercase tracking-wider">Type</div>
@@ -81,7 +79,7 @@ function KeyboardPanel({ keyStats }: { keyStats: KeyStat[] }) {
 
   return (
     <div className="flex flex-col gap-4">
-      <h2 className="font-mono text-xs uppercase tracking-widest text-neutral-500">
+      <h2 className="text-sm font-semibold uppercase tracking-widest text-neutral-400">
         Keyboard — all time
       </h2>
       <div className="rounded-lg border border-neutral-800 bg-neutral-900 px-4 py-6">
@@ -112,8 +110,6 @@ export default function StatsPage() {
   const { rounds, isLoading } = useRounds();
   const stats = aggregateStats(rounds);
 
-  // Per-key profile is local (localStorage), independent of saved rounds — so it
-  // can show even for signed-out users with no persisted rounds.
   const { profile } = useKeyProfile();
   const keyStats = profileToStats(profile);
   const hasKeyData = keyStats.length > 0;
@@ -121,18 +117,7 @@ export default function StatsPage() {
   return (
     <div className="relative min-h-screen flex flex-col items-center px-4 py-6 md:py-10">
       <div className="w-full max-w-5xl">
-        <div className="flex items-center justify-between w-full mb-10">
-          <Link
-            href="/"
-            className="flex items-center gap-2 font-mono text-sm text-neutral-500 hover:text-neutral-300 transition-colors"
-          >
-            <FontAwesomeIcon icon={faArrowLeft} size="sm" />
-            back to typing
-          </Link>
-          <h1 className="font-display text-sm font-semibold text-neutral-400 tracking-widest uppercase">
-            Statistics
-          </h1>
-        </div>
+        <PageNav current="/stats" />
 
         {isLoading ? (
           <div className="flex flex-col gap-4 py-2" aria-hidden>
@@ -168,7 +153,7 @@ export default function StatsPage() {
 
             {stats.trend.length > 1 && (
               <div className="flex flex-col gap-3">
-                <h2 className="font-mono text-xs uppercase tracking-widest text-neutral-500">WPM over time</h2>
+                <h2 className="text-sm font-semibold uppercase tracking-widest text-neutral-400">WPM over time</h2>
                 <ResponsiveContainer width="100%" height={240}>
                   <LineChart data={stats.trend} margin={{ top: 8, right: 8, bottom: 0, left: -16 }}>
                     <CartesianGrid stroke="var(--chart-grid)" vertical={false} />

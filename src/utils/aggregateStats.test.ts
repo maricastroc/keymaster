@@ -53,7 +53,6 @@ describe('aggregateStats', () => {
     const varied = aggregateStats([r({ wpm: 10 }), r({ wpm: 90 }), r({ wpm: 10 })]);
     expect(varied.consistency).toBeLessThan(50);
 
-    // A single round can't have a meaningful consistency.
     expect(aggregateStats([r({ wpm: 50 })]).consistency).toBe(0);
   });
 

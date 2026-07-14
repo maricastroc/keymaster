@@ -19,7 +19,6 @@ describe('errors — accuracy degradation', () => {
   });
 
   it('accuracy rounds to nearest integer', () => {
-    // 2 correct / 3 total = 66.67% → rounds to 67
     const keystrokes = buildKeystrokes(['abc'], ['abX']);
     const result = calculateMetrics(keystrokes, 60);
     expect(result.accuracy).toBe(67);
@@ -28,7 +27,6 @@ describe('errors — accuracy degradation', () => {
 
 describe('errors — wpm is based on correct chars only', () => {
   it('wpm counts only correct chars', () => {
-    // 5 correct ('hello') + 5 wrong ('XXXXX') = 5 correct / 5 / 1 min = 1 wpm
     const keystrokes: Keystroke[] = [
       ...buildKeystrokes(['hello'], ['hello']),
       ...buildKeystrokes(['world'], ['XXXXX']).map((k) => ({
@@ -64,11 +62,11 @@ describe('errors — error count in chart data', () => {
 
 describe('skips — advancing with partial word', () => {
   it('skipping a word with partial input still counts typed chars in keystrokes', () => {
-    // simulate typing 'hel' then advancing (skipping 'lo')
+
     const keystrokes = buildKeystrokes(['hello'], ['hel']);
     const result = calculateMetrics(keystrokes, 60);
 
-    expect(result.accuracy).toBe(100); // all 3 chars correct
+    expect(result.accuracy).toBe(100);
   });
 
   it('calculateGeneralStats handles partial words gracefully', () => {

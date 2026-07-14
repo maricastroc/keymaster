@@ -20,8 +20,6 @@ const robotoMono = Roboto_Mono({
 
 export default function App({ Component, pageProps: { session, ...pageProps } }: AppProps) {
   useEffect(() => {
-    // Register the PWA service worker in production only — in dev it would
-    // fight Turbopack's HMR by caching module chunks.
     if (process.env.NODE_ENV === 'production' && 'serviceWorker' in navigator) {
       navigator.serviceWorker.register('/sw.js').catch(() => {});
     }

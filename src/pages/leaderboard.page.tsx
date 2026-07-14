@@ -4,13 +4,13 @@ import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useSession } from 'next-auth/react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 
 import { useLeaderboard } from '@/features/leaderboard/useLeaderboard';
 import { rankTier, TIER_COLOR } from '@/features/leaderboard/logic/tiers';
 import type { LeaderboardEntry, LeaderboardPeriod } from '@/types/leaderboard';
 import { Footer } from '@/components/Footer';
+import { PageNav } from '@/components/PageNav';
+import { Pills } from '@/components/ui/pills';
 
 function RankBadge({ rank }: { rank: number }) {
   const tier = rankTier(rank);
@@ -66,14 +66,14 @@ function Row({ entry }: { entry: LeaderboardEntry }) {
 
       <span className="text-right font-mono text-sm font-bold tabular-nums text-yellow-500">
         {entry.wpm}
-        <span className="ml-1 hidden text-[10px] font-normal text-neutral-600 sm:inline">wpm</span>
+        <span className="ml-1 hidden text-[10px] font-normal text-neutral-500 sm:inline">wpm</span>
       </span>
 
       <span className="hidden text-right font-mono text-xs tabular-nums text-neutral-500 sm:inline">
         {entry.accuracy}%
       </span>
 
-      <span className="hidden text-right font-mono text-[11px] text-neutral-600 sm:inline">
+      <span className="hidden text-right font-mono text-[11px] text-neutral-500 sm:inline">
         {entry.mode} · {entry.difficulty}
       </span>
     </div>
@@ -96,37 +96,16 @@ export default function LeaderboardPage() {
   return (
     <div className="relative flex min-h-screen flex-col items-center px-4 py-6 md:py-10">
       <div className="w-full max-w-3xl">
-        <div className="mb-10 flex w-full items-center justify-between">
-          <Link
-            href="/"
-            className="flex items-center gap-2 font-mono text-sm text-neutral-500 transition-colors hover:text-neutral-300"
-          >
-            <FontAwesomeIcon icon={faArrowLeft} size="sm" />
-            back to typing
-          </Link>
-          <h1 className="font-display text-sm font-semibold uppercase tracking-widest text-neutral-400">
-            Leaderboard
-          </h1>
-        </div>
+        <PageNav current="/leaderboard" />
 
         <div className="mb-6 flex items-center justify-between">
-          <p className="font-mono text-xs text-neutral-600">Ranked by best WPM</p>
-          <div className="flex items-center gap-0.5">
-            {PERIODS.map((p) => (
-              <button
-                key={p.value}
-                onClick={() => setPeriod(p.value)}
-                aria-pressed={period === p.value}
-                className={`cursor-pointer rounded-md px-2.5 py-1 font-mono text-xs transition-colors ${
-                  period === p.value
-                    ? 'bg-yellow-500/10 font-semibold text-yellow-500'
-                    : 'text-neutral-500 hover:bg-neutral-800/60 hover:text-neutral-300'
-                }`}
-              >
-                {p.label}
-              </button>
-            ))}
-          </div>
+          <p className="font-mono text-xs text-neutral-500">Ranked by best WPM</p>
+          <Pills
+            label="Leaderboard period"
+            options={PERIODS}
+            value={period}
+            onChange={setPeriod}
+          />
         </div>
 
         {isLoading ? (
@@ -162,7 +141,7 @@ export default function LeaderboardPage() {
 
             {showPinnedMe && me && (
               <div className="border-t border-neutral-700">
-                <p className="bg-neutral-900 px-3 py-1 font-mono text-[10px] uppercase tracking-wider text-neutral-600">
+                <p className="bg-neutral-900 px-3 py-1 font-mono text-[10px] uppercase tracking-wider text-neutral-500">
                   your position
                 </p>
                 <Row entry={me} />
@@ -172,7 +151,7 @@ export default function LeaderboardPage() {
         )}
 
         {status === 'unauthenticated' && entries.length > 0 && (
-          <p className="mt-4 text-center font-mono text-xs text-neutral-600">
+          <p className="mt-4 text-center font-mono text-xs text-neutral-500">
             Sign in to appear on the leaderboard.
           </p>
         )}

@@ -64,7 +64,6 @@ export function SoundProvider({ children }: { children: React.ReactNode }) {
     return audioCtxRef.current;
   };
 
-  // Fetch + decode a sound's sample files once, caching the decoded buffers.
   const loadBuffers = useCallback(async (name: string) => {
     const cached = bufferCache.current.get(name);
     if (cached) return cached;
@@ -86,7 +85,6 @@ export function SoundProvider({ children }: { children: React.ReactNode }) {
     return buffers;
   }, []);
 
-  // Plays a random sample from a sound set at the current volume.
   const playSample = useCallback(
     async (name: SoundOption) => {
       if (name === 'none') return;
@@ -141,8 +139,6 @@ export function SoundProvider({ children }: { children: React.ReactNode }) {
     source.start(0);
   }, [loadBuffers]);
 
-  // Warm the current sound (and the error sound) so the first keystroke of a
-  // round doesn't stutter while samples are fetched and decoded.
   const preload = useCallback(() => {
     if (soundName !== 'none') void loadBuffers(soundName).catch(() => {});
     void loadBuffers('error').catch(() => {});

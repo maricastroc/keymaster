@@ -31,7 +31,7 @@ export const useReplay = ({ keystrokes, onKeystroke }: Props) => {
     if (!current) return;
 
     const delay = prev
-      ? Math.min(current.timestampMs - prev.timestampMs, 300) // cap at 300ms per keystroke
+      ? Math.min(current.timestampMs - prev.timestampMs, 300)
       : 100;
 
     timeoutRef.current = setTimeout(() => {

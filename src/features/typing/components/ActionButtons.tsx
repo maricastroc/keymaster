@@ -4,10 +4,10 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faAngleRight,
   faArrowRotateRight,
-  faArrowsRotate,
+  faShuffle,
   faSpinner,
 } from '@fortawesome/free-solid-svg-icons';
-import { Tooltip } from 'react-tooltip';
+import { AppTooltip } from '@/components/ui/tooltip';
 
 interface ActionButtonsProps {
   onRandomize: () => void;
@@ -27,7 +27,7 @@ export const ActionButtons = ({
   const buttons = [
     {
       id: 'randomize',
-      icon: faArrowsRotate,
+      icon: faShuffle,
       tooltip: 'Randomize',
       onClick: onRandomize,
       isLoading: isLoading && loadingButton === 'randomize',
@@ -69,11 +69,7 @@ export const ActionButtons = ({
       </div>
 
       {buttons.map((button) => (
-        <Tooltip
-          key={button.id}
-          className="!bg-neutral-800 !text-neutral-0 !text-xs !px-3 !py-1 !rounded-md !border !border-neutral-700"
-          id={`${button.id}-tooltip`}
-        />
+        <AppTooltip key={button.id} id={`${button.id}-tooltip`} />
       ))}
     </>
   );
