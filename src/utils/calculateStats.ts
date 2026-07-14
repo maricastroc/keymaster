@@ -1,6 +1,7 @@
 import { ChartPoint } from '@/types/chartPoint';
 import { GeneralStats } from '@/types/generalStats';
 import { Keystroke } from '@/types/keyStore';
+import { consistencyScore } from './consistency';
 
 export const calculateGeneralStats = (
   keystrokes: Keystroke[],
@@ -42,21 +43,11 @@ export const calculateGeneralStats = (
     ...chartData.map((d) => d.raw).filter((v) => !isNaN(v))
   );
 
-  const wpmValues = chartData
-    .map((d) => d.wpm)
-    .filter((v) => !isNaN(v) && v > 0);
-
-  let consistency = 0;
-  if (wpmValues.length > 1) {
-    const mean = wpmValues.reduce((a, b) => a + b, 0) / wpmValues.length;
-    const variance =
-      wpmValues.reduce((a, b) => a + Math.pow(b - mean, 2), 0) /
-      wpmValues.length;
-    const stdDev = Math.sqrt(variance);
-    const cv = (stdDev / mean) * 100;
-
-    consistency = Math.max(0, Math.min(100, Math.round(100 - cv)));
-  }
+  // Consistency measures how steady the pace was, so it must run on the
+  // *instantaneous* per-second WPM (`burst`). The `wpm` series is a running
+  // average that converges over time, which would make everyone look perfectly
+  // consistent.
+  const consistency = consistencyScore(chartData.map((d) => d.burst));
 
   return {
     wpm,

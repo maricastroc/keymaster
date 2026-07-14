@@ -11,12 +11,14 @@ const k = (typedChar: string, isCorrect: boolean): Keystroke => ({
   timestampMs: 1000,
 });
 
-const point = (wpm: number, raw: number): ChartPoint => ({
+// `burst` (instantaneous per-second WPM) drives consistency, so it defaults to
+// `wpm` here — a steady run where each second matches the average.
+const point = (wpm: number, raw: number, burst = wpm): ChartPoint => ({
   second: 1,
   wpm,
   raw,
   accuracy: 100,
-  burst: 0,
+  burst,
   errors: null,
   errorCount: 0,
 });
