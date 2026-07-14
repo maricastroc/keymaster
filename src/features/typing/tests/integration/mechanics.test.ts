@@ -44,13 +44,13 @@ describe('engine mechanics — typing', () => {
     expect(state.keystrokes.every((k) => k.isCorrect)).toBe(true);
   });
 
-  it('typing beyond word length + 10 is blocked by canTypeMoreChars', () => {
+  it('typing beyond word length + 5 is blocked by canTypeMoreChars', () => {
     const word = 'hi';
     let state = createInitialState([word]);
     state = engineReducer(state, { type: 'START' });
 
-    state = typeWord(state, 0, 'hi          ', word, 0);
-    expect(state.userInput[0].length).toBeLessThanOrEqual(word.length + 10);
+    state = typeWord(state, 0, 'hi     ', word, 0);
+    expect(state.userInput[0].length).toBeLessThanOrEqual(word.length + 5);
   });
 });
 

@@ -19,8 +19,13 @@ export function isLastWordComplete(
   return typed.length >= word.length;
 }
 
+// How far a word may overflow past its own length before further input is
+// rejected. Enough to see a short mistyped run, but tight enough that a word
+// can't balloon into a long red blob that reflows the rest of the text.
+export const MAX_WORD_OVERFLOW = 5;
+
 export function canTypeMoreChars(typed: string, word: string): boolean {
-  return typed.length < word.length + 10;
+  return typed.length < word.length + MAX_WORD_OVERFLOW;
 }
 
 export function calculateMetrics(

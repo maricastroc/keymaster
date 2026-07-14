@@ -16,6 +16,7 @@ import { useActiveWordScroll } from '@/features/typing/hooks/useActiveWordScroll
 import { useAutoFocusOnReady } from '@/features/typing/hooks/useAutoFocusOnReady';
 import { useEngineReset } from '@/features/typing/hooks/useEngineReset';
 import { useResultsReveal } from '@/features/typing/hooks/useResultsReveal';
+import { useShakeOnBump } from '@/features/typing/hooks/useShakeOnBump';
 import { useKeyProfile } from '@/features/results/keys/useKeyProfile';
 import { generatePractice } from '@/features/results/keys/logic/generatePractice';
 import { practiceWords } from '@/data/practiceWords';
@@ -94,6 +95,7 @@ export default function Home() {
     totalTime,
     finishedTime,
     isReady,
+    overflowBump,
     prepare,
     resume,
     handleKeyDown,
@@ -185,6 +187,9 @@ export default function Home() {
   }, [personalBest]);
 
   const { showResults, textFading } = useResultsReveal(isCompleted, setIsNewBest);
+
+  // Nudge the current word when the user keeps typing past the overflow cap.
+  const isOverflowShaking = useShakeOnBump(overflowBump);
 
   return (
     <div className="relative min-h-screen flex flex-col items-center px-4 py-6 md:py-10">
@@ -287,7 +292,9 @@ export default function Home() {
                 <div
                   key={wordIdx}
                   data-word-index={wordIdx}
-                  className="inline-block"
+                  className={`inline-block ${
+                    isOverflowShaking && wordIdx === activeWordIndex ? 'animate-shake' : ''
+                  }`}
                 >
                   <WordDisplay
                     word={word}
