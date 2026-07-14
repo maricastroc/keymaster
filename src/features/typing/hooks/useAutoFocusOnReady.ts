@@ -3,7 +3,7 @@ import { useEffect, type RefObject } from 'react';
 type Params = {
   isReady: boolean;
   isStarted: boolean;
-  inputRef: RefObject<HTMLInputElement | null>;
+  inputRef: RefObject<HTMLTextAreaElement | null>;
   preload: () => void;
 };
 

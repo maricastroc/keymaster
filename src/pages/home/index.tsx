@@ -18,6 +18,7 @@ import { useEngineReset } from '@/features/typing/hooks/useEngineReset';
 import { useResultsReveal } from '@/features/typing/hooks/useResultsReveal';
 import { useShakeOnBump } from '@/features/typing/hooks/useShakeOnBump';
 import { useResumeOnKey } from '@/features/typing/hooks/useResumeOnKey';
+import { useTypingInput } from '@/features/typing/hooks/useTypingInput';
 import { useKeyProfile } from '@/features/results/keys/useKeyProfile';
 import { generatePractice } from '@/features/results/keys/logic/generatePractice';
 import { practiceWords } from '@/data/practiceWords';
@@ -61,7 +62,7 @@ export default function Home() {
   const [showHistorySection, setShowHistorySection] = useState(false);
   const [showCustomModal, setShowCustomModal] = useState(false);
 
-  const inputRef = useRef<HTMLInputElement>(null);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
 
   const wordsContainerRef = useRef<HTMLDivElement>(null);
 
@@ -156,6 +157,8 @@ export default function Home() {
     isReady,
     containerRef: wordsContainerRef,
   });
+
+  const { onFocus: onInputFocus } = useTypingInput({ inputRef, onKey: handleKeyDown });
 
   useAutoFocusOnReady({ isReady, isStarted, inputRef, preload });
 
@@ -317,12 +320,24 @@ export default function Home() {
             </div>
           )}
 
-          <input
+          {/*
+            Hidden capture field. Driven by `beforeinput`/`compositionend` (see
+            useTypingInput) rather than `keydown` so mobile soft keyboards work.
+            Kept focusable and sized (opacity-0, 16px font to avoid iOS zoom) so
+            a tap on the text can summon the keyboard; the engine draws its own
+            caret, so the native one is hidden.
+          */}
+          <textarea
             ref={inputRef}
-            className="absolute opacity-0 pointer-events-none"
-            autoComplete="off"
+            onFocus={onInputFocus}
+            className="absolute inset-0 h-full w-full resize-none border-0 bg-transparent p-0 text-[16px] opacity-0 caret-transparent outline-none pointer-events-none"
             aria-label="Typing test input"
-            onKeyDown={(e) => handleKeyDown(e.key)}
+            autoComplete="off"
+            autoCorrect="off"
+            autoCapitalize="off"
+            spellCheck={false}
+            inputMode="text"
+            tabIndex={-1}
           />
 
           {isPaused && <PauseWarning onResume={handleResume} />}
