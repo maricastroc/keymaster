@@ -52,9 +52,13 @@ function Row({ entry }: { entry: LeaderboardEntry }) {
     >
       <RankBadge rank={entry.rank} />
 
-      <div className="flex min-w-0 items-center gap-2.5">
+      <Link
+        href={`/u/${entry.userId}`}
+        className="group flex min-w-0 items-center gap-2.5"
+        aria-label={`View ${entry.name ?? 'this typist'}'s profile`}
+      >
         <Avatar entry={entry} />
-        <span className="truncate font-mono text-sm text-neutral-300">
+        <span className="truncate font-mono text-sm text-neutral-300 transition-colors group-hover:text-yellow-500">
           {entry.name ?? 'anonymous'}
         </span>
         {entry.isMe && (
@@ -62,7 +66,7 @@ function Row({ entry }: { entry: LeaderboardEntry }) {
             you
           </span>
         )}
-      </div>
+      </Link>
 
       <span className="text-right font-mono text-sm font-bold tabular-nums text-yellow-500">
         {entry.wpm}
