@@ -10,6 +10,12 @@ import { useTypingEngine } from '@/features/typing/hooks/useTypingEngine';
 import { useTextLoader } from '@/features/typing/hooks/useTextLoader';
 import { useRoundStats } from '@/features/typing/hooks/useRoundStats';
 import { usePersonalBest } from '@/features/typing/hooks/usePersonalBest';
+import { useAutoPause } from '@/features/typing/hooks/useAutoPause';
+import { useTypingShortcuts } from '@/features/typing/hooks/useTypingShortcuts';
+import { useActiveWordScroll } from '@/features/typing/hooks/useActiveWordScroll';
+import { useAutoFocusOnReady } from '@/features/typing/hooks/useAutoFocusOnReady';
+import { useEngineReset } from '@/features/typing/hooks/useEngineReset';
+import { useResultsReveal } from '@/features/typing/hooks/useResultsReveal';
 import { useKeyProfile } from '@/features/results/keys/useKeyProfile';
 import { generatePractice } from '@/features/results/keys/logic/generatePractice';
 import { practiceWords } from '@/data/practiceWords';
@@ -49,8 +55,6 @@ export default function Home() {
   const personalBest = usePersonalBest();
   const personalBestRef = useRef(0);
   const [isNewBest, setIsNewBest] = useState(false);
-
-  const [capsLockOn, setCapsLockOn] = useState(false);
 
   const [showHistorySection, setShowHistorySection] = useState(false);
   const [showCustomModal, setShowCustomModal] = useState(false);
@@ -141,86 +145,30 @@ export default function Home() {
     [keystrokes, chartData, totalTime]
   );
 
-  useEffect(() => {
-    if (!currentText) return;
-    reset(currentText);
-    if (hasInteractedRef.current) prepare();
-  }, [currentText]);
+  useEngineReset({ currentText, initialTime, hasInteractedRef, reset, prepare });
 
-  useEffect(() => {
-    if (!currentText) return;
-    reset(currentText);
+  useActiveWordScroll({
+    activeWordIndex,
+    isStarted,
+    isReady,
+    containerRef: wordsContainerRef,
+  });
 
-    if (hasInteractedRef.current) prepare();
-  }, [initialTime]);
+  useAutoFocusOnReady({ isReady, isStarted, inputRef, preload });
 
-  useEffect(() => {
-    if (!isReady) return;
-
-    const currentWordEl = wordsContainerRef.current?.querySelector<HTMLElement>(
-      `[data-word-index="${activeWordIndex}"]`
-    );
-
-    const prefersReducedMotion = window.matchMedia?.(
-      '(prefers-reduced-motion: reduce)'
-    ).matches;
-
-    currentWordEl?.scrollIntoView({
-      block: 'center',
-      behavior: prefersReducedMotion ? 'auto' : 'smooth',
-    });
-  }, [activeWordIndex, isStarted, isReady]);
-
-
-  useEffect(() => {
-    if (isReady && !isStarted) {
-      inputRef.current?.focus();
-      preload();
-    }
-  }, [isReady, isStarted, preload]);
-
+  // Prefetch the (lazy) results chunk once typing begins, so it's ready by the
+  // time the round completes.
   useEffect(() => {
     if (isStarted) import('@/features/results/components/ResultSection');
   }, [isStarted]);
 
-  useEffect(() => {
-    const handleVisibilityChange = () => {
-      if (document.hidden && isStarted && !isCompleted && !isPaused) {
-        pause();
-      }
-    };
+  useAutoPause({ isStarted, isCompleted, isPaused, pause });
 
-    const handleBlur = () => {
-      if (isStarted && !isCompleted && !isPaused) {
-        pause();
-      }
-    };
-
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-    window.addEventListener('blur', handleBlur);
-
-    return () => {
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
-      window.removeEventListener('blur', handleBlur);
-    };
-  }, [isStarted, isCompleted, isPaused, pause]);
-
-  useEffect(() => {
-    const syncCaps = (e: KeyboardEvent) => setCapsLockOn(e.getModifierState('CapsLock'));
-    const onKeyDown = (e: KeyboardEvent) => {
-      syncCaps(e);
-      if (e.key === 'Escape' && !showHistorySection && currentText) {
-        e.preventDefault();
-        onRestart();
-      }
-    };
-    window.addEventListener('keydown', onKeyDown);
-    window.addEventListener('keyup', syncCaps);
-    return () => {
-      window.removeEventListener('keydown', onKeyDown);
-      window.removeEventListener('keyup', syncCaps);
-    };
-  }, [showHistorySection, currentText, onRestart]);
+  const capsLockOn = useTypingShortcuts({
+    currentText,
+    blocked: showHistorySection,
+    onRestart,
+  });
 
   const isLoading = isValidating || isNextLoading;
   const loadingButton = isNextLoading ? 'next' : isValidating ? 'randomize' : null;
@@ -232,25 +180,11 @@ export default function Home() {
       ? 'Test paused.'
       : '';
 
-  const [showResults, setShowResults] = useState(false);
-  const [textFading, setTextFading] = useState(false);
-
   useEffect(() => {
     personalBestRef.current = personalBest;
   }, [personalBest]);
 
-  useEffect(() => {
-    if (!isCompleted) {
-      setShowResults(false);
-      setTextFading(false);
-      setIsNewBest(false);
-      return;
-    }
-    setTextFading(true);
-    const t = setTimeout(() => setShowResults(true), 350);
-    return () => clearTimeout(t);
-  }, [isCompleted]);
-
+  const { showResults, textFading } = useResultsReveal(isCompleted, setIsNewBest);
 
   return (
     <div className="relative min-h-screen flex flex-col items-center px-4 py-6 md:py-10">
