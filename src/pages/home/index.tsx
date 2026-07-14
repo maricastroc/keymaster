@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import dynamic from 'next/dynamic';
 import * as Dialog from '@radix-ui/react-dialog';
 
@@ -17,6 +17,7 @@ import { useAutoFocusOnReady } from '@/features/typing/hooks/useAutoFocusOnReady
 import { useEngineReset } from '@/features/typing/hooks/useEngineReset';
 import { useResultsReveal } from '@/features/typing/hooks/useResultsReveal';
 import { useShakeOnBump } from '@/features/typing/hooks/useShakeOnBump';
+import { useResumeOnKey } from '@/features/typing/hooks/useResumeOnKey';
 import { useKeyProfile } from '@/features/results/keys/useKeyProfile';
 import { generatePractice } from '@/features/results/keys/logic/generatePractice';
 import { practiceWords } from '@/data/practiceWords';
@@ -191,6 +192,14 @@ export default function Home() {
   // Nudge the current word when the user keeps typing past the overflow cap.
   const isOverflowShaking = useShakeOnBump(overflowBump);
 
+  const handleResume = useCallback(() => {
+    resume();
+    setTimeout(() => inputRef.current?.focus(), 10);
+  }, [resume]);
+
+  // Paused runs resume on click (the overlay button) or on any real keypress.
+  useResumeOnKey(isPaused, handleResume);
+
   return (
     <div className="relative min-h-screen flex flex-col items-center px-4 py-6 md:py-10">
       <a
@@ -316,14 +325,7 @@ export default function Home() {
             onKeyDown={(e) => handleKeyDown(e.key)}
           />
 
-          {isPaused && (
-            <PauseWarning
-              onResume={() => {
-                resume();
-                setTimeout(() => inputRef.current?.focus(), 10);
-              }}
-            />
-          )}
+          {isPaused && <PauseWarning onResume={handleResume} />}
 
           {!isReady && !isCompleted && !isPaused && currentText && (
             <div

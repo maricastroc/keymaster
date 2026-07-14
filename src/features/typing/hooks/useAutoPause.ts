@@ -8,8 +8,13 @@ type Params = {
 };
 
 /**
- * Pause an in-progress test when the tab is hidden or the window loses focus,
- * so idle time can never inflate the user's WPM.
+ * Pause an in-progress test when the tab is actually hidden — switched away or
+ * minimized — so idle time can't wreck the run.
+ *
+ * Deliberately listens only to `visibilitychange`, not `window blur`: blur also
+ * fires for benign focus changes (clicking the address bar, opening devtools,
+ * alt-tabbing to another app or monitor), which would pause mid-flow with no
+ * real tab switch. `document.hidden` fires only on a genuine tab hide/minimize.
  */
 export function useAutoPause({ isStarted, isCompleted, isPaused, pause }: Params) {
   useEffect(() => {
@@ -19,18 +24,10 @@ export function useAutoPause({ isStarted, isCompleted, isPaused, pause }: Params
       }
     };
 
-    const handleBlur = () => {
-      if (isStarted && !isCompleted && !isPaused) {
-        pause();
-      }
-    };
-
     document.addEventListener('visibilitychange', handleVisibilityChange);
-    window.addEventListener('blur', handleBlur);
 
     return () => {
       document.removeEventListener('visibilitychange', handleVisibilityChange);
-      window.removeEventListener('blur', handleBlur);
     };
   }, [isStarted, isCompleted, isPaused, pause]);
 }
