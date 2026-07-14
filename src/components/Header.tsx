@@ -4,7 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useState, useRef, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faClockRotateLeft, faChartLine, faTrophy, faRightFromBracket, faSun, faMoon, faVolumeHigh, faVolumeXmark, faPlay } from '@fortawesome/free-solid-svg-icons';
+import { faClockRotateLeft, faChartLine, faTrophy, faRightFromBracket, faSun, faMoon, faVolumeHigh, faVolumeXmark, faPlay, faCalendarDay } from '@fortawesome/free-solid-svg-icons';
 import { faGithub } from '@fortawesome/free-brands-svg-icons';
 import { usePersonalBest } from '@/features/typing/hooks/usePersonalBest';
 import { signIn, signOut, useSession } from 'next-auth/react';
@@ -87,6 +87,16 @@ export const Header = ({ onOpenHistorySection }: HeaderProps) => {
         >
           <FontAwesomeIcon icon={faClockRotateLeft} size="sm" />
         </button>
+
+        <Link
+          href="/daily"
+          className="cursor-pointer text-neutral-500 hover:text-neutral-300 transition-colors p-1.5"
+          aria-label="Daily challenge"
+          data-tooltip-id="header-tip"
+          data-tooltip-content="Daily challenge"
+        >
+          <FontAwesomeIcon icon={faCalendarDay} size="sm" />
+        </Link>
 
         <Link
           href="/stats"

@@ -18,10 +18,14 @@ interface TypingOptions {
   onSuccess?: () => void;
   onFinished?: (data: HistoryStats) => void;
   initialTime?: number;
+  /** Force a mode instead of reading the global config (used by the daily
+   * challenge, which is always a full passage). */
+  mode?: 'timed' | 'passage';
 }
 
 export const useTypingEngine = (text: string, options?: TypingOptions) => {
-  const { mode } = useConfig();
+  const { mode: configMode } = useConfig();
+  const mode = options?.mode ?? configMode;
 
   const words = useMemo(() => text.split(' '), [text]);
 

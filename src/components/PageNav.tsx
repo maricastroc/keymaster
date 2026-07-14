@@ -2,11 +2,12 @@
 
 import Link from 'next/link';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowLeft, faChartLine, faTrophy } from '@fortawesome/free-solid-svg-icons';
+import { faArrowLeft, faChartLine, faTrophy, faCalendarDay } from '@fortawesome/free-solid-svg-icons';
 
-type Section = '/stats' | '/leaderboard';
+type Section = '/daily' | '/stats' | '/leaderboard';
 
 const SECTIONS: { href: Section; label: string; icon: typeof faChartLine }[] = [
+  { href: '/daily', label: 'Daily', icon: faCalendarDay },
   { href: '/stats', label: 'Statistics', icon: faChartLine },
   { href: '/leaderboard', label: 'Leaderboard', icon: faTrophy },
 ];

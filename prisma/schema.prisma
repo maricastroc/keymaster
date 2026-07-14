@@ -18,15 +18,16 @@ model Text {
 }
 
 model User {
-  id            String    @id @default(uuid())
+  id            String        @id @default(uuid())
   name          String?
-  email         String?   @unique
+  email         String?       @unique
   emailVerified DateTime?
   image         String?
-  createdAt     DateTime  @default(now())
+  createdAt     DateTime      @default(now())
   accounts      Account[]
   sessions      Session[]
   rounds        Round[]
+  dailyResults  DailyResult[]
 }
 
 model Account {
@@ -73,4 +74,20 @@ model Round {
   mode       String
   difficulty String
   createdAt  DateTime @default(now())
+}
+
+// One row per user per day: their best result on that day's shared challenge
+// text. The `date` is the UTC calendar day (`YYYY-MM-DD`).
+model DailyResult {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  date      String
+  textId    String
+  wpm       Int
+  accuracy  Int
+  createdAt DateTime @default(now())
+
+  @@unique([userId, date])
+  @@index([date, wpm])
 }
