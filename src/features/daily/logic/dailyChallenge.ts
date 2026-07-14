@@ -4,18 +4,8 @@ import { prisma } from '@/lib/prisma';
 import { dailyIndex } from './dailyText';
 import type { DailyChallengeText, DailyEntry } from '@/types/daily';
 
-// Prefer English for a fair, shared challenge; fall back to any language if the
-// pool is empty.
 const DAILY_LANGUAGE = 'en';
 
-/**
- * Server-only. Resolves the single text everyone types on `dateStr`. Picked
- * deterministically from a stably-ordered pool, so the result is consistent
- * across requests for the day without any stored "today's text" record.
- *
- * Caveat: the pick is derived from the pool's size and id-ordering, so adding
- * or removing texts can shift which one a given day maps to.
- */
 export async function getDailyChallenge(dateStr: string): Promise<DailyChallengeText | null> {
   let where: Prisma.TextWhereInput = { language: DAILY_LANGUAGE };
   let count = await prisma.text.count({ where });

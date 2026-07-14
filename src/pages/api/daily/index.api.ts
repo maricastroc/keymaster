@@ -33,7 +33,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   const date = utcDateString(new Date());
   const challenge = await getDailyChallenge(date);
 
-  // Anti-spoof: the submitted result must be for today's actual daily text.
   if (!challenge || challenge.id !== textId) {
     return res.status(409).json({ message: "Not today's challenge" });
   }
@@ -42,7 +41,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     where: { userId_date: { userId, date } },
   });
 
-  // Keep only the user's best WPM for the day.
   if (existing && existing.wpm >= wpm) {
     return res.status(200).json({ best: existing.wpm, improved: false });
   }

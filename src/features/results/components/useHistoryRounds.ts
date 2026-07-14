@@ -26,7 +26,6 @@ export function useHistoryRounds(filterMode: ModeFilter, filterDifficulty: Diffi
       (filterDifficulty === 'all' || r.difficulty === filterDifficulty)
   );
 
-  // Best within the current filter, so the crown reflects what's on screen.
   const personalBest = rounds.length > 0 ? Math.max(...rounds.map((r) => r.wpm)) : 0;
 
   const isLoadingHistory = isLoggedIn && apiRounds === undefined;

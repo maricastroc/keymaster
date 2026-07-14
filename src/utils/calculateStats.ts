@@ -43,10 +43,6 @@ export const calculateGeneralStats = (
     ...chartData.map((d) => d.raw).filter((v) => !isNaN(v))
   );
 
-  // Consistency measures how steady the pace was, so it must run on the
-  // *instantaneous* per-second WPM (`burst`). The `wpm` series is a running
-  // average that converges over time, which would make everyone look perfectly
-  // consistent.
   const consistency = consistencyScore(chartData.map((d) => d.burst));
 
   return {

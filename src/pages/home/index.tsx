@@ -162,8 +162,6 @@ export default function Home() {
 
   useAutoFocusOnReady({ isReady, isStarted, inputRef, preload });
 
-  // Prefetch the (lazy) results chunk once typing begins, so it's ready by the
-  // time the round completes.
   useEffect(() => {
     if (isStarted) import('@/features/results/components/ResultSection');
   }, [isStarted]);
@@ -191,8 +189,6 @@ export default function Home() {
   }, [personalBest]);
 
   const { showResults, textFading } = useResultsReveal(isCompleted, setIsNewBest);
-
-  // Nudge the current word when the user keeps typing past the overflow cap.
   const isOverflowShaking = useShakeOnBump(overflowBump);
 
   const handleResume = useCallback(() => {
@@ -200,7 +196,6 @@ export default function Home() {
     setTimeout(() => inputRef.current?.focus(), 10);
   }, [resume]);
 
-  // Paused runs resume on click (the overlay button) or on any real keypress.
   useResumeOnKey(isPaused, handleResume);
 
   return (

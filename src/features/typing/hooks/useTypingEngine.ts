@@ -37,8 +37,6 @@ export const useTypingEngine = (text: string, options?: TypingOptions) => {
   const hasSavedRef = useRef(false);
   const isFinishingRef = useRef(false);
 
-  // Increments each time a keystroke is rejected at the overflow cap, so the UI
-  // can nudge (shake) the current word instead of the input dead-ending silently.
   const [overflowBump, setOverflowBump] = useState(0);
 
   const {
@@ -108,8 +106,6 @@ export const useTypingEngine = (text: string, options?: TypingOptions) => {
 
       if (key.length === 1 && key !== ' ') {
         if (!canTypeMoreChars(currentTyped, currentWord)) {
-          // Hit the overflow wall: reject the char but make it legible — an
-          // error tick + a shake bump — rather than swallowing input silently.
           options?.onError?.();
           setOverflowBump((n) => n + 1);
           return;

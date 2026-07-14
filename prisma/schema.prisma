@@ -76,8 +76,6 @@ model Round {
   createdAt  DateTime @default(now())
 }
 
-// One row per user per day: their best result on that day's shared challenge
-// text. The `date` is the UTC calendar day (`YYYY-MM-DD`).
 model DailyResult {
   id        String   @id @default(uuid())
   userId    String

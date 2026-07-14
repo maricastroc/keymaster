@@ -30,8 +30,7 @@ export function useEngineReset({
   useEffect(() => {
     if (!currentText) return;
     reset(currentText);
-    // Changing the timer duration shouldn't bounce the user back to the Start
-    // overlay if they've already been typing.
+
     if (hasInteractedRef.current) prepare();
   }, [initialTime]);
 }

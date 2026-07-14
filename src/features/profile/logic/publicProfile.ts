@@ -60,8 +60,6 @@ export async function getPublicProfile(userId: string): Promise<PublicProfileDat
 
   const stats = aggregateStats(roundStats);
 
-  // Rank = how many users have a higher personal best, +1. Mirrors the
-  // leaderboard's ranking so the number lines up between the two pages.
   let rank: number | null = null;
   if (stats.bestWpm > 0) {
     const higher = await prisma.$queryRaw<{ count: number }[]>(Prisma.sql`

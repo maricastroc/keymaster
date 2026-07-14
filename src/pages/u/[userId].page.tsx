@@ -15,11 +15,9 @@ import { BreakdownTable } from '@/features/stats/components/BreakdownTable';
 import { formatDuration } from '@/features/stats/logic/formatDuration';
 import { Footer } from '@/components/Footer';
 
-// Recharts measures the DOM, so render it on the client only; the SEO-relevant
-// content (header, stat tiles, breakdowns) still server-renders.
 const WpmTrendChart = dynamic(
   () => import('@/features/stats/components/WpmTrendChart').then((m) => m.WpmTrendChart),
-  { ssr: false, loading: () => <div className="h-[264px]" aria-hidden /> }
+  { ssr: false, loading: () => <div className="h-66" aria-hidden /> }
 );
 
 type Props = {

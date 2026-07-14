@@ -1,6 +1,6 @@
 # Keymaster
 
-A full-stack typing speed test with real-time metrics, session replay, per-word and per-key heatmaps, weak-key practice drills, a global leaderboard, and persistent history — built with Next.js, Prisma, and PostgreSQL.
+A full-stack typing speed test with real-time metrics, session replay, per-word and per-key heatmaps, weak-key practice drills, a daily challenge, global and daily leaderboards, shareable public profiles, and persistent history — built with Next.js, Prisma, and PostgreSQL.
 
 **[Live demo →](https://keymaster.marianacastro.dev/)**
 
@@ -20,6 +20,10 @@ A full-stack typing speed test with real-time metrics, session replay, per-word 
 
 **Global leaderboard** — all-time and weekly rankings by best WPM, with rank tiers. Your own position is pinned even when you fall outside the visible top entries.
 
+**Daily challenge** — everyone in the world types the same passage each day, picked deterministically from the UTC date (no cron, no stored "text of the day"), with its own daily leaderboard. Built as an isolated typing surface that reuses the core engine, so it can't affect the main test.
+
+**Public profiles** — every signed-in typist gets a shareable, server-rendered profile at `/u/[id]` with lifetime stats, all-time rank, a WPM-over-time trend, and mode/difficulty breakdowns. Leaderboard rows link straight to them.
+
 **Key analysis & weak-key practice** — every keystroke feeds a per-key profile rendered as a color-coded keyboard heatmap, surfacing your weakest keys. The app can then generate targeted practice drills built from exactly those keys.
 
 ---
@@ -32,6 +36,8 @@ A full-stack typing speed test with real-time metrics, session replay, per-word 
 - **Difficulty levels** — texts filtered by difficulty per category
 - **Multilingual texts** — English, Portuguese, Spanish, French, and German
 - **Global leaderboard** — all-time and weekly rankings by best WPM, with rank tiers
+- **Daily challenge** — one shared, deterministic text per day with its own daily leaderboard
+- **Public profiles** — shareable, server-rendered profile pages (`/u/[id]`) with lifetime stats and rank
 - **Weak-key practice** — auto-generated drills targeting your worst keys
 - **Key analysis** — per-key accuracy and speed rendered as a keyboard heatmap
 - **Statistics dashboard** — aggregate stats, WPM-over-time trend, and breakdowns by mode & difficulty
@@ -106,19 +112,24 @@ src/
 ├── features/
 │   ├── typing/        # Engine reducer, hooks, word display, all tests
 │   ├── results/       # Chart, stats, per-word heatmap, replay, key analysis
+│   ├── daily/         # Daily challenge: deterministic text-of-day, arena, board
+│   ├── profile/       # Public profile data assembly (server)
+│   ├── stats/         # Shared stat tiles, breakdown table, WPM trend chart
 │   ├── leaderboard/   # Ranking logic (tiers) and data hook
 │   ├── settings/      # Config context, settings panel
 │   └── sound/         # Audio context and playback
 ├── components/ui/     # Reusable UI primitives (button, pills, tooltip)
 ├── hooks/             # Shared hooks (useLocalStorage)
 ├── lib/               # Auth config, Prisma client, helpers
+├── pages/             # Routes: home, /daily, /stats, /leaderboard, /u/[id] (SSR)
 ├── pages/api/
 │   ├── auth/          # NextAuth handler
 │   ├── rounds/        # REST endpoints for round history
 │   ├── leaderboard/   # Ranked best-WPM entries (all-time & weekly)
+│   ├── daily/         # Submit & rank the day's shared challenge
 │   └── texts/         # Random text by category / difficulty / language
 ├── services/          # API client (roundsApi)
-├── utils/             # Pure functions: calculateStats, smoothData, buildChartData
+├── utils/             # Pure functions: calculateStats, consistency, buildChartData
 └── types/             # Shared TypeScript types
 ```
 

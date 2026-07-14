@@ -50,7 +50,7 @@ export function DailyArena({ text, isLoggedIn }: Props) {
         const data: { improved: boolean } = await res.json();
         setResult((r) => (r ? { ...r, improved: data.improved } : r));
         setSubmitState('saved');
-        // Re-run getServerSideProps so the board below reflects the new result.
+
         router.replace(router.asPath, undefined, { scroll: false });
       } catch {
         setSubmitState('error');

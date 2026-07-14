@@ -38,12 +38,10 @@ describe('isLastWordComplete', () => {
 
 describe('canTypeMoreChars', () => {
   it('returns true when typed is shorter than word length + 5', () => {
-    // 'hello' (5) + 4 extra chars = 9, still under the cap of 10.
     expect(canTypeMoreChars('helloextr', 'hello')).toBe(true);
   });
 
   it('returns false when typed reaches word length + 5', () => {
-    // 'hello' (5) + 5 extra chars = 10, exactly at the cap.
     expect(canTypeMoreChars('helloextra', 'hello')).toBe(false);
   });
 

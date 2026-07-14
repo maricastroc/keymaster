@@ -24,7 +24,7 @@ describe('dailyIndex', () => {
   it('generally differs across consecutive days', () => {
     const days = ['2026-07-14', '2026-07-15', '2026-07-16', '2026-07-17', '2026-07-18'];
     const indices = new Set(days.map((d) => dailyIndex(d, 50)));
-    // Not a strict guarantee, but a good hash spreads 5 days over a pool of 50.
+
     expect(indices.size).toBeGreaterThan(1);
   });
 
