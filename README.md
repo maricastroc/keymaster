@@ -1,10 +1,43 @@
-# Keymaster
+<h1 align="center">
+  <br>
+  <img src="public/assets/images/logo-keymaster.svg" alt="Keymaster" width="40">
+  <br>
+  Keymaster
+  <br>
+</h1>
 
-A full-stack typing speed test with real-time metrics, session replay, per-word and per-key heatmaps, weak-key practice drills, a daily challenge, global and daily leaderboards, shareable public profiles, and persistent history — built with Next.js, Prisma, and PostgreSQL.
+<h4 align="center">A full-stack typing speed test with real-time metrics, session replay, and per-key heatmaps.</h4>
 
-**[Live demo →](https://keymaster.marianacastro.dev/)**
+<p align="center">
+  <img src="https://img.shields.io/badge/Next.js-000000?style=for-the-badge&logo=next.js&logoColor=white" alt="Next.js" />
+  <img src="https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript" />
+  <img src="https://img.shields.io/badge/Tailwind_CSS-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white" alt="Tailwind CSS" />
+  <img src="https://img.shields.io/badge/Prisma-2D3748?style=for-the-badge&logo=prisma&logoColor=white" alt="Prisma" />
+  <img src="https://img.shields.io/badge/PostgreSQL-4169E1?style=for-the-badge&logo=postgresql&logoColor=white" alt="PostgreSQL" />
+  <img src="https://img.shields.io/badge/Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white" alt="Vercel" />
+</p>
 
----
+<p align="center">
+  <a href="#highlights">Highlights</a> •
+  <a href="#features">Features</a> •
+  <a href="#tech-stack">Tech Stack</a> •
+  <a href="#testing">Testing</a> •
+  <a href="#running-locally">Running Locally</a>
+</p>
+
+<p align="center">
+  Real-time metrics, session replay, per-word and per-key heatmaps, weak-key practice drills, a daily challenge, global and daily leaderboards, shareable public profiles, and persistent history — built with Next.js, Prisma, and PostgreSQL.
+</p>
+
+<p align="center">
+  🔗 <strong>Live demo:</strong> <a href="https://keymaster.marianacastro.dev/">keymaster.marianacastro.dev</a>
+</p>
+
+<p align="center">
+  <img src="docs/home-desktop.png" alt="Keymaster" width="800" />
+</p>
+
+<br/>
 
 ## Highlights
 
